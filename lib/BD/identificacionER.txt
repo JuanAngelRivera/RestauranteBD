@@ -1,0 +1,37 @@
+-----------Entidades--------------
+Entidad(atr1, atr2, ...., atrn)
+
+Rol(Id, descripcion, sueldo)
+Empleado (Id, Nombre, telefono, Curp, RFC, fecIngreso,NSS, )
+Turno  (Id, horaInicio,HoraFin, descrpcion)
+Local   (Id, nombre, direccion, telelfono)
+Orden   (Id, fechaRealizada, total,)
+Pago     ( monto,Id)
+metodoPago (Id, descripcion) 
+Contacto  (numero,nombre, telefono)
+Insumo    (Id, descripcion, nombre, costo,)
+Proovedores	(Id, nombre, direccion, descripcion)
+Producto   (Id, precio, nombre,)
+Categoria  (Id, nombre, descripcion)
+Descuento   (Id, descripcion, porcentaje)
+Bonus    (Id, descripcion, valor)
+medida( id, descripcion)
+error(id, descripcion)
+
+-----------Relaciones-------------
+Relación(entidad1, entidad2,..., entidadN), cardinalidad, [atributos de la relación ( N- N)]
+vende (local, orden)  1-n
+tiene ( rol,  empleado)  1 - n
+trabaja ( turno, empleado) 1- n
+levanta ( orden, empleado) n - 1
+Contiene   (producto, orden) n - n
+Ingredientes   (producto, insumo,)  n - n 
+mide  (insumo, medida)  n - 1 
+ pertenece( producto, categoria)  n - 1 
+ se aplica (producto,descuento)   n -1
+		1	1
+		n	1
+surte( proverdor, insumo)  n- n
+tiene( proveedor, contacto) 1-n
+tipo ( pago, tipoPago) n - 1
+monto   (orden, pago)  1 - 1
