@@ -5,16 +5,16 @@ Rol(Id, descripcion, sueldo)
 Empleado (Id, Nombre, telefono, Curp, RFC, fecIngreso,NSS, )
 Turno  (Id, horaInicio,HoraFin, descrpcion)
 Local   (Id, nombre, direccion, telelfono)
-Orden   (Id, fechaRealizada, total,)
+Orden   (Id, fechaRealizada, total,)      ----> debil
 Pago     ( monto,Id)
 metodoPago (Id, descripcion) 
-Contacto  (numero,nombre, telefono)
+Contacto  (numero,nombre, telefono)  ----> debil
 Insumo    (Id, descripcion, nombre, costo,)
-Proovedores	(Id, nombre, direccion, descripcion)
+Proovedor	(Id, nombre, direccion, descripcion)
 Producto   (Id, precio, nombre,)
 Categoria  (Id, nombre, descripcion)
 Descuento   (Id, descripcion, porcentaje)
-Bonus    (Id, descripcion, valor)
+Bonus    (Id, descripcion, valor)c:\Users\Asus\Documents\5to_semestre_FundamentosBaseaDatos\proyecto_ER.png
 medida( id, descripcion)
 error(id, descripcion)
 
@@ -33,5 +33,8 @@ mide  (insumo, medida)  n - 1
 		n	1
 surte( proverdor, insumo)  n- n
 tiene( proveedor, contacto) 1-n
-tipo ( pago, tipoPago) n - 1
+tipo ( pago, metodoPago) n - 1
 monto   (orden, pago)  1 - 1
+recibe (empleado, bonus)  n - n 
+	1	n
+	n	1
