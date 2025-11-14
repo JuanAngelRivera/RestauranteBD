@@ -17,6 +17,7 @@ Descuento   (Id, descripcion, porcentaje)
 Bonus    (Id, descripcion, valor)c:\Users\Asus\Documents\5to_semestre_FundamentosBaseaDatos\proyecto_ER.png
 medida( id, descripcion)
 error(id, descripcion)
+nomina(salarioTotal,fechaPago)  ----> debil
 
 -----------Relaciones-------------
 Relación(entidad1, entidad2,..., entidadN), cardinalidad, [atributos de la relación ( N- N)]
@@ -35,6 +36,6 @@ surte( proverdor, insumo)  n- n
 tiene( proveedor, contacto) 1-n
 tipo ( pago, metodoPago) n - 1
 monto   (orden, pago)  1 - 1
-recibe (empleado, bonus)  n - n 
-	1	n
-	n	1
+recibe  (empleado,nomina)  1 -1
+beneficios (nomina,Bonus) n - n
+ 
