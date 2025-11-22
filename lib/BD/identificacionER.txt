@@ -18,6 +18,7 @@ Bonus    (Id, descripcion, valor)c:\Users\Asus\Documents\5to_semestre_Fundamento
 medida( id, descripcion)
 error(id, descripcion)
 nomina(salarioTotal,fechaPago)  ----> debil
+cuenta (nombreUsuario,contraseña)
 
 -----------Relaciones-------------
 Relación(entidad1, entidad2,..., entidadN), cardinalidad, [atributos de la relación ( N- N)]
@@ -38,4 +39,5 @@ tipo ( pago, metodoPago) n - 1
 monto   (orden, pago)  1 - 1
 recibe  (empleado,nomina)  1 -1
 beneficios (nomina,Bonus) n - n
+se verifica (empleado,cuneta)  1- n
  
