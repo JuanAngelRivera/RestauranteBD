@@ -33,4 +33,10 @@ class _loginViewState extends State<loginView> {
       ),
     );
   }
+  void verificacion()
+  {
+    setState(() {
+      secreto = !secreto;
+    });
+  }
 }
