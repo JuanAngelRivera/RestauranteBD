@@ -18,7 +18,7 @@ Bonus    (Id, descripcion, valor)c:\Users\Asus\Documents\5to_semestre_Fundamento
 medida( id, descripcion)
 error(id, descripcion)
 nomina(salarioTotal,fechaPago)  ----> debil
-cuenta (nombreUsuario,contraseña)
+cuenta (nombreUsuario,contraseña)   -----> debil
 
 -----------Relaciones-------------
 Relación(entidad1, entidad2,..., entidadN), cardinalidad, [atributos de la relación ( N- N)]
