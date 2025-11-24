@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:restaurante_base_de_datos/utils/styles.dart';
 import 'package:restaurante_base_de_datos/widgets/idle_screen_widget.dart';
 import 'package:restaurante_base_de_datos/widgets/panel_widget.dart';
+import 'package:restaurante_base_de_datos/widgets/table_screen_widget.dart';
 
 class adminView extends StatefulWidget {
   const adminView({super.key});
@@ -11,6 +12,7 @@ class adminView extends StatefulWidget {
 }
 
 class _adminViewState extends State<adminView> {
+  late TableScreenWidget tabla;
   @override
   Widget build(BuildContext context) {
     final opciones = ["Productos", "Categorias", "Empleados", "MIAU"];
@@ -61,6 +63,9 @@ class _adminViewState extends State<adminView> {
                             style: ListTileStyle.drawer,
                             title: Text(opciones[i]),
                             onTap: () => {
+                              setState(() {
+                                tablaCargada = true;
+                              })
                               //despliegue de las tablas
                             },
                           ),
@@ -75,10 +80,7 @@ class _adminViewState extends State<adminView> {
                       colorBase: Styles.fondoClaro,
                       child: SizedBox(
                         height: MediaQuery.of(context).size.height * .8,
-                        child: Column(
-                          children: [ tablaCargada == true ? SizedBox() : IdleScreenWidget()
-                          ],
-                        ),
+                        child: tablaCargada == true ? tabla : IdleScreenWidget(),
                       ),
                     ),
                   ),

@@ -17,14 +17,17 @@ class _IdleScreenWidgetState extends State<IdleScreenWidget> {
         Center(
           child: Text(
             "Bienvenido\nAdministrador",
-            style: Styles.titleText.copyWith(
-              fontSize: 72
-            )),
+            style: Styles.titleText.copyWith(fontSize: 72),
+          ),
         ),
-        SizedBox(height: 30,),
+        SizedBox(height: 30),
         Align(
           alignment: AlignmentGeometry.bottomRight,
-          child: Image.asset("sources/images/loginImage.png", height: MediaQuery.of(context).size.height * 0.4))
+          child: Image.asset(
+            "sources/images/loginImage.png",
+            height: MediaQuery.of(context).size.height * 0.4,
+          ),
+        ),
       ],
     );
   }
