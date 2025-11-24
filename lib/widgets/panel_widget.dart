@@ -26,7 +26,7 @@ class PanelWidget extends StatefulWidget {
 class _PanelWidgetState extends State<PanelWidget> {
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Container( 
       decoration: BoxDecoration(
         boxShadow: widget.sombra == true ? [
           BoxShadow(
