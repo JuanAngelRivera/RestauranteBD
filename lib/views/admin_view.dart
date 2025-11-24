@@ -33,6 +33,7 @@ class _adminViewState extends State<adminView> {
                     SizedBox(width: 30,),
                     Text("NOMBRE DEL LOCAL", style: Styles.baseText,),
                     Expanded(child: SizedBox()),
+                    ElevatedButton(onPressed: cerrarSesion, child: child)
                     Image.asset("sources/images/loginImage.png", width: 50,)
                   ],
                 ),),

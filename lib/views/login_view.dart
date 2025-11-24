@@ -62,6 +62,9 @@ class _loginViewState extends State<loginView> {
                               }
                               return null;
                             },
+                            onFieldSubmitted: (value){
+                              verificacion();
+                            },
                           ),
                           TextFormField(
                             style: Styles.baseText,
@@ -77,6 +80,9 @@ class _loginViewState extends State<loginView> {
                                 return 'Contraseña incorrecta';
                               }
                               return null;
+                            },
+                            onFieldSubmitted: (value){
+                              verificacion();
                             },
                           ),
                           SizedBox(
