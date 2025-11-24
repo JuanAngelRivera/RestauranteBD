@@ -12,6 +12,12 @@ class adminView extends StatefulWidget {
 class _adminViewState extends State<adminView> {
   @override
   Widget build(BuildContext context) {
+    final opciones = [
+      "Productos",
+      "Categorias",
+      "Empleados",
+      "MIAU"
+    ];
     return Scaffold(
       backgroundColor: Styles.fondoOscuro,
       body: SizedBox.expand(
@@ -27,20 +33,61 @@ class _adminViewState extends State<adminView> {
                 colorBase: Styles.fondoClaro,
                 padding: EdgeInsets.all(10),
                 child: Row(
+                  spacing: 10,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text("Cherry Café", style: Styles.titleText,),
                     SizedBox(width: 30,),
                     Text("NOMBRE DEL LOCAL", style: Styles.baseText,),
                     Expanded(child: SizedBox()),
-                    ElevatedButton(onPressed: cerrarSesion, child: child)
+                    ElevatedButton(
+                      style: Styles.buttonStyle,
+                      onPressed: cerrarSesion, 
+                      child: Text(
+                        "Cerrar sesión",
+                        style: Styles.baseTextW,)),
                     Image.asset("sources/images/loginImage.png", width: 50,)
                   ],
-                ),),
+                ),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: PanelWidget(
+                      padding: EdgeInsets.all(10),
+                      colorBase: Styles.fondoClaro,
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height * .8,
+                        child: ListView.builder(
+                          itemCount: opciones.length,
+                          itemBuilder: (_, i) => ListTile(
+                            style: ListTileStyle.drawer,
+                            title: Text(opciones[i]),
+                            onTap: () => {
+                              //despliegue de las tablas
+                              },
+                          )),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: PanelWidget(
+                      padding: EdgeInsets.all(10  ),
+                      colorBase: Styles.fondoClaro,
+                      child: Text("Hola")))
+                ],
+              )
             ],
           ),
         ),
       ),
     );
+  }
+
+  void cerrarSesion(){
+    //cerrar conexion con BD antes de retirarse de la vista
+    Navigator.pop(context);
   }
 }

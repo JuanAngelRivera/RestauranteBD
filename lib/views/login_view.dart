@@ -121,6 +121,9 @@ class _loginViewState extends State<loginView> {
         SnackBar(
           content: Text("Formulario valido... Redirigiendo")));
           Future.delayed(Duration(seconds: 3)).then((value){
+            setState(() {
+              cargando = false;
+            });
             Navigator.pushNamed(context, "/admin");
           });
     }
