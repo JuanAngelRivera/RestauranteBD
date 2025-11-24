@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
+
 class Styles {
   static final TextStyle baseText = TextStyle(
-    color: Colors.black,
+    color: fondoOscuro,
     fontSize: 16,
-    fontFamily: "Roboto");
+    fontFamily: "Roboto",
+  );
 
   static final TextStyle titleText = TextStyle(
-    color: Colors.black,
+    color: fondoOscuro,
     fontSize: 24,
     fontWeight: FontWeight.w900,
-    fontFamily: "Roboto");
+    fontFamily: "Roboto",
+  );
 
   static final ButtonStyle buttonStyle = ButtonStyle(
     maximumSize: WidgetStateProperty.resolveWith<Size>((
-      Set<WidgetState> states
-    ){
+      Set<WidgetState> states,
+    ) {
       return Size(200, 100);
     }),
     alignment: Alignment.center,
@@ -32,25 +35,41 @@ class Styles {
       Set<WidgetState> states,
     ) {
       if (states.contains(WidgetState.pressed)) {
-        return Color.fromARGB(255, 235, 24, 137);
+        return contraste;
       } else if (states.contains(WidgetState.disabled)) {
-        return const Color.fromARGB(255, 235, 24, 137);
+        return contraste;
       }
       return Colors.black;
     }),
   );
 
-  static final TextStyle buttonTextStyle = baseText.copyWith(color: Colors.white);
+  static final Color contraste = Color.fromARGB(255, 235, 24, 137);
 
-  static InputDecoration createInputDecoration(String text)
-  {
+  static final Color fondoClaro = Colors.grey.shade500;
+
+  static final Color fondoOscuro = Colors.grey.shade900;
+
+  static final TextStyle baseTextW = baseText.copyWith(color: Colors.white);
+
+  static final TextStyle titleTextW = titleText.copyWith(color: Colors.white);
+
+  static InputDecoration createInputDecoration(String text, Color colorBase) {
     InputDecoration inputDecoration = InputDecoration(
       filled: true,
-    fillColor: Colors.grey.shade300,
-    focusColor: Colors.red,
-    labelStyle: baseText,
-    label: Text(text),
-    border: OutlineInputBorder());
+      fillColor: colorBase,
+      labelStyle: baseText.copyWith(color: contraste),
+      label: Text(text),
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(
+          color: contraste,
+        )
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderSide: BorderSide(
+          color: Colors.red
+        )
+      )
+    );
 
     return inputDecoration;
   }
