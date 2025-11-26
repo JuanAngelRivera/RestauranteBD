@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:restaurante_base_de_datos/utils/styles.dart';
+import 'package:restaurante_base_de_datos/widgets/image_list_tile_widget.dart';
 import 'package:restaurante_base_de_datos/widgets/panel_widget.dart';
 
 class orderView extends StatefulWidget {
@@ -68,7 +69,7 @@ class _orderViewState extends State<orderView> {
                       image: DecorationImage(
                         fit: BoxFit.fill,
                         image: AssetImage(
-                          "sources/images/fotoSEmpleado/empleadoDelMes.png",
+                          "sources/images/fotosEmpleado/empleadoDelMes.png",
                         ),
                       ),
                     ),
@@ -146,20 +147,22 @@ class _orderViewState extends State<orderView> {
                           Text("Categorias", style: Styles.titleText),
                           SizedBox(height: 10),
                           Expanded(
-                            child: ListView.builder(
-                              itemCount: categorias.length,
-                              itemBuilder: (_, i) => ListTile(
-                                style: ListTileStyle.drawer,
-                                title: Text(
-                                  categorias[i],
-                                  style: Styles.titleText,
+                            child: Scrollbar(
+                              child: ListView.builder(
+                                itemCount: categorias.length,
+                                itemBuilder: (_, i) => ListTile(
+                                  style: ListTileStyle.drawer,
+                                  title: Text(
+                                    categorias[i],
+                                    style: Styles.titleText,
+                                  ),
+                                  onTap: () => {
+                                    setState(() {
+                                      categoriaCargada = true;
+                                    }),
+                                    //despliegue de las tablas
+                                  },
                                 ),
-                                onTap: () => {
-                                  setState(() {
-                                    categoriaCargada = true;
-                                  }),
-                                  //despliegue de las tablas
-                                },
                               ),
                             ),
                           ),
@@ -176,18 +179,18 @@ class _orderViewState extends State<orderView> {
                       padding: EdgeInsets.all(10),
                       child: Column(
                         children: [
-                          
-                          ListView.builder(
-                            itemCount: productos.length,
-                            itemBuilder: (_, i) => ListTile(
-                              style: ListTileStyle.drawer,
-                              title: Text(productos[i], style: Styles.baseText),
-                              onTap: () => {
-                                setState(() {
-                                  productoEnOrden = true;
-                                }),
-                                //despliegue de las tablas
-                              },
+                          Text(
+                            "Categoria.nombrexd",
+                            style: Styles.titleText,
+                          ),
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: productos.length,
+                              itemBuilder: (_, i) => ImageListTileWidget(
+                                title: productos[i],
+                                imagen: "",
+                                precio: "10",
+                              ),
                             ),
                           ),
                         ],
