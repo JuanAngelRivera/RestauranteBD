@@ -13,7 +13,7 @@ CREATE TABLE MetodoPago (id INTEGER AUTO_INCREMENT not null,
                          ); -- 🐑
 
 CREATE TABLE CherryLocal (id INTEGER AUTO_INCREMENT NOT NULL,
-					direccion VARCHAR(30),
+					direccion VARCHAR(45),
                     nombre VARCHAR(25),
                     telefono VARCHAR(10),
                     constraint LocalPK primary key (id)
