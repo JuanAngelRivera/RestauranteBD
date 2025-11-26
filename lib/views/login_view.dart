@@ -124,7 +124,7 @@ class _loginViewState extends State<loginView> {
             setState(() {
               cargando = false;
             });
-            Navigator.pushNamed(context, "/admin");
+            Navigator.pushNamed(context, "/order");
           });
     }
     else{
