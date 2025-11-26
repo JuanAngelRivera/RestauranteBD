@@ -67,7 +67,9 @@ class _orderViewState extends State<orderView> {
                       shape: BoxShape.circle,
                       image: DecorationImage(
                         fit: BoxFit.fill,
-                        image: AssetImage("sources/images/fotoSEmpleado/empleadoDelMes.png"),
+                        image: AssetImage(
+                          "sources/images/fotoSEmpleado/empleadoDelMes.png",
+                        ),
                       ),
                     ),
                   ),
@@ -170,18 +172,25 @@ class _orderViewState extends State<orderView> {
                   Expanded(
                     flex: 1,
                     child: PanelWidget(
-                      child: ListView.builder(
-                        itemCount: productos.length,
-                        itemBuilder: (_, i) => ListTile(
-                          style: ListTileStyle.drawer,
-                          title: Text(productos[i], style: Styles.baseText),
-                          onTap: () => {
-                            setState(() {
-                              productoEnOrden = true;
-                            }),
-                            //despliegue de las tablas
-                          },
-                        ),
+                      colorBase: Styles.fondoClaro,
+                      padding: EdgeInsets.all(10),
+                      child: Column(
+                        children: [
+                          
+                          ListView.builder(
+                            itemCount: productos.length,
+                            itemBuilder: (_, i) => ListTile(
+                              style: ListTileStyle.drawer,
+                              title: Text(productos[i], style: Styles.baseText),
+                              onTap: () => {
+                                setState(() {
+                                  productoEnOrden = true;
+                                }),
+                                //despliegue de las tablas
+                              },
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
