@@ -1,37 +1,29 @@
+
 create  database cherryDB;
 use cherryDB;
                   
 CREATE TABLE TablaError (id varchar(20) NOT NULL,
 					descripcion TEXT,
                     constraint ErrorPK primary key (id)
-                    );--🐑
+                    ); -- 🐑
 
 CREATE TABLE MetodoPago (id INTEGER AUTO_INCREMENT not null,
 						 descripcion TEXT,
                          constraint MetodopagoPK primary key (id)
-                         );--🐑
-
-CREATE TABLE Pago (id INTEGER AUTO_INCREMENT NOT NULL,
-				   descripcion TEXT,
-                   id_metodoPago INTEGER,
-                   Id_orden INTEGER,
-                   constraint PagoPK primary key (id),
-                   constraint PagoFK1 foreign key (id_metodoPago) references MetodoPago(id),
-                   constraint PagoFK2 foreign key (Id_orden) references Orden(Id)
-                   );--🐑
+                         ); -- 🐑
 
 CREATE TABLE CherryLocal (id INTEGER AUTO_INCREMENT NOT NULL,
 					direccion VARCHAR(30),
                     nombre VARCHAR(25),
                     telefono VARCHAR(10),
                     constraint LocalPK primary key (id)
-                    );--🐑
+                    );  -- 🐑
 
-CREATE TABLE Rol (id INTEGER PRIMARY KEY AUTO_INCREMENT,
+CREATE TABLE Rol (id INTEGER AUTO_INCREMENT NOT NULL,
 				  descripcion TEXT,
                   sueldo DECIMAL(9,2),
                   constraint RolPK primary key (id) 
-                  );--🐑
+                  ); -- 🐑
 
 
 CREATE TABLE Turno (id INTEGER AUTO_INCREMENT NOT NULL,
@@ -39,30 +31,13 @@ CREATE TABLE Turno (id INTEGER AUTO_INCREMENT NOT NULL,
 					horaFin TIME,
 					descripcion TEXT,
 					constraint TurnoPK primary key (id)
-                    );--🐑
+                    ); -- 🐑
 
 CREATE TABLE Bonus (id INTEGER AUTO_INCREMENT NOT NULL,
 					valor DECIMAL(9,2),
                     descripcion TEXT,
                     constraint BonusPK primary key (id)
-                    );--🐑
-
-CREATE TABLE Nomina (id_Empleado INTEGER NOT NULL,
-					 fechaPago DATE NOT NULL,
-                     salarioTotal DECIMAL(9,2),
-                     constraint NominaPK primary key (id_Empleado, fechaPago),
-                     constraint NominaFK foreign key (id_Empleado) REFERENCES Empleado(id)
-);--🐑
-
-
-CREATE TABLE Beneficios (id_Empleado INTEGER NOT NULL,
-                         fechaPago_Nomina DATE NOT NULL,
-						 id_Bonus INTEGER NOT NULL,
-                         constraint primary key (id_Empleado, fechaPago_Nomina, id_Bonus),
-                         constraint BeneficiosFK1 foreign key (id_Empleado, fechaPago_Nomina) REFERENCES Nomina(id_Empleado, fechaPago),
-                         constraint BeneficiosFK2 foreign key (id_Bonus) REFERENCES Bonus(id)
-);--🐑
-
+                    ); -- 🐑
                     
 CREATE TABLE Empleado (id INTEGER AUTO_INCREMENT NOT NULL,
 					   nombre VARCHAR(25),
@@ -77,30 +52,55 @@ CREATE TABLE Empleado (id INTEGER AUTO_INCREMENT NOT NULL,
                        constraint EmpleadoPK primary key (id),
                        constraint EmpleadoFK1 foreign key (Id_Rol) REFERENCES Rol(id),
                        constraint EmpleadoFK2 foreign key (Id_Turno) REFERENCES Turno(Id)
-                       );--🐑
+                       ); -- 🐑
+                       
+CREATE TABLE Nomina (id_Empleado INTEGER NOT NULL,
+					 fechaPago DATE NOT NULL,
+                     salarioTotal DECIMAL(9,2),
+                     constraint NominaPK primary key (id_Empleado, fechaPago),
+                     constraint NominaFK foreign key (id_Empleado) REFERENCES Empleado(id)
+                     );   -- 🐑
+
+CREATE TABLE Beneficios (id_Empleado INTEGER NOT NULL,
+                         fechaPago_Nomina DATE NOT NULL,
+						 id_Bonus INTEGER NOT NULL,
+                         constraint primary key (id_Empleado, fechaPago_Nomina, id_Bonus),
+                         constraint BeneficiosFK1 foreign key (id_Empleado, fechaPago_Nomina) REFERENCES Nomina(id_Empleado, fechaPago),
+                         constraint BeneficiosFK2 foreign key (id_Bonus) REFERENCES Bonus(id)
+); -- 🐑
 
 CREATE TABLE Cuenta (id_Empleado INTEGER NOT NULL,
 					 nombreUsuario VARCHAR(25) NOT NULL,
                      contraseña VARCHAR(25),
-                     constraint CuentaPK primary key (id_Empleado, nombreUsauario),
+                     constraint CuentaPK primary key (id_Empleado, nombreUsuario),
                      constraint CuentaFK1 foreign key (id_Empleado) REFERENCES Empleado(id)
-                     );--🐑
+                     ); -- 🐑
 
-CREATE TABLE Orden (id_local INTEGER NOT NULL,
+CREATE TABLE Orden (id_CherryLocal INTEGER,
 					id INTEGER AUTO_INCREMENT NOT NULL,
                     total DECIMAL(9,2),
                     fechaRealizada DATE,
                     id_Empleado INTEGER,
-                    constraint OrdenPK primary key(id_Local, id),
-                    constraint OrdenFK1 foreign key (Id_local) REFERENCES Local(id),
-                    constraint OrdenFK2 foreign key (Id_Empleado) REFERENCES Empleado(id)
-                    );--🐑
+                    constraint OrdenPK primary key(id,id_CherryLocal),
+                    constraint OrdenFK1 foreign key (id_CherryLocal) REFERENCES CherryLocal(id),
+                    constraint OrdenFK2 foreign key (id_Empleado) REFERENCES Empleado(id)
+                    ); -- 🐑
+                    
+CREATE TABLE Pago (id INTEGER AUTO_INCREMENT NOT NULL,
+				   descripcion TEXT,
+                   id_metodoPago INTEGER,
+                   id_orden INTEGER,
+                   id_cherryLocal INTEGER,
+                   constraint PagoPK primary key (id),
+                   constraint PagoFK1 foreign key (id_metodoPago) references MetodoPago(id),
+                   constraint PagoFK2 foreign key (id_orden,id_CherryLocal) references Orden(id,id_CherryLocal)
+                   ); -- 🐑
                     
 CREATE TABLE Categoria (id INTEGER AUTO_INCREMENT NOT NULL,
 						nombre VARCHAR(25),
                         descripcion TEXT,
                         constraint CategoriaPK primary key (id)
-                        );--🐑
+                        ); -- 🐑
 
 CREATE TABLE Producto (id INTEGER AUTO_INCREMENT NOT NULL,
 					   nombre VARCHAR(25),
@@ -109,14 +109,15 @@ CREATE TABLE Producto (id INTEGER AUTO_INCREMENT NOT NULL,
                        foto VARCHAR(100),
                        constraint ProductoPK primary key (id),
                        constraint ProductoFK FOREIGN KEY (Id_Categoria) REFERENCES Categoria(Id)
-                       );--🐑
+                       ); -- 🐑
 
 CREATE TABLE Contiene (id_Orden INTEGER,
-					   id_Producto2 INTEGER,
-                       constraint ContienePK primary key (id_Orden, id_Producto),
-                       constraint ContieneFK1 foreign key (id_Orden) REFERENCES Orden(id),
-                       constraint ContieneFK2 foreign key (Id_Producto) REFERENCES Producto(id)
-                       );--🐑
+					   id_CherryLocal INTEGER,
+					   id_Producto INTEGER,
+                       constraint ContienePK primary key (id_Orden, id_CherryLocal, id_Producto),
+                       constraint ContieneFK1 foreign key (id_Orden, id_CherryLocal) REFERENCES Orden(id,id_CherryLocal),
+                       constraint ContieneFK2 foreign key (id_Producto) REFERENCES Producto(id)
+                       ); -- 🐑
 
 CREATE TABLE Descuento (id INTEGER AUTO_INCREMENT NOT NULL,
 						descripcion TEXT,
@@ -124,19 +125,19 @@ CREATE TABLE Descuento (id INTEGER AUTO_INCREMENT NOT NULL,
                         id_Producto INTEGER,
                         constraint DescuentoPK primary key (id),
                         constraint DescuentoFK foreign key (id_Producto) REFERENCES Producto(id)
-                        );--🐑
+                        ); -- 🐑
                         
 CREATE TABLE Medida (id INTEGER AUTO_INCREMENT NOT NULL,
 					descripcion TEXT,
                     constraint MedidaPK primary key (id)
-                    );--🐑
+                    ); -- 🐑
 
 CREATE TABLE Proveedor (id INTEGER AUTO_INCREMENT NOT NULL,
 					    nombre VARCHAR(25),
                         direccion VARCHAR(30),
                         descripcion TEXT,
                         constraint ProveedorPK primary key (id)
-                        );--🐑
+                        ); -- 🐑
 
 CREATE TABLE Insumo (id INTEGER AUTO_INCREMENT NOT NULL,
 					 nombre VARCHAR(25),
@@ -146,7 +147,7 @@ CREATE TABLE Insumo (id INTEGER AUTO_INCREMENT NOT NULL,
                      enAlmacen INTEGER,
                      constraint InsumoPK primary key (id),
                      constraint InsumoFK1 foreign key (id_Medida) REFERENCES Medida(id)
-                     );--🐑
+                     ); -- 🐑
 
 CREATE TABLE Ingredientes (id_Producto INTEGER,
                            id_Insumo INTEGER,
@@ -154,7 +155,7 @@ CREATE TABLE Ingredientes (id_Producto INTEGER,
                            constraint primary key (id_Insumo, id_Producto),
                            constraint IngredientesFK1 foreign key (id_Insumo) REFERENCES Insumo(id),
                            constraint IngredientesFK2 foreign key (id_Producto) REFERENCES Producto(id)
-                           );--🐑
+                           ); -- 🐑
 
 CREATE TABLE Contacto (id_Proveedor INTEGER,
 					   numero INTEGER NOT NULL,
