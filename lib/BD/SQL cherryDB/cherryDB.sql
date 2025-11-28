@@ -39,7 +39,7 @@ CREATE TABLE Bonus (id INTEGER AUTO_INCREMENT NOT NULL,
 					valor DECIMAL(9,2),
                     descripcion TEXT,
                     constraint BonusPK primary key (id)
-                    ); -- 🐑    no
+                    ); -- 🐑   🐑
                     
 CREATE TABLE Empleado (id INTEGER AUTO_INCREMENT NOT NULL,
 					   nombre VARCHAR(40),
@@ -127,7 +127,7 @@ CREATE TABLE Descuento (id INTEGER AUTO_INCREMENT NOT NULL,
                         id_Producto INTEGER,
                         constraint DescuentoPK primary key (id),
                         constraint DescuentoFK foreign key (id_Producto) REFERENCES Producto(id)
-                        ); -- 🐑   
+                        ); -- 🐑   🐑   
                         
 CREATE TABLE Medida (id INTEGER AUTO_INCREMENT NOT NULL,
 					descripcion TEXT,
@@ -139,7 +139,7 @@ CREATE TABLE Proveedor (id INTEGER AUTO_INCREMENT NOT NULL,
                         direccion VARCHAR(50),
                         descripcion TEXT,
                         constraint ProveedorPK primary key (id)
-                        ); -- 🐑
+                        ); -- 🐑  🐑 
 
 CREATE TABLE Insumo (id INTEGER AUTO_INCREMENT NOT NULL,
 					 nombre VARCHAR(40),
@@ -165,4 +165,4 @@ CREATE TABLE Contacto (id_Proveedor INTEGER,
                        telefono VARCHAR(15),
                        constraint primary key (id_Proveedor, numero),
                        CONSTRAINT ContactoFK1 foreign key (id_Proveedor) REFERENCES Proveedor(id)
-                       );          
+                       );    -- 🐑   🐑      
