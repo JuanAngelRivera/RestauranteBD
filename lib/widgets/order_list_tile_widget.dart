@@ -39,12 +39,26 @@ class _OrderListTileWidgetState extends State<OrderListTileWidget> {
     cantidadController.dispose();
     super.dispose();
   }
+
+  @override
+  void didUpdateWidget(covariant OrderListTileWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.cantidad != widget.cantidad) {
+      cantidadController.text = widget.cantidad.toString();
+    }
+  }
   
   @override
   Widget build(BuildContext context) {
     return PanelWidget(
       colorBase: Colors.grey.shade300,
-      padding: EdgeInsets.all(10),
+      padding: EdgeInsets.only(
+        left: 10,
+        right: 10,
+        top: 2,
+        bottom: 2
+      ),
       child: Column(
         children: [
           Row(
@@ -56,8 +70,10 @@ class _OrderListTileWidgetState extends State<OrderListTileWidget> {
               ),
               Text("\$${widget.precio.toStringAsFixed(2)}"),
               SizedBox(
-                width: 50,
+                width: 80,
+                height: 30,
                 child: TextField(
+                  textAlign: TextAlign.center,
                   decoration: Styles.createInputDecoration("", Styles.fondoClaro),
                   controller: cantidadController,
                   keyboardType: TextInputType.number,
@@ -80,7 +96,11 @@ class _OrderListTileWidgetState extends State<OrderListTileWidget> {
                   },
                 ),
               ),
-              Text("\$${widget.subtotal.toStringAsFixed(2)}"),
+              SizedBox(
+                width: 100,
+                child: Text(
+                  "\$${widget.subtotal.toStringAsFixed(2)}", 
+                  textAlign: TextAlign.center,)),
               ElevatedButton(
                 onPressed: widget.onRemove, 
                 child: Text("-"))

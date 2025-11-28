@@ -76,7 +76,7 @@ class Styles {
       filled: true,
       fillColor: colorBase,
       labelStyle: baseText.copyWith(color: contraste),
-      label: Text(text),
+      label: Text(text,),
       focusedBorder: OutlineInputBorder(
         borderSide: BorderSide(
           color: contraste,
@@ -86,6 +86,10 @@ class Styles {
         borderSide: BorderSide(
           color: Colors.red
         )
+      ),
+      border: OutlineInputBorder(
+        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.circular(5)
       )
     );
 

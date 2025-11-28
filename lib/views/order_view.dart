@@ -37,9 +37,10 @@ class _orderViewState extends State<orderView> {
   void agregarPedido(String nombre, double precio) {
     setState(() {
       final index = pedido.indexWhere((item) => item["nombre"] == nombre);
-
+      
       if (index != -1){
         pedido[index]["cantidad"] += 1;
+
         pedido[index]["subtotal"] = pedido[index]["cantidad"] * pedido[index]["precio"];
       }
       else{
@@ -236,27 +237,30 @@ class _orderViewState extends State<orderView> {
                               SizedBox(width: 50,)
                             ],
                           ),
-                          Expanded(
-                            child: ListView.builder(
-                              itemCount: pedido.length,
-                              itemBuilder: (context, index) {
-                                final item = pedido[index];
-                                return OrderListTileWidget(
-                                  nombreProducto: item["nombre"],
-                                  precio: item["precio"],
-                                  cantidad: item["cantidad"],
-                                  subtotal: item["subtotal"],
-                                  onCantidadChanged: (nuevaCantidad){
-                                    setState(() {
-                                      item["cantidad"] = nuevaCantidad;
-                                      item["subtotal"] = nuevaCantidad * item["precio"];
-                                    });
-                                  },
-                                  onRemove: () {
-                                    setState(() => pedido.removeAt(index));
-                                  },
-                                );
-                              },
+                          SizedBox(
+                            height: 400,
+                            child: Scrollbar(
+                              child: ListView.builder(
+                                itemCount: pedido.length,
+                                itemBuilder: (context, index) {
+                                  final item = pedido[index];
+                                  return OrderListTileWidget(
+                                    nombreProducto: item["nombre"],
+                                    precio: item["precio"],
+                                    cantidad: item["cantidad"],
+                                    subtotal: item["subtotal"],
+                                    onCantidadChanged: (nuevaCantidad){
+                                      setState(() {
+                                        item["cantidad"] = nuevaCantidad;
+                                        item["subtotal"] = nuevaCantidad * item["precio"];
+                                      });
+                                    },
+                                    onRemove: () {
+                                      setState(() => pedido.removeAt(index));
+                                    },
+                                  );
+                                },
+                              ),
                             ),
                           ),
                         ],
