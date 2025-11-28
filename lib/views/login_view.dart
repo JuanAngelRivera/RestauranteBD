@@ -120,7 +120,7 @@ class _loginViewState extends State<loginView> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Formulario valido... Redirigiendo")));
-          Future.delayed(Duration(seconds: 3)).then((value){
+          Future.delayed(Duration(seconds: 1)).then((value){
             setState(() {
               cargando = false;
             });

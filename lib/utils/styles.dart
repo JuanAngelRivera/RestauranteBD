@@ -53,6 +53,10 @@ class Styles {
 
   static final TextStyle titleTextW = titleText.copyWith(color: Colors.white);
 
+  static final TextStyle phantomText = baseText.copyWith(color: Colors.grey.shade500);
+
+  static final TextStyle phantomPointsText = phantomText.copyWith(fontSize: 24);
+
   static InputDecoration createInputDecoration(String text, Color colorBase) {
     InputDecoration inputDecoration = InputDecoration(
       filled: true,
@@ -73,4 +77,18 @@ class Styles {
 
     return inputDecoration;
   }
+
+  static ButtonStyle imageListButtonStyle = ButtonStyle(
+    shape: WidgetStatePropertyAll(RoundedRectangleBorder(
+      borderRadius: BorderRadiusGeometry.circular(10))),
+    backgroundColor: WidgetStatePropertyAll(Colors.grey.shade300),
+    overlayColor: WidgetStatePropertyAll(Colors.transparent)
+  );
+
+  static ButtonStyle imageListAddButtonStyle = ButtonStyle(
+    shape: WidgetStatePropertyAll(RoundedRectangleBorder(
+      borderRadius: BorderRadiusGeometry.circular(10))),
+    backgroundColor: WidgetStatePropertyAll(Colors.transparent),
+    overlayColor: WidgetStatePropertyAll(Colors.transparent)
+  );
 }
