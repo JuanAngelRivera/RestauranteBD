@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:restaurante_base_de_datos/utils/styles.dart';
 import 'package:restaurante_base_de_datos/widgets/image_list_tile_widget.dart';
+import 'package:restaurante_base_de_datos/widgets/order_list_tile_widget.dart';
 import 'package:restaurante_base_de_datos/widgets/panel_widget.dart';
 
 class orderView extends StatefulWidget {
@@ -30,6 +31,26 @@ class _orderViewState extends State<orderView> {
 
   bool categoriaCargada = false;
   bool productoEnOrden = false;
+
+  List<Map<String, dynamic>> pedido = [];
+
+  void agregarPedido(String nombre, double precio) {
+    setState(() {
+      final index = pedido.indexWhere((item) => item["nombre"] == nombre);
+
+      if (index != -1){
+        pedido[index]["cantidad"] += 1;
+        pedido[index]["subtotal"] = pedido[index]["cantidad"] * pedido[index]["precio"];
+      }
+      else{
+          pedido.add({
+            "nombre": nombre, 
+            "precio": precio,
+            "cantidad": 1,
+            "subtotal": precio});
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +123,7 @@ class _orderViewState extends State<orderView> {
                 children: [
                   //columna Categorias
                   Expanded(
-                    flex: 2,
+                    flex: 1,
                     child: PanelWidget(
                       padding: EdgeInsets.all(10),
                       colorBase: Styles.fondoClaro,
@@ -173,16 +194,13 @@ class _orderViewState extends State<orderView> {
 
                   //columna lista Productos
                   Expanded(
-                    flex: 1,
+                    flex: 2,
                     child: PanelWidget(
-                      colorBase: Styles.fondoClaro,
                       padding: EdgeInsets.all(10),
                       child: Column(
+                        spacing: 10,
                         children: [
-                          Text(
-                            "Categoria.nombrexd",
-                            style: Styles.titleText,
-                          ),
+                          Text("Categoria.nombrexd", style: Styles.titleText),
                           Expanded(
                             child: ListView.builder(
                               itemCount: productos.length,
@@ -190,7 +208,55 @@ class _orderViewState extends State<orderView> {
                                 title: productos[i],
                                 imagen: "",
                                 precio: 10.0,
+                                onAdd: agregarPedido,
                               ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  Expanded(
+                    flex: 2,
+                    child: PanelWidget(
+                      padding: EdgeInsets.all(20),
+                      child: Column(
+                        spacing: 10,
+                        children: [
+                          Text("Orden", style: Styles.titleText),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              SizedBox(width: MediaQuery.of(context).size.width * 0.01,),
+                              Text("Producto", style: Styles.baseText),
+                              Text("Precio", style: Styles.baseText),
+                              Text("Cantidad", style: Styles.baseText),
+                              Text("Subtotal", style: Styles.baseText),
+                              SizedBox(width: 50,)
+                            ],
+                          ),
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: pedido.length,
+                              itemBuilder: (context, index) {
+                                final item = pedido[index];
+                                return OrderListTileWidget(
+                                  nombreProducto: item["nombre"],
+                                  precio: item["precio"],
+                                  cantidad: item["cantidad"],
+                                  subtotal: item["subtotal"],
+                                  onCantidadChanged: (nuevaCantidad){
+                                    setState(() {
+                                      item["cantidad"] = nuevaCantidad;
+                                      item["subtotal"] = nuevaCantidad * item["precio"];
+                                    });
+                                  },
+                                  onRemove: () {
+                                    setState(() => pedido.removeAt(index));
+                                  },
+                                );
+                              },
                             ),
                           ),
                         ],

@@ -7,11 +7,14 @@ class ImageListTileWidget extends StatefulWidget {
   final String? imagen;
   final double precio;
 
+  final void Function(String nombre, double precio) onAdd;
+
   const ImageListTileWidget({
     super.key,
     required this.title,
     this.imagen,
     required this.precio,
+    required this.onAdd,
   });
 
   @override
@@ -81,7 +84,7 @@ class _ImageListTileWidgetState extends State<ImageListTileWidget> {
                     TextButton(
                       style: Styles.imageListAddButtonStyle,
                       onPressed: () {
-                        //añadir a la orden local
+                        widget.onAdd(widget.title, widget.precio);
                       },
                       child: Image.asset(
                         "sources/images/loginImage.png",
