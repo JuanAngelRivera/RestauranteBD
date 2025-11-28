@@ -49,13 +49,27 @@ class Styles {
 
   static final Color fondoOscuro = Colors.grey.shade900;
 
-  static final TextStyle baseTextW = baseText.copyWith(color: Colors.white);
+  static final TextStyle baseTextW = baseText.copyWith(
+    color: Colors.white);
 
-  static final TextStyle titleTextW = titleText.copyWith(color: Colors.white);
+  static final TextStyle titleTextW = titleText.copyWith(
+    color: Colors.white);
 
-  static final TextStyle phantomText = baseText.copyWith(color: Colors.grey.shade500);
+  static final TextStyle phantomText = baseText.copyWith(
+    color: Colors.grey.shade500);
 
-  static final TextStyle phantomPointsText = phantomText.copyWith(fontSize: 24);
+  static final TextStyle phantomPointsText = phantomText.copyWith(
+    fontSize: 24);
+
+  static final TextStyle priceText = titleText.copyWith(
+    color: contraste,
+  );
+
+  static final TextStyle discountText = priceText.copyWith(
+    decoration: TextDecoration.lineThrough,
+    decorationColor: contraste,
+    fontSize: 16
+  );
 
   static InputDecoration createInputDecoration(String text, Color colorBase) {
     InputDecoration inputDecoration = InputDecoration(

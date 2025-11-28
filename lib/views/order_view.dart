@@ -189,7 +189,7 @@ class _orderViewState extends State<orderView> {
                               itemBuilder: (_, i) => ImageListTileWidget(
                                 title: productos[i],
                                 imagen: "",
-                                precio: "10",
+                                precio: 10.0,
                               ),
                             ),
                           ),
