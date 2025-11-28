@@ -24,7 +24,8 @@ INSERT INTO Turno (horaInicio, horaFin, descripcion) VALUES
 select * from Turno;
 
 INSERT INTO Bonus (valor, descripcion) VALUES
-('100.00','Bonus por puntualidad');
+('100.00','Bonus por Puntualidad'),
+('200.00','Bonus por Empleado el mes');
 select * from Bonus;
 
 -- 
@@ -99,7 +100,6 @@ INSERT INTO Producto (nombre, precio, id_Categoria, foto) VALUES
 ('Frappe de Caramelo', 62.00, 3, 'frappecaramelo.jpg'),   -- 20
 ('Taza Cherry', 95.00, 6, 'taza.jpg'),                    -- 21
 ('Termo Cherry', 180.00, 6, 'termo.jpg');                 -- 22
-
 select* from Producto;
 
 
