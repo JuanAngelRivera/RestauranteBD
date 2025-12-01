@@ -113,12 +113,12 @@ class Cuentas extends Table {
   IntColumn get idEmpleado =>
       integer().references(Empleados, #id).nullable()();
 
-  TextColumn get nombreUsuario => text().named('nombre_usuario')();
+  TextColumn get usuario => text().named("nombreUsuario")();
 
-  TextColumn get password => text().nullable()();
+  TextColumn get password => text().named("contraseña").nullable()();
 
   @override
-  Set<Column> get primaryKey => {idEmpleado, nombreUsuario};
+  Set<Column> get primaryKey => {idEmpleado, usuario};
 
   @override
   String get tableName => 'Cuenta';

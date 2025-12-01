@@ -2746,12 +2746,12 @@ class $CuentasTable extends Cuentas with TableInfo<$CuentasTable, Cuenta> {
       'REFERENCES Empleado (id)',
     ),
   );
-  static const VerificationMeta _nombreUsuarioMeta = const VerificationMeta(
-    'nombreUsuario',
+  static const VerificationMeta _usuarioMeta = const VerificationMeta(
+    'usuario',
   );
   @override
-  late final GeneratedColumn<String> nombreUsuario = GeneratedColumn<String>(
-    'nombre_usuario',
+  late final GeneratedColumn<String> usuario = GeneratedColumn<String>(
+    'nombreUsuario',
     aliasedName,
     false,
     type: DriftSqlType.string,
@@ -2762,14 +2762,14 @@ class $CuentasTable extends Cuentas with TableInfo<$CuentasTable, Cuenta> {
   );
   @override
   late final GeneratedColumn<String> password = GeneratedColumn<String>(
-    'password',
+    'contraseña',
     aliasedName,
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
   @override
-  List<GeneratedColumn> get $columns => [idEmpleado, nombreUsuario, password];
+  List<GeneratedColumn> get $columns => [idEmpleado, usuario, password];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -2788,28 +2788,25 @@ class $CuentasTable extends Cuentas with TableInfo<$CuentasTable, Cuenta> {
         idEmpleado.isAcceptableOrUnknown(data['id_empleado']!, _idEmpleadoMeta),
       );
     }
-    if (data.containsKey('nombre_usuario')) {
+    if (data.containsKey('nombreUsuario')) {
       context.handle(
-        _nombreUsuarioMeta,
-        nombreUsuario.isAcceptableOrUnknown(
-          data['nombre_usuario']!,
-          _nombreUsuarioMeta,
-        ),
+        _usuarioMeta,
+        usuario.isAcceptableOrUnknown(data['nombreUsuario']!, _usuarioMeta),
       );
     } else if (isInserting) {
-      context.missing(_nombreUsuarioMeta);
+      context.missing(_usuarioMeta);
     }
-    if (data.containsKey('password')) {
+    if (data.containsKey('contraseña')) {
       context.handle(
         _passwordMeta,
-        password.isAcceptableOrUnknown(data['password']!, _passwordMeta),
+        password.isAcceptableOrUnknown(data['contraseña']!, _passwordMeta),
       );
     }
     return context;
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {idEmpleado, nombreUsuario};
+  Set<GeneratedColumn> get $primaryKey => {idEmpleado, usuario};
   @override
   Cuenta map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
@@ -2818,13 +2815,13 @@ class $CuentasTable extends Cuentas with TableInfo<$CuentasTable, Cuenta> {
         DriftSqlType.int,
         data['${effectivePrefix}id_empleado'],
       ),
-      nombreUsuario: attachedDatabase.typeMapping.read(
+      usuario: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}nombre_usuario'],
+        data['${effectivePrefix}nombreUsuario'],
       )!,
       password: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}password'],
+        data['${effectivePrefix}contraseña'],
       ),
     );
   }
@@ -2837,18 +2834,18 @@ class $CuentasTable extends Cuentas with TableInfo<$CuentasTable, Cuenta> {
 
 class Cuenta extends DataClass implements Insertable<Cuenta> {
   final int? idEmpleado;
-  final String nombreUsuario;
+  final String usuario;
   final String? password;
-  const Cuenta({this.idEmpleado, required this.nombreUsuario, this.password});
+  const Cuenta({this.idEmpleado, required this.usuario, this.password});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (!nullToAbsent || idEmpleado != null) {
       map['id_empleado'] = Variable<int>(idEmpleado);
     }
-    map['nombre_usuario'] = Variable<String>(nombreUsuario);
+    map['nombreUsuario'] = Variable<String>(usuario);
     if (!nullToAbsent || password != null) {
-      map['password'] = Variable<String>(password);
+      map['contraseña'] = Variable<String>(password);
     }
     return map;
   }
@@ -2858,7 +2855,7 @@ class Cuenta extends DataClass implements Insertable<Cuenta> {
       idEmpleado: idEmpleado == null && nullToAbsent
           ? const Value.absent()
           : Value(idEmpleado),
-      nombreUsuario: Value(nombreUsuario),
+      usuario: Value(usuario),
       password: password == null && nullToAbsent
           ? const Value.absent()
           : Value(password),
@@ -2872,7 +2869,7 @@ class Cuenta extends DataClass implements Insertable<Cuenta> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Cuenta(
       idEmpleado: serializer.fromJson<int?>(json['idEmpleado']),
-      nombreUsuario: serializer.fromJson<String>(json['nombreUsuario']),
+      usuario: serializer.fromJson<String>(json['usuario']),
       password: serializer.fromJson<String?>(json['password']),
     );
   }
@@ -2881,18 +2878,18 @@ class Cuenta extends DataClass implements Insertable<Cuenta> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'idEmpleado': serializer.toJson<int?>(idEmpleado),
-      'nombreUsuario': serializer.toJson<String>(nombreUsuario),
+      'usuario': serializer.toJson<String>(usuario),
       'password': serializer.toJson<String?>(password),
     };
   }
 
   Cuenta copyWith({
     Value<int?> idEmpleado = const Value.absent(),
-    String? nombreUsuario,
+    String? usuario,
     Value<String?> password = const Value.absent(),
   }) => Cuenta(
     idEmpleado: idEmpleado.present ? idEmpleado.value : this.idEmpleado,
-    nombreUsuario: nombreUsuario ?? this.nombreUsuario,
+    usuario: usuario ?? this.usuario,
     password: password.present ? password.value : this.password,
   );
   Cuenta copyWithCompanion(CuentasCompanion data) {
@@ -2900,9 +2897,7 @@ class Cuenta extends DataClass implements Insertable<Cuenta> {
       idEmpleado: data.idEmpleado.present
           ? data.idEmpleado.value
           : this.idEmpleado,
-      nombreUsuario: data.nombreUsuario.present
-          ? data.nombreUsuario.value
-          : this.nombreUsuario,
+      usuario: data.usuario.present ? data.usuario.value : this.usuario,
       password: data.password.present ? data.password.value : this.password,
     );
   }
@@ -2911,63 +2906,63 @@ class Cuenta extends DataClass implements Insertable<Cuenta> {
   String toString() {
     return (StringBuffer('Cuenta(')
           ..write('idEmpleado: $idEmpleado, ')
-          ..write('nombreUsuario: $nombreUsuario, ')
+          ..write('usuario: $usuario, ')
           ..write('password: $password')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(idEmpleado, nombreUsuario, password);
+  int get hashCode => Object.hash(idEmpleado, usuario, password);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Cuenta &&
           other.idEmpleado == this.idEmpleado &&
-          other.nombreUsuario == this.nombreUsuario &&
+          other.usuario == this.usuario &&
           other.password == this.password);
 }
 
 class CuentasCompanion extends UpdateCompanion<Cuenta> {
   final Value<int?> idEmpleado;
-  final Value<String> nombreUsuario;
+  final Value<String> usuario;
   final Value<String?> password;
   final Value<int> rowid;
   const CuentasCompanion({
     this.idEmpleado = const Value.absent(),
-    this.nombreUsuario = const Value.absent(),
+    this.usuario = const Value.absent(),
     this.password = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   CuentasCompanion.insert({
     this.idEmpleado = const Value.absent(),
-    required String nombreUsuario,
+    required String usuario,
     this.password = const Value.absent(),
     this.rowid = const Value.absent(),
-  }) : nombreUsuario = Value(nombreUsuario);
+  }) : usuario = Value(usuario);
   static Insertable<Cuenta> custom({
     Expression<int>? idEmpleado,
-    Expression<String>? nombreUsuario,
+    Expression<String>? usuario,
     Expression<String>? password,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (idEmpleado != null) 'id_empleado': idEmpleado,
-      if (nombreUsuario != null) 'nombre_usuario': nombreUsuario,
-      if (password != null) 'password': password,
+      if (usuario != null) 'nombreUsuario': usuario,
+      if (password != null) 'contraseña': password,
       if (rowid != null) 'rowid': rowid,
     });
   }
 
   CuentasCompanion copyWith({
     Value<int?>? idEmpleado,
-    Value<String>? nombreUsuario,
+    Value<String>? usuario,
     Value<String?>? password,
     Value<int>? rowid,
   }) {
     return CuentasCompanion(
       idEmpleado: idEmpleado ?? this.idEmpleado,
-      nombreUsuario: nombreUsuario ?? this.nombreUsuario,
+      usuario: usuario ?? this.usuario,
       password: password ?? this.password,
       rowid: rowid ?? this.rowid,
     );
@@ -2979,11 +2974,11 @@ class CuentasCompanion extends UpdateCompanion<Cuenta> {
     if (idEmpleado.present) {
       map['id_empleado'] = Variable<int>(idEmpleado.value);
     }
-    if (nombreUsuario.present) {
-      map['nombre_usuario'] = Variable<String>(nombreUsuario.value);
+    if (usuario.present) {
+      map['nombreUsuario'] = Variable<String>(usuario.value);
     }
     if (password.present) {
-      map['password'] = Variable<String>(password.value);
+      map['contraseña'] = Variable<String>(password.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -2995,7 +2990,7 @@ class CuentasCompanion extends UpdateCompanion<Cuenta> {
   String toString() {
     return (StringBuffer('CuentasCompanion(')
           ..write('idEmpleado: $idEmpleado, ')
-          ..write('nombreUsuario: $nombreUsuario, ')
+          ..write('usuario: $usuario, ')
           ..write('password: $password, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -9727,14 +9722,14 @@ typedef $$BeneficiosTableProcessedTableManager =
 typedef $$CuentasTableCreateCompanionBuilder =
     CuentasCompanion Function({
       Value<int?> idEmpleado,
-      required String nombreUsuario,
+      required String usuario,
       Value<String?> password,
       Value<int> rowid,
     });
 typedef $$CuentasTableUpdateCompanionBuilder =
     CuentasCompanion Function({
       Value<int?> idEmpleado,
-      Value<String> nombreUsuario,
+      Value<String> usuario,
       Value<String?> password,
       Value<int> rowid,
     });
@@ -9772,8 +9767,8 @@ class $$CuentasTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<String> get nombreUsuario => $composableBuilder(
-    column: $table.nombreUsuario,
+  ColumnFilters<String> get usuario => $composableBuilder(
+    column: $table.usuario,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -9815,8 +9810,8 @@ class $$CuentasTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<String> get nombreUsuario => $composableBuilder(
-    column: $table.nombreUsuario,
+  ColumnOrderings<String> get usuario => $composableBuilder(
+    column: $table.usuario,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -9858,10 +9853,8 @@ class $$CuentasTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<String> get nombreUsuario => $composableBuilder(
-    column: $table.nombreUsuario,
-    builder: (column) => column,
-  );
+  GeneratedColumn<String> get usuario =>
+      $composableBuilder(column: $table.usuario, builder: (column) => column);
 
   GeneratedColumn<String> get password =>
       $composableBuilder(column: $table.password, builder: (column) => column);
@@ -9919,24 +9912,24 @@ class $$CuentasTableTableManager
           updateCompanionCallback:
               ({
                 Value<int?> idEmpleado = const Value.absent(),
-                Value<String> nombreUsuario = const Value.absent(),
+                Value<String> usuario = const Value.absent(),
                 Value<String?> password = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CuentasCompanion(
                 idEmpleado: idEmpleado,
-                nombreUsuario: nombreUsuario,
+                usuario: usuario,
                 password: password,
                 rowid: rowid,
               ),
           createCompanionCallback:
               ({
                 Value<int?> idEmpleado = const Value.absent(),
-                required String nombreUsuario,
+                required String usuario,
                 Value<String?> password = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CuentasCompanion.insert(
                 idEmpleado: idEmpleado,
-                nombreUsuario: nombreUsuario,
+                usuario: usuario,
                 password: password,
                 rowid: rowid,
               ),

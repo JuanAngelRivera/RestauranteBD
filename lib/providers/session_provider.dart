@@ -37,7 +37,7 @@ class SessionNotifier extends StateNotifier<SessionState> {
       await loginDao.into(loginDao.cuentas).insert(
         CuentasCompanion(
           idEmpleado: const Value.absent(),
-          nombreUsuario: const Value('ADMIN'),
+          usuario: const Value('ADMIN'),
           password: const Value('ADMIN'),
         ),
         mode: InsertMode.insertOrIgnore,
@@ -45,7 +45,7 @@ class SessionNotifier extends StateNotifier<SessionState> {
     }
   }
 
-  Future<bool> login(String nombreUsuario, String? password) async {
+  Future<bool> login(String nombreUsuario, String password) async {
     final valid = await loginDao.validarUsuario(nombreUsuario, password);
     if (!valid) return false;
 

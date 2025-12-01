@@ -212,7 +212,7 @@ class CuentasDao extends DatabaseAccessor<AppDatabase>
     return (select(cuentas)
           ..where((t) =>
               t.idEmpleado.equals(idEmpleado) &
-              t.nombreUsuario.equals(nombreUsuario)))
+              t.usuario.equals(nombreUsuario)))
         .getSingleOrNull();
   }
 
@@ -226,7 +226,7 @@ class CuentasDao extends DatabaseAccessor<AppDatabase>
       (delete(cuentas)
             ..where((t) =>
                 t.idEmpleado.equals(idEmpleado) &
-                t.nombreUsuario.equals(nombreUsuario)))
+                t.usuario.equals(nombreUsuario)))
           .go();
 }
 

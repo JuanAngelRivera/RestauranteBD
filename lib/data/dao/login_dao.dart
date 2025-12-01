@@ -8,10 +8,10 @@ part 'login_dao.g.dart';
 class LoginDao extends DatabaseAccessor<AppDatabase> with _$LoginDaoMixin {
   LoginDao(AppDatabase db) : super(db);
 
-  Future<bool> validarUsuario(String nombreUsuario, String? password) async {
+  Future<bool> validarUsuario(String nombreUsuario, String password) async {
     final query = await (select(cuentas)
-          ..where((c) => c.nombreUsuario.equals(nombreUsuario) &
-              (c.password.equals(password ?? ''))))
+          ..where((c) => c.usuario.equals(nombreUsuario) &
+              (c.password.equals(password))))
         .getSingleOrNull();
     return query != null;
   }
@@ -20,7 +20,7 @@ class LoginDao extends DatabaseAccessor<AppDatabase> with _$LoginDaoMixin {
     final query = select(cuentas).join([
       leftOuterJoin(empleados, empleados.id.equalsExp(cuentas.idEmpleado)),
     ])
-      ..where(cuentas.nombreUsuario.equals(nombreUsuario));
+      ..where(cuentas.usuario.equals(nombreUsuario));
 
     final row = await query.getSingleOrNull();
     if (row == null) return null;
