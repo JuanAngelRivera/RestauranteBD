@@ -10,16 +10,16 @@ class OrderListTileWidget extends StatefulWidget {
   final int cantidad;
   final double subtotal;
   final Function(int nuevaCantidad) onCantidadChanged;
-  
+
   const OrderListTileWidget({
-    super.key, 
-    required this.nombreProducto, 
-    required this.precio, 
-    required this.onRemove, 
-    required this.cantidad, 
-    required this.subtotal, 
-    required this.onCantidadChanged
-    });
+    super.key,
+    required this.nombreProducto,
+    required this.precio,
+    required this.onRemove,
+    required this.cantidad,
+    required this.subtotal,
+    required this.onCantidadChanged,
+  });
 
   @override
   State<OrderListTileWidget> createState() => _OrderListTileWidgetState();
@@ -27,16 +27,25 @@ class OrderListTileWidget extends StatefulWidget {
 
 class _OrderListTileWidgetState extends State<OrderListTileWidget> {
   late TextEditingController cantidadController;
-
+  late FocusNode focusNode;
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    cantidadController = TextEditingController(text: widget.cantidad.toString());
+    cantidadController = TextEditingController(
+      text: widget.cantidad.toString(),
+    );
+    focusNode = FocusNode();
+    focusNode.addListener(() {
+    if (!focusNode.hasFocus) {
+      updateContador(cantidadController.text);
+    }
+  });
   }
 
   @override
-  void dispose(){
+  void dispose() {
     cantidadController.dispose();
+    focusNode = FocusNode();
     super.dispose();
   }
 
@@ -48,66 +57,61 @@ class _OrderListTileWidgetState extends State<OrderListTileWidget> {
       cantidadController.text = widget.cantidad.toString();
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return PanelWidget(
       colorBase: Colors.grey.shade300,
-      padding: EdgeInsets.only(
-        left: 10,
-        right: 10,
-        top: 2,
-        bottom: 2
-      ),
+      padding: EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 5),
       child: Column(
         children: [
           Row(
+            spacing: 10,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                widget.nombreProducto,
-                style: Styles.titleText,
-              ),
+              Text(widget.nombreProducto, style: Styles.titleText),
+              SizedBox(width: MediaQuery.of(context).size.width * 0.001),
               Text("\$${widget.precio.toStringAsFixed(2)}"),
+              SizedBox(width: MediaQuery.of(context).size.width * 0.001),
               SizedBox(
                 width: 80,
                 height: 30,
                 child: TextField(
                   textAlign: TextAlign.center,
-                  decoration: Styles.createInputDecoration("", Styles.fondoClaro),
+                  decoration: Styles.createInputDecoration(
+                    "",
+                    Styles.fondoClaro,
+                  ),
                   controller: cantidadController,
+                  focusNode: focusNode,
                   keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly
-                  ],
-                  onChanged: (value) {
-                    setState(() {
-                      int nuevaCantidad = int.tryParse(value) ?? 1;
-
-                      if (nuevaCantidad < 1){
-                        nuevaCantidad = 1;
-                        cantidadController.text = "1";
-                        cantidadController.selection = TextSelection.collapsed(
-                          offset: cantidadController.text.length);
-                      }
-                      widget.onCantidadChanged(nuevaCantidad);
-                    }
-                    );
-                  },
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 ),
               ),
               SizedBox(
                 width: 100,
                 child: Text(
-                  "\$${widget.subtotal.toStringAsFixed(2)}", 
-                  textAlign: TextAlign.center,)),
+                  "\$${widget.subtotal.toStringAsFixed(2)}",
+                  textAlign: TextAlign.center,
+                ),
+              ),
               ElevatedButton(
                 onPressed: widget.onRemove, 
-                child: Text("-"))
+                style: Styles.buttonStyle,
+                child: Text("-")),
             ],
           ),
         ],
       ),
     );
+  }
+
+  void updateContador(value) {
+    int nuevaCantidad = int.tryParse(value) ?? 1;
+    if (nuevaCantidad < 1) {
+      nuevaCantidad = 1;
+      cantidadController.text = "1";
+    }
+    widget.onCantidadChanged(nuevaCantidad);
   }
 }

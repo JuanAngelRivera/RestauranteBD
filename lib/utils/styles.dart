@@ -66,9 +66,12 @@ class Styles {
   );
 
   static final TextStyle discountText = priceText.copyWith(
-    decoration: TextDecoration.lineThrough,
     decorationColor: contraste,
     fontSize: 16
+  );
+
+  static final TextStyle discountText_ = discountText.copyWith(
+        decoration: TextDecoration.lineThrough,
   );
 
   static InputDecoration createInputDecoration(String text, Color colorBase) {

@@ -73,7 +73,7 @@ class _ImageListTileWidgetState extends State<ImageListTileWidget> {
                     Text(widget.title, style: Styles.titleText),
                     Text(
                       '\$${(widget.precio).toStringAsFixed(2)}',
-                      style: tieneDescuento == true ? Styles.discountText : Styles.priceText),
+                      style: tieneDescuento == true ? Styles.discountText_ : Styles.priceText),
                       ],
                     ),
                     tieneDescuento == true ? 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:restaurante_base_de_datos/utils/styles.dart';
+import 'package:restaurante_base_de_datos/widgets/discount_list_tile_widget.dart';
 import 'package:restaurante_base_de_datos/widgets/image_list_tile_widget.dart';
 import 'package:restaurante_base_de_datos/widgets/order_list_tile_widget.dart';
 import 'package:restaurante_base_de_datos/widgets/panel_widget.dart';
@@ -29,6 +30,15 @@ class _orderViewState extends State<orderView> {
     "producto5",
   ];
 
+  final List<int> descuentos = [
+    10,
+    20,
+    30,
+    40,
+    50
+
+  ];
+
   bool categoriaCargada = false;
   bool productoEnOrden = false;
 
@@ -37,18 +47,19 @@ class _orderViewState extends State<orderView> {
   void agregarPedido(String nombre, double precio) {
     setState(() {
       final index = pedido.indexWhere((item) => item["nombre"] == nombre);
-      
-      if (index != -1){
+
+      if (index != -1) {
         pedido[index]["cantidad"] += 1;
 
-        pedido[index]["subtotal"] = pedido[index]["cantidad"] * pedido[index]["precio"];
-      }
-      else{
-          pedido.add({
-            "nombre": nombre, 
-            "precio": precio,
-            "cantidad": 1,
-            "subtotal": precio});
+        pedido[index]["subtotal"] =
+            pedido[index]["cantidad"] * pedido[index]["precio"];
+      } else {
+        pedido.add({
+          "nombre": nombre,
+          "precio": precio,
+          "cantidad": 1,
+          "subtotal": precio,
+        });
       }
     });
   }
@@ -218,10 +229,16 @@ class _orderViewState extends State<orderView> {
                     ),
                   ),
 
+                  //columna lista Orden
                   Expanded(
                     flex: 2,
                     child: PanelWidget(
-                      padding: EdgeInsets.all(20),
+                      padding: EdgeInsets.only(
+                        left: 20,
+                        right: 20,
+                        top: 10,
+                        bottom: 10
+                      ),
                       child: Column(
                         spacing: 10,
                         children: [
@@ -229,16 +246,18 @@ class _orderViewState extends State<orderView> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              SizedBox(width: MediaQuery.of(context).size.width * 0.01,),
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.01,
+                              ),
                               Text("Producto", style: Styles.baseText),
                               Text("Precio", style: Styles.baseText),
                               Text("Cantidad", style: Styles.baseText),
                               Text("Subtotal", style: Styles.baseText),
-                              SizedBox(width: 50,)
+                              SizedBox(width: 50),
                             ],
                           ),
                           SizedBox(
-                            height: 400,
+                            height: MediaQuery.of(context).size.height * 0.32,
                             child: Scrollbar(
                               child: ListView.builder(
                                 itemCount: pedido.length,
@@ -249,11 +268,11 @@ class _orderViewState extends State<orderView> {
                                     precio: item["precio"],
                                     cantidad: item["cantidad"],
                                     subtotal: item["subtotal"],
-                                    onCantidadChanged: (nuevaCantidad){
-                                      setState(() {
-                                        item["cantidad"] = nuevaCantidad;
-                                        item["subtotal"] = nuevaCantidad * item["precio"];
-                                      });
+                                    onCantidadChanged: (nuevaCantidad) {
+                                      item["cantidad"] = nuevaCantidad;
+                                      item["subtotal"] =
+                                          nuevaCantidad * item["precio"];
+                                      setState(() {});
                                     },
                                     onRemove: () {
                                       setState(() => pedido.removeAt(index));
@@ -261,6 +280,48 @@ class _orderViewState extends State<orderView> {
                                   );
                                 },
                               ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.32,
+                            child: Column(
+                              spacing: 5,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Divider(),
+                                Text(
+                                  "Subtotal:",
+                                  style: Styles.baseText,
+                                ),
+                                Text(
+                                  "Descuentos:",
+                                  style: Styles.baseText,
+                                ),
+                                SizedBox(
+                                  height: MediaQuery.of(context).size.height * 0.12,
+                                  child: Scrollbar(
+                                    child: ListView.builder(
+                                          itemCount: pedido.length,
+                                          itemBuilder: (context, index){
+                                            final item = pedido[index];
+                                            return DiscountListTileWidget(
+                                            nombre: item["nombre"], 
+                                            descuento: 10, 
+                                            subtotal: item["cantidad"] * item["precio"] * 10 / 100);
+                                          }),
+                                  ),
+                                ),
+                                Divider(),
+                                Text(
+                                  "Total:",
+                                  style: Styles.baseText,
+                                ),
+                                ElevatedButton(
+                                  style: Styles.buttonStyle,
+                                  onPressed: () {},
+                                  child: Text("Proceder"),
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -275,7 +336,6 @@ class _orderViewState extends State<orderView> {
       ),
     );
   }
-
   void busqueda() {
     print("Soy gay");
   }
