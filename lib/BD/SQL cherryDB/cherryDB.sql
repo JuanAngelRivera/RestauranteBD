@@ -69,7 +69,7 @@ CREATE TABLE Beneficios (id_Empleado INTEGER NOT NULL,
                          constraint primary key (id_Empleado, fechaPago_Nomina, id_Bonus),
                          constraint BeneficiosFK1 foreign key (id_Empleado, fechaPago_Nomina) REFERENCES Nomina(id_Empleado, fechaPago),
                          constraint BeneficiosFK2 foreign key (id_Bonus) REFERENCES Bonus(id)
-                         ); -- 🐑   no insercion       vista
+                         ); -- 🐑   no insercion       vista 🐑 
 
 CREATE TABLE Cuenta (id_Empleado INTEGER NOT NULL,
 					 nombreUsuario VARCHAR(25) NOT NULL,
@@ -79,7 +79,7 @@ CREATE TABLE Cuenta (id_Empleado INTEGER NOT NULL,
                      ); -- 🐑	no insercion    vista
 
 CREATE TABLE Orden (id_CherryLocal INTEGER,
-				id INTEGER AUTO_INCREMENT NOT NULL,
+					id INTEGER AUTO_INCREMENT NOT NULL,
                     total DECIMAL(9,2),
                     fechaRealizada DATE,
                     id_Empleado INTEGER,
