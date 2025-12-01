@@ -9,13 +9,26 @@ import 'package:restaurante_base_de_datos/views/order_view.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final database = AppDatabase();
-  final result = await database.customSelect(
-  "PRAGMA table_info('Cuenta');" // usa el nombre real de la tabla en la DB
-).get();
+  final result = await database
+      .customSelect(
+        "PRAGMA table_info('Empleado');", // usa el nombre real de la tabla en la DB
+      )
+      .get();
 
-for (final row in result) {
-  print('Columna: ${row.read<String>('name')} - Tipo: ${row.read<String>('type')}');
-}
+  for (final row in result) {
+    print(
+      'Columna: ${row.read<String>('name')} - Tipo: ${row.read<String>('type')}',
+    );
+  }
+
+  final select = await database.customSelect(
+    'SELECT nombre FROM Empleado;',
+  ).get();
+
+  for (final e in select){
+    print(select.toList());
+  }
+
   runApp(
     ProviderScope(
       overrides: [appDatabaseProvider.overrideWithValue(database)],

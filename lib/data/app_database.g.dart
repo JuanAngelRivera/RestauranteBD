@@ -1599,9 +1599,9 @@ class $EmpleadosTable extends Empleados
   late final GeneratedColumn<String> curp = GeneratedColumn<String>(
     'curp',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
   );
   static const VerificationMeta _rfcMeta = const VerificationMeta('rfc');
@@ -1609,9 +1609,9 @@ class $EmpleadosTable extends Empleados
   late final GeneratedColumn<String> rfc = GeneratedColumn<String>(
     'rfc',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
   );
   static const VerificationMeta _fechaIngresoMeta = const VerificationMeta(
@@ -1619,7 +1619,7 @@ class $EmpleadosTable extends Empleados
   );
   @override
   late final GeneratedColumn<String> fechaIngreso = GeneratedColumn<String>(
-    'fecha_ingreso',
+    'fechaIngreso',
     aliasedName,
     true,
     type: DriftSqlType.string,
@@ -1630,9 +1630,9 @@ class $EmpleadosTable extends Empleados
   late final GeneratedColumn<String> nss = GeneratedColumn<String>(
     'nss',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
   );
   static const VerificationMeta _fotoMeta = const VerificationMeta('foto');
@@ -1715,22 +1715,18 @@ class $EmpleadosTable extends Empleados
         _curpMeta,
         curp.isAcceptableOrUnknown(data['curp']!, _curpMeta),
       );
-    } else if (isInserting) {
-      context.missing(_curpMeta);
     }
     if (data.containsKey('rfc')) {
       context.handle(
         _rfcMeta,
         rfc.isAcceptableOrUnknown(data['rfc']!, _rfcMeta),
       );
-    } else if (isInserting) {
-      context.missing(_rfcMeta);
     }
-    if (data.containsKey('fecha_ingreso')) {
+    if (data.containsKey('fechaIngreso')) {
       context.handle(
         _fechaIngresoMeta,
         fechaIngreso.isAcceptableOrUnknown(
-          data['fecha_ingreso']!,
+          data['fechaIngreso']!,
           _fechaIngresoMeta,
         ),
       );
@@ -1740,8 +1736,6 @@ class $EmpleadosTable extends Empleados
         _nssMeta,
         nss.isAcceptableOrUnknown(data['nss']!, _nssMeta),
       );
-    } else if (isInserting) {
-      context.missing(_nssMeta);
     }
     if (data.containsKey('foto')) {
       context.handle(
@@ -1785,19 +1779,19 @@ class $EmpleadosTable extends Empleados
       curp: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}curp'],
-      )!,
+      ),
       rfc: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}rfc'],
-      )!,
+      ),
       fechaIngreso: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}fecha_ingreso'],
+        data['${effectivePrefix}fechaIngreso'],
       ),
       nss: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}nss'],
-      )!,
+      ),
       foto: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}foto'],
@@ -1823,10 +1817,10 @@ class Empleado extends DataClass implements Insertable<Empleado> {
   final int id;
   final String? nombre;
   final String? telefono;
-  final String curp;
-  final String rfc;
+  final String? curp;
+  final String? rfc;
   final String? fechaIngreso;
-  final String nss;
+  final String? nss;
   final String? foto;
   final int? idRol;
   final int? idTurno;
@@ -1834,10 +1828,10 @@ class Empleado extends DataClass implements Insertable<Empleado> {
     required this.id,
     this.nombre,
     this.telefono,
-    required this.curp,
-    required this.rfc,
+    this.curp,
+    this.rfc,
     this.fechaIngreso,
-    required this.nss,
+    this.nss,
     this.foto,
     this.idRol,
     this.idTurno,
@@ -1852,12 +1846,18 @@ class Empleado extends DataClass implements Insertable<Empleado> {
     if (!nullToAbsent || telefono != null) {
       map['telefono'] = Variable<String>(telefono);
     }
-    map['curp'] = Variable<String>(curp);
-    map['rfc'] = Variable<String>(rfc);
-    if (!nullToAbsent || fechaIngreso != null) {
-      map['fecha_ingreso'] = Variable<String>(fechaIngreso);
+    if (!nullToAbsent || curp != null) {
+      map['curp'] = Variable<String>(curp);
     }
-    map['nss'] = Variable<String>(nss);
+    if (!nullToAbsent || rfc != null) {
+      map['rfc'] = Variable<String>(rfc);
+    }
+    if (!nullToAbsent || fechaIngreso != null) {
+      map['fechaIngreso'] = Variable<String>(fechaIngreso);
+    }
+    if (!nullToAbsent || nss != null) {
+      map['nss'] = Variable<String>(nss);
+    }
     if (!nullToAbsent || foto != null) {
       map['foto'] = Variable<String>(foto);
     }
@@ -1879,12 +1879,12 @@ class Empleado extends DataClass implements Insertable<Empleado> {
       telefono: telefono == null && nullToAbsent
           ? const Value.absent()
           : Value(telefono),
-      curp: Value(curp),
-      rfc: Value(rfc),
+      curp: curp == null && nullToAbsent ? const Value.absent() : Value(curp),
+      rfc: rfc == null && nullToAbsent ? const Value.absent() : Value(rfc),
       fechaIngreso: fechaIngreso == null && nullToAbsent
           ? const Value.absent()
           : Value(fechaIngreso),
-      nss: Value(nss),
+      nss: nss == null && nullToAbsent ? const Value.absent() : Value(nss),
       foto: foto == null && nullToAbsent ? const Value.absent() : Value(foto),
       idRol: idRol == null && nullToAbsent
           ? const Value.absent()
@@ -1904,10 +1904,10 @@ class Empleado extends DataClass implements Insertable<Empleado> {
       id: serializer.fromJson<int>(json['id']),
       nombre: serializer.fromJson<String?>(json['nombre']),
       telefono: serializer.fromJson<String?>(json['telefono']),
-      curp: serializer.fromJson<String>(json['curp']),
-      rfc: serializer.fromJson<String>(json['rfc']),
+      curp: serializer.fromJson<String?>(json['curp']),
+      rfc: serializer.fromJson<String?>(json['rfc']),
       fechaIngreso: serializer.fromJson<String?>(json['fechaIngreso']),
-      nss: serializer.fromJson<String>(json['nss']),
+      nss: serializer.fromJson<String?>(json['nss']),
       foto: serializer.fromJson<String?>(json['foto']),
       idRol: serializer.fromJson<int?>(json['idRol']),
       idTurno: serializer.fromJson<int?>(json['idTurno']),
@@ -1920,10 +1920,10 @@ class Empleado extends DataClass implements Insertable<Empleado> {
       'id': serializer.toJson<int>(id),
       'nombre': serializer.toJson<String?>(nombre),
       'telefono': serializer.toJson<String?>(telefono),
-      'curp': serializer.toJson<String>(curp),
-      'rfc': serializer.toJson<String>(rfc),
+      'curp': serializer.toJson<String?>(curp),
+      'rfc': serializer.toJson<String?>(rfc),
       'fechaIngreso': serializer.toJson<String?>(fechaIngreso),
-      'nss': serializer.toJson<String>(nss),
+      'nss': serializer.toJson<String?>(nss),
       'foto': serializer.toJson<String?>(foto),
       'idRol': serializer.toJson<int?>(idRol),
       'idTurno': serializer.toJson<int?>(idTurno),
@@ -1934,10 +1934,10 @@ class Empleado extends DataClass implements Insertable<Empleado> {
     int? id,
     Value<String?> nombre = const Value.absent(),
     Value<String?> telefono = const Value.absent(),
-    String? curp,
-    String? rfc,
+    Value<String?> curp = const Value.absent(),
+    Value<String?> rfc = const Value.absent(),
     Value<String?> fechaIngreso = const Value.absent(),
-    String? nss,
+    Value<String?> nss = const Value.absent(),
     Value<String?> foto = const Value.absent(),
     Value<int?> idRol = const Value.absent(),
     Value<int?> idTurno = const Value.absent(),
@@ -1945,10 +1945,10 @@ class Empleado extends DataClass implements Insertable<Empleado> {
     id: id ?? this.id,
     nombre: nombre.present ? nombre.value : this.nombre,
     telefono: telefono.present ? telefono.value : this.telefono,
-    curp: curp ?? this.curp,
-    rfc: rfc ?? this.rfc,
+    curp: curp.present ? curp.value : this.curp,
+    rfc: rfc.present ? rfc.value : this.rfc,
     fechaIngreso: fechaIngreso.present ? fechaIngreso.value : this.fechaIngreso,
-    nss: nss ?? this.nss,
+    nss: nss.present ? nss.value : this.nss,
     foto: foto.present ? foto.value : this.foto,
     idRol: idRol.present ? idRol.value : this.idRol,
     idTurno: idTurno.present ? idTurno.value : this.idTurno,
@@ -2020,10 +2020,10 @@ class EmpleadosCompanion extends UpdateCompanion<Empleado> {
   final Value<int> id;
   final Value<String?> nombre;
   final Value<String?> telefono;
-  final Value<String> curp;
-  final Value<String> rfc;
+  final Value<String?> curp;
+  final Value<String?> rfc;
   final Value<String?> fechaIngreso;
-  final Value<String> nss;
+  final Value<String?> nss;
   final Value<String?> foto;
   final Value<int?> idRol;
   final Value<int?> idTurno;
@@ -2043,16 +2043,14 @@ class EmpleadosCompanion extends UpdateCompanion<Empleado> {
     this.id = const Value.absent(),
     this.nombre = const Value.absent(),
     this.telefono = const Value.absent(),
-    required String curp,
-    required String rfc,
+    this.curp = const Value.absent(),
+    this.rfc = const Value.absent(),
     this.fechaIngreso = const Value.absent(),
-    required String nss,
+    this.nss = const Value.absent(),
     this.foto = const Value.absent(),
     this.idRol = const Value.absent(),
     this.idTurno = const Value.absent(),
-  }) : curp = Value(curp),
-       rfc = Value(rfc),
-       nss = Value(nss);
+  });
   static Insertable<Empleado> custom({
     Expression<int>? id,
     Expression<String>? nombre,
@@ -2071,7 +2069,7 @@ class EmpleadosCompanion extends UpdateCompanion<Empleado> {
       if (telefono != null) 'telefono': telefono,
       if (curp != null) 'curp': curp,
       if (rfc != null) 'rfc': rfc,
-      if (fechaIngreso != null) 'fecha_ingreso': fechaIngreso,
+      if (fechaIngreso != null) 'fechaIngreso': fechaIngreso,
       if (nss != null) 'nss': nss,
       if (foto != null) 'foto': foto,
       if (idRol != null) 'id_rol': idRol,
@@ -2083,10 +2081,10 @@ class EmpleadosCompanion extends UpdateCompanion<Empleado> {
     Value<int>? id,
     Value<String?>? nombre,
     Value<String?>? telefono,
-    Value<String>? curp,
-    Value<String>? rfc,
+    Value<String?>? curp,
+    Value<String?>? rfc,
     Value<String?>? fechaIngreso,
-    Value<String>? nss,
+    Value<String?>? nss,
     Value<String?>? foto,
     Value<int?>? idRol,
     Value<int?>? idTurno,
@@ -2124,7 +2122,7 @@ class EmpleadosCompanion extends UpdateCompanion<Empleado> {
       map['rfc'] = Variable<String>(rfc.value);
     }
     if (fechaIngreso.present) {
-      map['fecha_ingreso'] = Variable<String>(fechaIngreso.value);
+      map['fechaIngreso'] = Variable<String>(fechaIngreso.value);
     }
     if (nss.present) {
       map['nss'] = Variable<String>(nss.value);
@@ -8200,10 +8198,10 @@ typedef $$EmpleadosTableCreateCompanionBuilder =
       Value<int> id,
       Value<String?> nombre,
       Value<String?> telefono,
-      required String curp,
-      required String rfc,
+      Value<String?> curp,
+      Value<String?> rfc,
       Value<String?> fechaIngreso,
-      required String nss,
+      Value<String?> nss,
       Value<String?> foto,
       Value<int?> idRol,
       Value<int?> idTurno,
@@ -8213,10 +8211,10 @@ typedef $$EmpleadosTableUpdateCompanionBuilder =
       Value<int> id,
       Value<String?> nombre,
       Value<String?> telefono,
-      Value<String> curp,
-      Value<String> rfc,
+      Value<String?> curp,
+      Value<String?> rfc,
       Value<String?> fechaIngreso,
-      Value<String> nss,
+      Value<String?> nss,
       Value<String?> foto,
       Value<int?> idRol,
       Value<int?> idTurno,
@@ -8780,10 +8778,10 @@ class $$EmpleadosTableTableManager
                 Value<int> id = const Value.absent(),
                 Value<String?> nombre = const Value.absent(),
                 Value<String?> telefono = const Value.absent(),
-                Value<String> curp = const Value.absent(),
-                Value<String> rfc = const Value.absent(),
+                Value<String?> curp = const Value.absent(),
+                Value<String?> rfc = const Value.absent(),
                 Value<String?> fechaIngreso = const Value.absent(),
-                Value<String> nss = const Value.absent(),
+                Value<String?> nss = const Value.absent(),
                 Value<String?> foto = const Value.absent(),
                 Value<int?> idRol = const Value.absent(),
                 Value<int?> idTurno = const Value.absent(),
@@ -8804,10 +8802,10 @@ class $$EmpleadosTableTableManager
                 Value<int> id = const Value.absent(),
                 Value<String?> nombre = const Value.absent(),
                 Value<String?> telefono = const Value.absent(),
-                required String curp,
-                required String rfc,
+                Value<String?> curp = const Value.absent(),
+                Value<String?> rfc = const Value.absent(),
                 Value<String?> fechaIngreso = const Value.absent(),
-                required String nss,
+                Value<String?> nss = const Value.absent(),
                 Value<String?> foto = const Value.absent(),
                 Value<int?> idRol = const Value.absent(),
                 Value<int?> idTurno = const Value.absent(),

@@ -61,10 +61,10 @@ class Empleados extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get nombre => text().nullable()();
   TextColumn get telefono => text().nullable()();
-  TextColumn get curp => text().unique()();
-  TextColumn get rfc => text().unique()();
-  TextColumn get fechaIngreso => text().nullable()();
-  TextColumn get nss => text().unique()();
+  TextColumn get curp => text().unique().nullable()();
+  TextColumn get rfc => text().unique().nullable()();
+  TextColumn get fechaIngreso => text().named("fechaIngreso").nullable()();
+  TextColumn get nss => text().unique().nullable()();
   TextColumn get foto => text().nullable()();
 
   IntColumn get idRol =>
