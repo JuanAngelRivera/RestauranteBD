@@ -137,7 +137,7 @@ INSERT INTO Ingredientes (id_Producto, id_Insumo, cantidad) VALUES
 (9, 13, 3),   -- Canela
 -- Smoothie de Fresa (Producto 10)
 (10, 3, 200),  -- Leche
-(10, 16, 80,  -- Fresa
+(10, 16, 80),  -- Fresa
 (10, 15, 1),   -- Plátano
 (10, 5, 120),  -- Hielo
 -- Croissant de Mantequilla (Producto 11)
