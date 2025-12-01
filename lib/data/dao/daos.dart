@@ -1,5 +1,5 @@
 import 'package:drift/drift.dart';
-import 'package:restaurante_base_de_datos/data/app_database.dart';
+import '../app_database.dart';
 import '../tables/database.dart';
 
 part 'daos.g.dart';

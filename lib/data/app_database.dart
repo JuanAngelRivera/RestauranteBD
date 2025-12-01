@@ -32,6 +32,9 @@ part 'app_database.g.dart';
     Insumos,
     Ingredients,
     Contactos,
+  ],
+  daos: [
+    
   ]
 )
 class AppDatabase extends _$AppDatabase {
