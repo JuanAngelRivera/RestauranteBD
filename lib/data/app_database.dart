@@ -67,9 +67,11 @@ class AppDatabase extends _$AppDatabase {
 }
 
 LazyDatabase _openConnection() {
+  print("abriendo conexion");
   return LazyDatabase(() async {
     final dir = await getApplicationDocumentsDirectory();
     final file = File(p.join(dir.path, 'cherry.db'));
+    print("Ubicación de la base de datos: ${file.path}");
     return NativeDatabase(file);
   });
 }
