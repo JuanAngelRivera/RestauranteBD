@@ -53,6 +53,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                             },
                             onFieldSubmitted: (_) => _login(),
                           ),
+                          SizedBox(height: 10,),
                           TextFormField(
                             style: Styles.baseText,
                             controller: conPassword,

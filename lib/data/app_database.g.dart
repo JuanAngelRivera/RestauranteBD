@@ -35,7 +35,7 @@ class $TablaErrorsTable extends TablaErrors
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'tabla_errors';
+  static const String $name = 'TablaError';
   @override
   VerificationContext validateIntegrity(
     Insertable<TablaError> instance, {
@@ -260,7 +260,7 @@ class $MetodoPagosTable extends MetodoPagos
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'metodo_pagos';
+  static const String $name = 'MetodoPago';
   @override
   VerificationContext validateIntegrity(
     Insertable<MetodoPago> instance, {
@@ -489,7 +489,7 @@ class $CherryLocalsTable extends CherryLocals
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'cherry_locals';
+  static const String $name = 'CherryLocal';
   @override
   VerificationContext validateIntegrity(
     Insertable<CherryLocal> instance, {
@@ -779,7 +779,7 @@ class $RolsTable extends Rols with TableInfo<$RolsTable, Rol> {
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'rols';
+  static const String $name = 'Rol';
   @override
   VerificationContext validateIntegrity(
     Insertable<Rol> instance, {
@@ -1047,7 +1047,7 @@ class $TurnosTable extends Turnos with TableInfo<$TurnosTable, Turno> {
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'turnos';
+  static const String $name = 'Turno';
   @override
   VerificationContext validateIntegrity(
     Insertable<Turno> instance, {
@@ -1344,7 +1344,7 @@ class $BonusesTable extends Bonuses with TableInfo<$BonusesTable, Bonuse> {
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'bonuses';
+  static const String $name = 'Bonus';
   @override
   VerificationContext validateIntegrity(
     Insertable<Bonuse> instance, {
@@ -1653,7 +1653,7 @@ class $EmpleadosTable extends Empleados
     type: DriftSqlType.int,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES rols (id)',
+      'REFERENCES Rol (id)',
     ),
   );
   static const VerificationMeta _idTurnoMeta = const VerificationMeta(
@@ -1667,7 +1667,7 @@ class $EmpleadosTable extends Empleados
     type: DriftSqlType.int,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES turnos (id)',
+      'REFERENCES Turno (id)',
     ),
   );
   @override
@@ -1687,7 +1687,7 @@ class $EmpleadosTable extends Empleados
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'empleados';
+  static const String $name = 'Empleado';
   @override
   VerificationContext validateIntegrity(
     Insertable<Empleado> instance, {
@@ -2175,7 +2175,7 @@ class $NominasTable extends Nominas with TableInfo<$NominasTable, Nomina> {
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES empleados (id)',
+      'REFERENCES Empleado (id)',
     ),
   );
   static const VerificationMeta _fechaPagoMeta = const VerificationMeta(
@@ -2206,7 +2206,7 @@ class $NominasTable extends Nominas with TableInfo<$NominasTable, Nomina> {
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'nominas';
+  static const String $name = 'Nomina';
   @override
   VerificationContext validateIntegrity(
     Insertable<Nomina> instance, {
@@ -2455,7 +2455,7 @@ class $BeneficiosTable extends Beneficios
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES nominas (id_empleado)',
+      'REFERENCES Nomina (id_empleado)',
     ),
   );
   static const VerificationMeta _fechaPagoNominaMeta = const VerificationMeta(
@@ -2469,7 +2469,7 @@ class $BeneficiosTable extends Beneficios
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES nominas (fecha_pago)',
+      'REFERENCES Nomina (fecha_pago)',
     ),
   );
   static const VerificationMeta _idBonusMeta = const VerificationMeta(
@@ -2483,7 +2483,7 @@ class $BeneficiosTable extends Beneficios
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES bonuses (id)',
+      'REFERENCES Bonus (id)',
     ),
   );
   @override
@@ -2492,7 +2492,7 @@ class $BeneficiosTable extends Beneficios
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'beneficios';
+  static const String $name = 'Beneficios';
   @override
   VerificationContext validateIntegrity(
     Insertable<Beneficio> instance, {
@@ -2739,11 +2739,11 @@ class $CuentasTable extends Cuentas with TableInfo<$CuentasTable, Cuenta> {
   late final GeneratedColumn<int> idEmpleado = GeneratedColumn<int>(
     'id_empleado',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES empleados (id)',
+      'REFERENCES Empleado (id)',
     ),
   );
   static const VerificationMeta _nombreUsuarioMeta = const VerificationMeta(
@@ -2774,7 +2774,7 @@ class $CuentasTable extends Cuentas with TableInfo<$CuentasTable, Cuenta> {
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'cuentas';
+  static const String $name = 'Cuenta';
   @override
   VerificationContext validateIntegrity(
     Insertable<Cuenta> instance, {
@@ -2787,8 +2787,6 @@ class $CuentasTable extends Cuentas with TableInfo<$CuentasTable, Cuenta> {
         _idEmpleadoMeta,
         idEmpleado.isAcceptableOrUnknown(data['id_empleado']!, _idEmpleadoMeta),
       );
-    } else if (isInserting) {
-      context.missing(_idEmpleadoMeta);
     }
     if (data.containsKey('nombre_usuario')) {
       context.handle(
@@ -2819,7 +2817,7 @@ class $CuentasTable extends Cuentas with TableInfo<$CuentasTable, Cuenta> {
       idEmpleado: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id_empleado'],
-      )!,
+      ),
       nombreUsuario: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}nombre_usuario'],
@@ -2838,18 +2836,16 @@ class $CuentasTable extends Cuentas with TableInfo<$CuentasTable, Cuenta> {
 }
 
 class Cuenta extends DataClass implements Insertable<Cuenta> {
-  final int idEmpleado;
+  final int? idEmpleado;
   final String nombreUsuario;
   final String? password;
-  const Cuenta({
-    required this.idEmpleado,
-    required this.nombreUsuario,
-    this.password,
-  });
+  const Cuenta({this.idEmpleado, required this.nombreUsuario, this.password});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['id_empleado'] = Variable<int>(idEmpleado);
+    if (!nullToAbsent || idEmpleado != null) {
+      map['id_empleado'] = Variable<int>(idEmpleado);
+    }
     map['nombre_usuario'] = Variable<String>(nombreUsuario);
     if (!nullToAbsent || password != null) {
       map['password'] = Variable<String>(password);
@@ -2859,7 +2855,9 @@ class Cuenta extends DataClass implements Insertable<Cuenta> {
 
   CuentasCompanion toCompanion(bool nullToAbsent) {
     return CuentasCompanion(
-      idEmpleado: Value(idEmpleado),
+      idEmpleado: idEmpleado == null && nullToAbsent
+          ? const Value.absent()
+          : Value(idEmpleado),
       nombreUsuario: Value(nombreUsuario),
       password: password == null && nullToAbsent
           ? const Value.absent()
@@ -2873,7 +2871,7 @@ class Cuenta extends DataClass implements Insertable<Cuenta> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Cuenta(
-      idEmpleado: serializer.fromJson<int>(json['idEmpleado']),
+      idEmpleado: serializer.fromJson<int?>(json['idEmpleado']),
       nombreUsuario: serializer.fromJson<String>(json['nombreUsuario']),
       password: serializer.fromJson<String?>(json['password']),
     );
@@ -2882,18 +2880,18 @@ class Cuenta extends DataClass implements Insertable<Cuenta> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'idEmpleado': serializer.toJson<int>(idEmpleado),
+      'idEmpleado': serializer.toJson<int?>(idEmpleado),
       'nombreUsuario': serializer.toJson<String>(nombreUsuario),
       'password': serializer.toJson<String?>(password),
     };
   }
 
   Cuenta copyWith({
-    int? idEmpleado,
+    Value<int?> idEmpleado = const Value.absent(),
     String? nombreUsuario,
     Value<String?> password = const Value.absent(),
   }) => Cuenta(
-    idEmpleado: idEmpleado ?? this.idEmpleado,
+    idEmpleado: idEmpleado.present ? idEmpleado.value : this.idEmpleado,
     nombreUsuario: nombreUsuario ?? this.nombreUsuario,
     password: password.present ? password.value : this.password,
   );
@@ -2931,7 +2929,7 @@ class Cuenta extends DataClass implements Insertable<Cuenta> {
 }
 
 class CuentasCompanion extends UpdateCompanion<Cuenta> {
-  final Value<int> idEmpleado;
+  final Value<int?> idEmpleado;
   final Value<String> nombreUsuario;
   final Value<String?> password;
   final Value<int> rowid;
@@ -2942,12 +2940,11 @@ class CuentasCompanion extends UpdateCompanion<Cuenta> {
     this.rowid = const Value.absent(),
   });
   CuentasCompanion.insert({
-    required int idEmpleado,
+    this.idEmpleado = const Value.absent(),
     required String nombreUsuario,
     this.password = const Value.absent(),
     this.rowid = const Value.absent(),
-  }) : idEmpleado = Value(idEmpleado),
-       nombreUsuario = Value(nombreUsuario);
+  }) : nombreUsuario = Value(nombreUsuario);
   static Insertable<Cuenta> custom({
     Expression<int>? idEmpleado,
     Expression<String>? nombreUsuario,
@@ -2963,7 +2960,7 @@ class CuentasCompanion extends UpdateCompanion<Cuenta> {
   }
 
   CuentasCompanion copyWith({
-    Value<int>? idEmpleado,
+    Value<int?>? idEmpleado,
     Value<String>? nombreUsuario,
     Value<String?>? password,
     Value<int>? rowid,
@@ -3035,7 +3032,7 @@ class $OrdensTable extends Ordens with TableInfo<$OrdensTable, Orden> {
     type: DriftSqlType.int,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES cherry_locals (id)',
+      'REFERENCES CherryLocal (id)',
     ),
   );
   static const VerificationMeta _totalMeta = const VerificationMeta('total');
@@ -3069,7 +3066,7 @@ class $OrdensTable extends Ordens with TableInfo<$OrdensTable, Orden> {
     type: DriftSqlType.int,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES empleados (id)',
+      'REFERENCES Empleado (id)',
     ),
   );
   @override
@@ -3084,7 +3081,7 @@ class $OrdensTable extends Ordens with TableInfo<$OrdensTable, Orden> {
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'ordens';
+  static const String $name = 'Orden';
   @override
   VerificationContext validateIntegrity(
     Insertable<Orden> instance, {
@@ -3423,7 +3420,7 @@ class $PagosTable extends Pagos with TableInfo<$PagosTable, Pago> {
     type: DriftSqlType.int,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES metodo_pagos (id)',
+      'REFERENCES MetodoPago (id)',
     ),
   );
   static const VerificationMeta _idOrdenMeta = const VerificationMeta(
@@ -3437,7 +3434,7 @@ class $PagosTable extends Pagos with TableInfo<$PagosTable, Pago> {
     type: DriftSqlType.int,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES ordens (id)',
+      'REFERENCES Orden (id)',
     ),
   );
   static const VerificationMeta _idCherryLocalMeta = const VerificationMeta(
@@ -3451,7 +3448,7 @@ class $PagosTable extends Pagos with TableInfo<$PagosTable, Pago> {
     type: DriftSqlType.int,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES cherry_locals (id)',
+      'REFERENCES CherryLocal (id)',
     ),
   );
   @override
@@ -3466,7 +3463,7 @@ class $PagosTable extends Pagos with TableInfo<$PagosTable, Pago> {
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'pagos';
+  static const String $name = 'Pago';
   @override
   VerificationContext validateIntegrity(
     Insertable<Pago> instance, {
@@ -3811,7 +3808,7 @@ class $CategoriasTable extends Categorias
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'categorias';
+  static const String $name = 'Categoria';
   @override
   VerificationContext validateIntegrity(
     Insertable<Categoria> instance, {
@@ -4070,7 +4067,7 @@ class $ProductosTable extends Productos
     type: DriftSqlType.int,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES categorias (id)',
+      'REFERENCES Categoria (id)',
     ),
   );
   static const VerificationMeta _fotoMeta = const VerificationMeta('foto');
@@ -4088,7 +4085,7 @@ class $ProductosTable extends Productos
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'productos';
+  static const String $name = 'Producto';
   @override
   VerificationContext validateIntegrity(
     Insertable<Producto> instance, {
@@ -4390,7 +4387,7 @@ class $ContienesTable extends Contienes
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES ordens (id)',
+      'REFERENCES Orden (id)',
     ),
   );
   static const VerificationMeta _idCherryLocalMeta = const VerificationMeta(
@@ -4404,7 +4401,7 @@ class $ContienesTable extends Contienes
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES cherry_locals (id)',
+      'REFERENCES CherryLocal (id)',
     ),
   );
   static const VerificationMeta _idProductoMeta = const VerificationMeta(
@@ -4418,7 +4415,7 @@ class $ContienesTable extends Contienes
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES productos (id)',
+      'REFERENCES Producto (id)',
     ),
   );
   @override
@@ -4427,7 +4424,7 @@ class $ContienesTable extends Contienes
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'contienes';
+  static const String $name = 'Contiene';
   @override
   VerificationContext validateIntegrity(
     Insertable<Contiene> instance, {
@@ -4707,7 +4704,7 @@ class $DescuentosTable extends Descuentos
     type: DriftSqlType.int,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES productos (id)',
+      'REFERENCES Producto (id)',
     ),
   );
   @override
@@ -4721,7 +4718,7 @@ class $DescuentosTable extends Descuentos
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'descuentos';
+  static const String $name = 'Descuento';
   @override
   VerificationContext validateIntegrity(
     Insertable<Descuento> instance, {
@@ -5011,7 +5008,7 @@ class $MedidasTable extends Medidas with TableInfo<$MedidasTable, Medida> {
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'medidas';
+  static const String $name = 'Medida';
   @override
   VerificationContext validateIntegrity(
     Insertable<Medida> instance, {
@@ -5240,7 +5237,7 @@ class $ProveedorsTable extends Proveedors
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'proveedors';
+  static const String $name = 'Proveedor';
   @override
   VerificationContext validateIntegrity(
     Insertable<Proveedor> instance, {
@@ -5549,7 +5546,7 @@ class $InsumosTable extends Insumos with TableInfo<$InsumosTable, Insumo> {
     type: DriftSqlType.int,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES medidas (id)',
+      'REFERENCES Medida (id)',
     ),
   );
   static const VerificationMeta _enAlmacenMeta = const VerificationMeta(
@@ -5576,7 +5573,7 @@ class $InsumosTable extends Insumos with TableInfo<$InsumosTable, Insumo> {
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'insumos';
+  static const String $name = 'Insumo';
   @override
   VerificationContext validateIntegrity(
     Insertable<Insumo> instance, {
@@ -5917,7 +5914,7 @@ class $IngredientsTable extends Ingredients
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES productos (id)',
+      'REFERENCES Producto (id)',
     ),
   );
   static const VerificationMeta _idInsumoMeta = const VerificationMeta(
@@ -5931,7 +5928,7 @@ class $IngredientsTable extends Ingredients
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES insumos (id)',
+      'REFERENCES Insumo (id)',
     ),
   );
   static const VerificationMeta _cantidadMeta = const VerificationMeta(
@@ -5951,7 +5948,7 @@ class $IngredientsTable extends Ingredients
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'ingredients';
+  static const String $name = 'Ingredientes';
   @override
   VerificationContext validateIntegrity(
     Insertable<Ingredient> instance, {
@@ -6195,7 +6192,7 @@ class $ContactosTable extends Contactos
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES proveedors (id)',
+      'REFERENCES Proveedor (id)',
     ),
   );
   static const VerificationMeta _numeroMeta = const VerificationMeta('numero');
@@ -6233,7 +6230,7 @@ class $ContactosTable extends Contactos
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'contactos';
+  static const String $name = 'Contacto';
   @override
   VerificationContext validateIntegrity(
     Insertable<Contacto> instance, {
@@ -9729,14 +9726,14 @@ typedef $$BeneficiosTableProcessedTableManager =
     >;
 typedef $$CuentasTableCreateCompanionBuilder =
     CuentasCompanion Function({
-      required int idEmpleado,
+      Value<int?> idEmpleado,
       required String nombreUsuario,
       Value<String?> password,
       Value<int> rowid,
     });
 typedef $$CuentasTableUpdateCompanionBuilder =
     CuentasCompanion Function({
-      Value<int> idEmpleado,
+      Value<int?> idEmpleado,
       Value<String> nombreUsuario,
       Value<String?> password,
       Value<int> rowid,
@@ -9751,9 +9748,9 @@ final class $$CuentasTableReferences
         $_aliasNameGenerator(db.cuentas.idEmpleado, db.empleados.id),
       );
 
-  $$EmpleadosTableProcessedTableManager get idEmpleado {
-    final $_column = $_itemColumn<int>('id_empleado')!;
-
+  $$EmpleadosTableProcessedTableManager? get idEmpleado {
+    final $_column = $_itemColumn<int>('id_empleado');
+    if ($_column == null) return null;
     final manager = $$EmpleadosTableTableManager(
       $_db,
       $_db.empleados,
@@ -9921,7 +9918,7 @@ class $$CuentasTableTableManager
               $$CuentasTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
-                Value<int> idEmpleado = const Value.absent(),
+                Value<int?> idEmpleado = const Value.absent(),
                 Value<String> nombreUsuario = const Value.absent(),
                 Value<String?> password = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -9933,7 +9930,7 @@ class $$CuentasTableTableManager
               ),
           createCompanionCallback:
               ({
-                required int idEmpleado,
+                Value<int?> idEmpleado = const Value.absent(),
                 required String nombreUsuario,
                 Value<String?> password = const Value.absent(),
                 Value<int> rowid = const Value.absent(),

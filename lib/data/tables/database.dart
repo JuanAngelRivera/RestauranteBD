@@ -6,11 +6,17 @@ class TablaErrors extends Table {
 
   @override
   Set<Column> get primaryKey => {id};
+
+  @override
+  String get tableName => 'TablaError';
 }
 
 class MetodoPagos extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get descripcion => text().nullable()();
+
+  @override
+  String get tableName => 'MetodoPago';
 }
 
 class CherryLocals extends Table {
@@ -18,12 +24,18 @@ class CherryLocals extends Table {
   TextColumn get direccion => text().nullable()();
   TextColumn get nombre => text().nullable()();
   TextColumn get telefono => text().nullable()();
+
+  @override
+  String get tableName => 'CherryLocal';
 }
 
 class Rols extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get descripcion => text().nullable()();
   RealColumn get sueldo => real().nullable()();
+
+  @override
+  String get tableName => 'Rol';
 }
 
 class Turnos extends Table {
@@ -31,12 +43,18 @@ class Turnos extends Table {
   TextColumn get horaInicio => text().nullable()();
   TextColumn get horaFin => text().nullable()();
   TextColumn get descripcion => text().nullable()();
+
+  @override
+  String get tableName => 'Turno';
 }
 
 class Bonuses extends Table {
   IntColumn get id => integer().autoIncrement()();
   RealColumn get valor => real().nullable()();
   TextColumn get descripcion => text().nullable()();
+
+  @override
+  String get tableName => 'Bonus';
 }
 
 class Empleados extends Table {
@@ -54,6 +72,9 @@ class Empleados extends Table {
 
   IntColumn get idTurno =>
       integer().nullable().references(Turnos, #id)();
+
+  @override
+  String get tableName => 'Empleado';
 }
 
 class Nominas extends Table {
@@ -66,6 +87,9 @@ class Nominas extends Table {
 
   @override
   Set<Column> get primaryKey => {idEmpleado, fechaPago};
+
+  @override
+  String get tableName => 'Nomina';
 }
 
 class Beneficios extends Table {
@@ -80,18 +104,24 @@ class Beneficios extends Table {
 
   @override
   Set<Column> get primaryKey => {idEmpleado, fechaPagoNomina, idBonus};
+
+  @override
+  String get tableName => 'Beneficios';
 }
 
 class Cuentas extends Table {
   IntColumn get idEmpleado =>
-      integer().references(Empleados, #id)();
+      integer().references(Empleados, #id).nullable()();
 
-  TextColumn get nombreUsuario => text()();
+  TextColumn get nombreUsuario => text().named('nombre_usuario')();
 
   TextColumn get password => text().nullable()();
 
   @override
   Set<Column> get primaryKey => {idEmpleado, nombreUsuario};
+
+  @override
+  String get tableName => 'Cuenta';
 }
 
 class Ordens extends Table {
@@ -106,6 +136,9 @@ class Ordens extends Table {
 
   IntColumn get idEmpleado =>
       integer().nullable().references(Empleados, #id)();
+
+  @override
+  String get tableName => 'Orden';
 }
 
 class Pagos extends Table {
@@ -121,12 +154,18 @@ class Pagos extends Table {
 
   IntColumn get idCherryLocal =>
       integer().nullable().references(CherryLocals, #id)();
+
+  @override
+  String get tableName => 'Pago';
 }
 
 class Categorias extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get nombre => text().nullable()();
   TextColumn get descripcion => text().nullable()();
+
+  @override
+  String get tableName => 'Categoria';
 }
 
 class Productos extends Table {
@@ -138,6 +177,9 @@ class Productos extends Table {
       integer().nullable().references(Categorias, #id)();
 
   TextColumn get foto => text().nullable()();
+
+  @override
+  String get tableName => 'Producto';
 }
 
 class Contienes extends Table {
@@ -153,6 +195,9 @@ class Contienes extends Table {
   @override
   Set<Column> get primaryKey =>
       {idOrden, idCherryLocal, idProducto};
+
+  @override
+  String get tableName => 'Contiene';
 }
 
 class Descuentos extends Table {
@@ -162,11 +207,17 @@ class Descuentos extends Table {
 
   IntColumn get idProducto =>
       integer().nullable().references(Productos, #id)();
+
+  @override
+  String get tableName => 'Descuento';
 }
 
 class Medidas extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get descripcion => text().nullable()();
+
+  @override
+  String get tableName => 'Medida';
 }
 
 class Proveedors extends Table {
@@ -174,6 +225,9 @@ class Proveedors extends Table {
   TextColumn get nombre => text().nullable()();
   TextColumn get direccion => text().nullable()();
   TextColumn get descripcion => text().nullable()();
+
+  @override
+  String get tableName => 'Proveedor';
 }
 
 class Insumos extends Table {
@@ -186,6 +240,9 @@ class Insumos extends Table {
       integer().nullable().references(Medidas, #id)();
 
   IntColumn get enAlmacen => integer().nullable()();
+
+  @override
+  String get tableName => 'Insumo';
 }
 
 class Ingredients extends Table {
@@ -199,6 +256,9 @@ class Ingredients extends Table {
 
   @override
   Set<Column> get primaryKey => {idInsumo, idProducto};
+
+  @override
+  String get tableName => 'Ingredientes';
 }
 
 class Contactos extends Table {
@@ -212,4 +272,7 @@ class Contactos extends Table {
 
   @override
   Set<Column> get primaryKey => {idProveedor, numero};
+
+  @override
+  String get tableName => 'Contacto';
 }

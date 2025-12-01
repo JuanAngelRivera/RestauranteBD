@@ -32,7 +32,7 @@ class SessionNotifier extends StateNotifier<SessionState> {
   }
 
   Future<void> _initAdmin() async {
-    final exists = await loginDao.validarUsuario('ADMIN', '');
+    final exists = await loginDao.validarUsuario('ADMIN', 'ADMIN');
     if (!exists) {
       await loginDao.into(loginDao.cuentas).insert(
         CuentasCompanion(
