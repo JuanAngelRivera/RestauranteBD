@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:restaurante_base_de_datos/utils/styles.dart';
-import 'package:restaurante_base_de_datos/widgets/panel_widget.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/session_provider.dart';
+import '../utils/styles.dart';
+import '../widgets/panel_widget.dart';
 
-class loginView extends StatefulWidget {
-  const loginView({super.key});
+class LoginView extends ConsumerStatefulWidget {
+  const LoginView({super.key});
 
   @override
-  State<loginView> createState() => _loginViewState();
+  ConsumerState<LoginView> createState() => _LoginViewState();
 }
 
-class _loginViewState extends State<loginView> {
-  TextEditingController conUser = TextEditingController();
-  TextEditingController conPassword = TextEditingController();
+class _LoginViewState extends ConsumerState<LoginView> {
+  final TextEditingController conUser = TextEditingController();
+  final TextEditingController conPassword = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool cargando = false;
+  bool _loginError = false;
 
   @override
   Widget build(BuildContext context) {
@@ -29,111 +32,92 @@ class _loginViewState extends State<loginView> {
                 PanelWidget(
                   colorBase: Styles.fondoClaro,
                   sombra: true,
-                  padding: EdgeInsets.only(top: 40, bottom: 20, left: 20, right: 20),
+                  padding: const EdgeInsets.all(20),
                   colorBorde: Styles.contraste,
                   child: SizedBox(
                     width: MediaQuery.of(context).size.width * 0.3,
                     child: Form(
                       key: _formKey,
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
-                        spacing: 10,
                         children: [
-                          Text(
-                            "Inicio de sesión",
-                            style: Styles.titleText,
-                            textAlign: TextAlign.center,
-                          ),
-                          SizedBox(height: 20,),
-                          
+                          Text("Inicio de sesión", style: Styles.titleText),
+                          const SizedBox(height: 20),
                           TextFormField(
                             style: Styles.baseText,
                             controller: conUser,
-                            keyboardType: TextInputType.emailAddress,
                             decoration: Styles.createInputDecoration("Usuario", Colors.white),
                             validator: (value) {
-                              if (value == null || value.isEmpty){
-                                return 'Ingresa un usuario';
-                              }
-                              else if (!value.startsWith("A")){
-                                return 'Usuario incorrecto';
-                              }
+                              if (value == null || value.isEmpty) return 'Ingresa un usuario';
                               return null;
                             },
-                            onFieldSubmitted: (value){
-                              verificacion();
-                            },
+                            onFieldSubmitted: (_) => _login(),
                           ),
                           TextFormField(
                             style: Styles.baseText,
                             controller: conPassword,
                             obscureText: true,
-                            keyboardType: TextInputType.visiblePassword,
                             decoration: Styles.createInputDecoration("Contraseña", Colors.white),
                             validator: (value) {
-                              if (value == null || value.isEmpty){
-                                return 'Ingresa la contraseña';
-                              }
-                              else if (!value.startsWith("A")){
-                                return 'Contraseña incorrecta';
-                              }
+                              if (value == null || value.isEmpty) return 'Ingresa la contraseña';
                               return null;
                             },
-                            onFieldSubmitted: (value){
-                              verificacion();
-                            },
+                            onFieldSubmitted: (_) => _login(),
                           ),
+                          const SizedBox(height: 20),
                           SizedBox(
                             width: MediaQuery.of(context).size.width * 0.1,
                             height: 50,
                             child: ElevatedButton(
-                              onPressed: verificacion,
+                              onPressed: _login,
                               style: Styles.buttonStyle,
                               child: Text("Ingresar", style: Styles.baseTextW),
                             ),
                           ),
+                          if (_loginError)
+                            const Padding(
+                              padding: EdgeInsets.only(top: 16),
+                              child: Text(
+                                'Usuario o contraseña incorrectos',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ),
                         ],
                       ),
                     ),
                   ),
                 ),
-                SizedBox(height: 10,),
-                cargando == true ? Image.asset("sources/images/loginImage.png", width: 100,) : SizedBox(height: 100),
+                const SizedBox(height: 10),
+                cargando
+                    ? Image.asset("sources/images/loginImage.png", width: 100)
+                    : const SizedBox(height: 100),
               ],
             ),
-
           ),
         ),
       ),
     );
   }
 
-  void verificacion(){
-    setState(() {
-      cargando = true;
-    });
+  void _login() async {
+    if (!_formKey.currentState!.validate()) return;
 
-    if (_formKey.currentState!.validate()){
+    setState(() => cargando = true);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Formulario valido... Redirigiendo")));
-          Future.delayed(Duration(seconds: 1)).then((value){
-            setState(() {
-              cargando = false;
-            });
-            Navigator.pushNamed(context, "/order");
-          });
-    }
-    else{
-        setState(() {
-          cargando = false;
-        });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Algo salió mal, revisa tu información")));
+    final sessionNotifier = ref.read(sessionProvider.notifier);
+    final success = await sessionNotifier.login(conUser.text.trim(), conPassword.text.trim());
+
+    setState(() => cargando = false);
+
+    if (success) {
+      setState(() => _loginError = false);
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Login exitoso! Redirigiendo...")));
+      Navigator.pushReplacementNamed(context, "/order");
+    } else {
+      setState(() => _loginError = true);
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Usuario o contraseña incorrectos")));
     }
   }
 }

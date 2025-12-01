@@ -6523,6 +6523,36 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $InsumosTable insumos = $InsumosTable(this);
   late final $IngredientsTable ingredients = $IngredientsTable(this);
   late final $ContactosTable contactos = $ContactosTable(this);
+  late final TablaErrorsDao tablaErrorsDao = TablaErrorsDao(
+    this as AppDatabase,
+  );
+  late final MetodoPagosDao metodoPagosDao = MetodoPagosDao(
+    this as AppDatabase,
+  );
+  late final CherryLocalsDao cherryLocalsDao = CherryLocalsDao(
+    this as AppDatabase,
+  );
+  late final RolsDao rolsDao = RolsDao(this as AppDatabase);
+  late final TurnosDao turnosDao = TurnosDao(this as AppDatabase);
+  late final BonusesDao bonusesDao = BonusesDao(this as AppDatabase);
+  late final EmpleadosDao empleadosDao = EmpleadosDao(this as AppDatabase);
+  late final NominasDao nominasDao = NominasDao(this as AppDatabase);
+  late final BeneficiosDao beneficiosDao = BeneficiosDao(this as AppDatabase);
+  late final CuentasDao cuentasDao = CuentasDao(this as AppDatabase);
+  late final OrdensDao ordensDao = OrdensDao(this as AppDatabase);
+  late final PagosDao pagosDao = PagosDao(this as AppDatabase);
+  late final CategoriasDao categoriasDao = CategoriasDao(this as AppDatabase);
+  late final ProductosDao productosDao = ProductosDao(this as AppDatabase);
+  late final ContienesDao contienesDao = ContienesDao(this as AppDatabase);
+  late final DescuentosDao descuentosDao = DescuentosDao(this as AppDatabase);
+  late final MedidasDao medidasDao = MedidasDao(this as AppDatabase);
+  late final ProveedorsDao proveedorsDao = ProveedorsDao(this as AppDatabase);
+  late final InsumosDao insumosDao = InsumosDao(this as AppDatabase);
+  late final IngredientsDao ingredientsDao = IngredientsDao(
+    this as AppDatabase,
+  );
+  late final ContactosDao contactosDao = ContactosDao(this as AppDatabase);
+  late final LoginDao loginDao = LoginDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();

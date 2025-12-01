@@ -1,0 +1,30 @@
+import 'package:drift/drift.dart';
+import '../app_database.dart';
+import '../tables/database.dart';
+
+part 'login_dao.g.dart';
+
+@DriftAccessor(tables: [Cuentas, Empleados])
+class LoginDao extends DatabaseAccessor<AppDatabase> with _$LoginDaoMixin {
+  LoginDao(AppDatabase db) : super(db);
+
+  Future<bool> validarUsuario(String nombreUsuario, String? password) async {
+    final query = await (select(cuentas)
+          ..where((c) => c.nombreUsuario.equals(nombreUsuario) &
+              (c.password.equals(password ?? ''))))
+        .getSingleOrNull();
+    return query != null;
+  }
+
+  Future<Empleado?> obtenerEmpleado(String nombreUsuario) async {
+    final query = select(cuentas).join([
+      leftOuterJoin(empleados, empleados.id.equalsExp(cuentas.idEmpleado)),
+    ])
+      ..where(cuentas.nombreUsuario.equals(nombreUsuario));
+
+    final row = await query.getSingleOrNull();
+    if (row == null) return null;
+
+    return row.readTableOrNull(empleados);
+  }
+}

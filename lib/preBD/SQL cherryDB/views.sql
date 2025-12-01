@@ -1,8 +1,8 @@
 use cherrydb;
 
 create view Vista_Empleados AS
-select Empleado.id AS "Id_Empleado", Empleado.nombre, Empleado.telefono, Empleado.CURP, Empleado.RFC, Empleado.fechaIngreso, 
-Empleado.NSS, Rol.descripcion AS "Rol" , Turno.descripcion AS "Turno"
+select Empleado.id "id empleado", Empleado.nombre nombre, Empleado.telefono telefono, Empleado.CURP curp, Empleado.RFC rfc,
+Empleado.fechaIngreso 'fecha de ingreso', Empleado.NSS nss, Rol.descripcion rol , Turno.descripcion turno
 from Empleado
 inner join Rol ON Empleado.id_Rol = Rol.id
 inner join Turno ON Empleado.id_Turno = Turno.id;
@@ -10,15 +10,15 @@ select * from Vista_Empleados; -- listo
 
 
 create view Vista_Nomina AS
-select Empleado.nombre AS "Nombre Empleado", Nomina.fechaPago,Nomina.salarioTotal AS "Salario Total"
+select Empleado.nombre "nombre del empleado", Nomina.fechaPago "fecha de pago",Nomina.salarioTotal "salario total"
 from Nomina 
 inner join Empleado ON Nomina.id_Empleado = Empleado.id;
 select * from Vista_Nomina;   -- listo
 
 
 create view Vista_Beneficios AS
-select Empleado.nombre AS "Nombre Empleado", Beneficios.fechaPago_Nomina AS FechaPago,
-Bonus.descripcion AS "Bonus", Bonus.valor AS "Monto Bonus"
+select Empleado.nombre AS "nombre empleado", Beneficios.fechaPago_Nomina 'fecha de pago',
+Bonus.descripcion AS "bonus", Bonus.valor AS "monto del bonus"
 FROM Beneficios 
 inner join Empleado ON Beneficios.id_Empleado = Empleado.id
 inner join Bonus ON Beneficios.id_Bonus = Bonus.id;
@@ -26,14 +26,14 @@ select * from Vista_Beneficios;      -- listo
 
 
 create view Vista_Cuenta AS
-select Cuenta.id_Empleado, Empleado.nombre AS "Nombre Empleado", Cuenta.nombreUsuario AS "Usuario"
+select Empleado.nombre AS "nombre empleado", Cuenta.nombreUsuario AS "nombre de la cuenta"
 from Cuenta
 inner join Empleado ON Cuenta.id_Empleado = Empleado.id;
-select * from Vista_Cuenta;   -- pendiente  por contaseña
+select * from Vista_Cuenta;   -- listo
 
 
 create view Vista_Orden AS
-select Orden.id_CherryLocal, "Local" AS NombreLocal, Orden.id AS "Numero de Orden",
+select Orden.id_CherryLocal "id del local", "Local" AS NombreLocal, Orden.id AS "Numero de Orden",
     Orden.total,Orden.fechaRealizada,Orden.id_Empleado,Empleado.nombre AS "Nombre Empleado"
 from Orden 
 inner join CherryLocal ON Orden.id_CherryLocal = CherryLocal.id

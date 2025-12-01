@@ -4,7 +4,9 @@ import 'package:drift/native.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:restaurante_base_de_datos/data/dao/login_dao.dart';
 
+import 'dao/daos.dart';
 import 'tables/database.dart';
 
 part 'app_database.g.dart';
@@ -34,7 +36,30 @@ part 'app_database.g.dart';
     Contactos,
   ],
   daos: [
-    
+    TablaErrorsDao,
+    MetodoPagosDao,
+    CherryLocalsDao,
+    RolsDao,
+    TurnosDao,
+    BonusesDao,
+    EmpleadosDao,
+    NominasDao,
+    BeneficiosDao,
+    CuentasDao,
+    OrdensDao,
+    PagosDao,
+    CategoriasDao,
+    ProductosDao,
+    ContienesDao,
+    DescuentosDao,
+    MedidasDao,
+    ProveedorsDao,
+    InsumosDao,
+    IngredientsDao,
+    ContactosDao,
+
+    // vistas
+    LoginDao,
   ]
 )
 class AppDatabase extends _$AppDatabase {
