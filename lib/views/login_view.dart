@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:restaurante_base_de_datos/providers/login_provider.dart';
 import '../providers/session_provider.dart';
 import '../utils/styles.dart';
 import '../widgets/panel_widget.dart';
@@ -101,24 +102,42 @@ class _LoginViewState extends ConsumerState<LoginView> {
   }
 
   void _login() async {
-    if (!_formKey.currentState!.validate()) return;
+  final loginDao = ref.read(loginDaoProvider);
 
-    setState(() => cargando = true);
+  final valid = await loginDao.validarUsuario(
+    conUser.text.trim(),
+    conPassword.text.trim(),
+  );
 
-    final sessionNotifier = ref.read(sessionProvider.notifier);
-    final success = await sessionNotifier.login(conUser.text.trim(), conPassword.text.trim());
+  setState(() {
+    _loginError = !valid;
+  });
 
-    setState(() => cargando = false);
+  if (valid) {
+    final empleado = await loginDao.obtenerEmpleado(conUser.text.trim());
 
-    if (success) {
-      setState(() => _loginError = false);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Login exitoso! Redirigiendo...")));
-      Navigator.pushReplacementNamed(context, "/order");
-    } else {
-      setState(() => _loginError = true);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Usuario o contraseña incorrectos")));
+    if (empleado == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Empleado no encontrado")),
+      );
+      return;
     }
+
+    // Guardar sesión
+    ref.read(sessionProvider.notifier).login(conUser.text.trim(), conPassword.text.trim());
+
+    // Determinar destino según el nombre de usuario
+    if (conUser.text.trim().startsWith('A')) {
+      // Administrador
+      Navigator.pushReplacementNamed(context, "/admin");
+    } else {
+      // Empleado normal
+      Navigator.pushReplacementNamed(context, "/order");
+    }
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Usuario o contraseña incorrectos")),
+    );
   }
+}
 }
