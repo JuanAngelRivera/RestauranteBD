@@ -123,16 +123,12 @@ class _LoginViewState extends ConsumerState<LoginView> {
       return;
     }
 
-    // Guardar sesión
     ref.read(sessionProvider.notifier).login(conUser.text.trim(), conPassword.text.trim());
 
-    // Determinar destino según el nombre de usuario
     if (conUser.text.trim().startsWith('A')) {
-      // Administrador
-      Navigator.pushReplacementNamed(context, "/admin");
+      Navigator.pushNamed(context, "/admin");
     } else {
-      // Empleado normal
-      Navigator.pushReplacementNamed(context, "/order");
+      Navigator.pushNamed(context, "/order");
     }
   } else {
     ScaffoldMessenger.of(context).showSnackBar(
