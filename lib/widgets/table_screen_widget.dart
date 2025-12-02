@@ -7,6 +7,8 @@ class TableScreenWidget extends StatefulWidget {
   final Stream<List<Map<String, dynamic>>> dataStream;
   final List<DataCell> Function(Map<String, dynamic>) cellBuilder;
   final int columnasPorPagina;
+  final void Function(Map<String, dynamic> row)? onEdit;
+  final void Function(Map<String, dynamic> row)? onDelete;
 
   const TableScreenWidget({
     super.key,
@@ -15,6 +17,8 @@ class TableScreenWidget extends StatefulWidget {
     required this.dataStream,
     required this.cellBuilder,
     required this.columnasPorPagina,
+    this.onEdit,
+    this.onDelete,
   });
 
   @override
@@ -37,10 +41,7 @@ class _TableScreenWidgetState extends State<TableScreenWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          widget.titulo, 
-          style: Styles.titleText,
-          textAlign: TextAlign.center,),
+        Text(widget.titulo, style: Styles.titleText),
         const SizedBox(height: 8),
 
         Expanded(
@@ -56,36 +57,61 @@ class _TableScreenWidgetState extends State<TableScreenWidget> {
               return Scrollbar(
                 controller: verticalCtrl,
                 thumbVisibility: true,
-
                 child: SingleChildScrollView(
                   controller: verticalCtrl,
                   scrollDirection: Axis.vertical,
-
-                  child: SingleChildScrollView(
+                  child: Scrollbar(
+                    thumbVisibility: true,
                     controller: horizontalCtrl,
-                    scrollDirection: Axis.horizontal,
-
-                    child: DataTable(
-                      columns: widget.columnas
-                          .map((c) => DataColumn(label: Text(c)))
-                          .toList(),
-
-                      rows: registros.map((reg) {
-                        final cells = widget.cellBuilder(reg);
-
-                        while (cells.length < widget.columnas.length) {
-                          cells.add(const DataCell(Text("")));
-                        }
-
-                        return DataRow(cells: cells);
-                      }).toList(),
+                    scrollbarOrientation: ScrollbarOrientation.top,
+                    child: SingleChildScrollView(
+                      controller: horizontalCtrl,
+                      scrollDirection: Axis.horizontal,
+                      child: DataTable(
+                        columns: [
+                          ...widget.columnas.map(
+                            (c) => DataColumn(label: Text(c)),
+                          ),
+                          const DataColumn(label: Text("Editar")),
+                          const DataColumn(label: Text("Eliminar")),
+                        ],
+                        rows: registros.map((reg) {
+                          final cells = widget.cellBuilder(reg);
+                    
+                          while (cells.length < widget.columnas.length) {
+                            cells.add(const DataCell(Text("")));
+                          }
+                          cells.add(
+                            DataCell(
+                              IconButton(
+                                icon: const Icon(Icons.edit, color: Colors.black87),
+                                onPressed: widget.onEdit == null
+                                    ? null
+                                    : () => widget.onEdit!(reg),
+                              ),
+                            ),
+                          );
+                          cells.add(
+                            DataCell(
+                              IconButton(
+                                icon: const Icon(Icons.delete, color: Colors.black87),
+                                onPressed: widget.onDelete == null
+                                    ? null
+                                    : () => widget.onDelete!(reg),
+                              ),
+                            ),
+                          );
+                    
+                          return DataRow(cells: cells);
+                        }).toList(),
+                      ),
                     ),
                   ),
                 ),
               );
             },
           ),
-        )
+        ),
       ],
     );
   }

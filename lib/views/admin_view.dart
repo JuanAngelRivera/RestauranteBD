@@ -1,6 +1,9 @@
+import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:restaurante_base_de_datos/data/app_database.dart';
 import 'package:restaurante_base_de_datos/providers/dao_helper_provider.dart';
+import 'package:restaurante_base_de_datos/providers/dao_providers.dart';
 import 'package:restaurante_base_de_datos/utils/styles.dart';
 import 'package:restaurante_base_de_datos/widgets/cell_builder_widgets.dart';
 import 'package:restaurante_base_de_datos/widgets/formulario_generico.dart';
@@ -21,6 +24,7 @@ class _adminViewState extends ConsumerState<adminView> {
   List<String> tablas = [];
   bool tablaCargada = false;
   String nombreLocal = "";
+  late AppDatabase db;
 
   @override
   void initState() {
@@ -122,8 +126,11 @@ class _adminViewState extends ConsumerState<adminView> {
                                     alignment: AlignmentGeometry.centerRight,
                                     child: ElevatedButton(
                                       style: Styles.buttonStyle,
-                                      onPressed: (){
-                                        mostrarFormulario(tabla!.titulo, id:  null);
+                                      onPressed: () {
+                                        mostrarFormulario(
+                                          tabla!.titulo,
+                                          id: null,
+                                        );
                                       },
                                       child: Text("Insertar"),
                                     ),
@@ -145,6 +152,7 @@ class _adminViewState extends ConsumerState<adminView> {
   }
 
   void cargarInfo() async {
+    db = ref.read(appDatabaseProvider);
     final adminDao = ref.read(adminDaoProvider);
     final daoHelper = ref.read(daoHelperProvider);
     final tablas = await adminDao.obtenerNombresTablas();
@@ -170,6 +178,15 @@ class _adminViewState extends ConsumerState<adminView> {
         cellBuilder: (registro) =>
             cellBuilderHelper.obtenerCellBuilder(tablaNombre, registro),
         columnasPorPagina: nombresColumnas.length,
+        onEdit: (row) {
+          mostrarFormulario(tablaNombre, id: row["id"]);
+        },
+        onDelete: (row) async {
+          await db.customStatement(
+            "DELETE FROM $tablaNombre WHERE id = ${row["id"]}",
+          );
+          cargarTabla(tablaNombre);
+        },
       );
     });
   }
@@ -177,15 +194,12 @@ class _adminViewState extends ConsumerState<adminView> {
   void mostrarFormulario(String tabla, {int? id}) async {
     final resultado = await showDialog(
       context: context,
-      builder: (_) => FormularioGenerico(
-        tabla: tabla,
-        id: id,
-      ),
+      builder: (_) => FormularioGenerico(tabla: tabla, id: id),
     );
 
     if (resultado == true) {
       cargarTabla(tabla);
-    };
+    }
   }
 
   void cerrarSesion() {

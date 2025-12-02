@@ -96,6 +96,9 @@ class _FormularioGenericoState extends ConsumerState<FormularioGenerico> {
             return Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: TextField(
+                onSubmitted: (value) {
+                  guardar();
+                },
                 controller: controllers[nombre],
                 decoration: Styles.createInputDecoration(
                   nombre, 
