@@ -5,7 +5,7 @@ CREATE TABLE TablaError (
 
 CREATE TABLE MetodoPago (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    descripcion TEXT
+    descripcion TEXT	
 );
 
 CREATE TABLE CherryLocal (
