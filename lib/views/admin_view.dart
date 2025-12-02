@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:restaurante_base_de_datos/providers/dao_helper_provider.dart';
 import 'package:restaurante_base_de_datos/utils/styles.dart';
 import 'package:restaurante_base_de_datos/widgets/cell_builder_widgets.dart';
+import 'package:restaurante_base_de_datos/widgets/formulario_generico.dart';
 import 'package:restaurante_base_de_datos/widgets/idle_screen_widget.dart';
 import 'package:restaurante_base_de_datos/widgets/panel_widget.dart';
 import 'package:restaurante_base_de_datos/widgets/table_screen_widget.dart';
@@ -56,7 +57,21 @@ class _adminViewState extends ConsumerState<adminView> {
                       onPressed: cerrarSesion,
                       child: Text("Cerrar sesión", style: Styles.baseTextW),
                     ),
-                    Image.asset("sources/images/loginImage.png", width: 50),
+                    TextButton(
+                      style: Styles.imageListAddButtonStyle,
+                      onPressed: () {
+                        setState(() {
+                          if (tablaCargada) {
+                            tablaCargada = false;
+                            tabla = null;
+                          }
+                        });
+                      },
+                      child: Image.asset(
+                        "sources/images/loginImage.png",
+                        width: 50,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -69,10 +84,7 @@ class _adminViewState extends ConsumerState<adminView> {
                       colorBase: Styles.fondoClaro,
                       child: Column(
                         children: [
-                          Text(
-                            "Tablas",
-                            style: Styles.titleText,
-                          ),
+                          Text("Tablas", style: Styles.titleText),
                           SizedBox(
                             height: MediaQuery.of(context).size.height * .76,
                             child: ListView.builder(
@@ -101,11 +113,25 @@ class _adminViewState extends ConsumerState<adminView> {
                       child: Container(
                         alignment: Alignment.center,
                         height: MediaQuery.of(context).size.height * 0.8,
-                        child: tablaCargada == true && tabla != null
-                              ? Expanded(
-                                child: tabla!)
-                              : Expanded(
-                                child: IdleScreenWidget()),
+                        child: tabla != null && tablaCargada
+                            ? Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                spacing: 10,
+                                children: [
+                                  Align(
+                                    alignment: AlignmentGeometry.centerRight,
+                                    child: ElevatedButton(
+                                      style: Styles.buttonStyle,
+                                      onPressed: (){
+                                        mostrarFormulario(tabla!.titulo, id:  null);
+                                      },
+                                      child: Text("Insertar"),
+                                    ),
+                                  ),
+                                  Expanded(child: Center(child: tabla!)),
+                                ],
+                              )
+                            : Expanded(child: IdleScreenWidget()),
                       ),
                     ),
                   ),
@@ -146,6 +172,20 @@ class _adminViewState extends ConsumerState<adminView> {
         columnasPorPagina: nombresColumnas.length,
       );
     });
+  }
+
+  void mostrarFormulario(String tabla, {int? id}) async {
+    final resultado = await showDialog(
+      context: context,
+      builder: (_) => FormularioGenerico(
+        tabla: tabla,
+        id: id,
+      ),
+    );
+
+    if (resultado == true) {
+      cargarTabla(tabla);
+    };
   }
 
   void cerrarSesion() {

@@ -125,7 +125,7 @@ class AdminDao extends DatabaseAccessor<AppDatabase> with _$AdminDaoMixin {
   Future<List<Map<String, dynamic>>> obtenerEmpleado() async {
     final query = select(empleados).join([
       leftOuterJoin(rols, rols.id.equalsExp(empleados.idRol)),
-      innerJoin(turnos, turnos.id.equalsExp(empleados.idTurno))
+      leftOuterJoin(turnos, turnos.id.equalsExp(empleados.idTurno))
     ]);
     final result = await query.get();
     return result.map((row) {

@@ -99,7 +99,7 @@ class CellBuilderWidgets {
     String tabla,
     Map<String, dynamic> registro,
   ) {
-    final t = tabla.toLowerCase(); // normalizamos
+    final t = tabla.toLowerCase();
 
     switch (t) {
       case 'producto':
