@@ -9,6 +9,12 @@ class CellBuilderWidgets {
     DataCell(Text(p['foto'] ?? ''))
   ];
 
+  List<DataCell> categoriaCellBuilder(Map<String, dynamic> p) => [
+    DataCell(Text(p['id'].toString())),
+    DataCell(Text(p['nombre'] ?? '')),
+    DataCell(Text(p['descripcion'] ?? ''))
+  ];
+
   List<DataCell> obtenerCellBuilder(
     String tabla,
     Map<String, dynamic> registro,
@@ -16,6 +22,8 @@ class CellBuilderWidgets {
     switch (tabla) {
       case 'Producto':
         return productoCellBuilder(registro);
+      case 'Categoria':
+        return categoriaCellBuilder(registro);
       default:
         return [];
     }

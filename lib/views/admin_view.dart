@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:restaurante_base_de_datos/providers/dao_helper_provider.dart';
-import 'package:restaurante_base_de_datos/utils/dao_helper.dart';
 import 'package:restaurante_base_de_datos/utils/styles.dart';
 import 'package:restaurante_base_de_datos/widgets/cell_builder_widgets.dart';
 import 'package:restaurante_base_de_datos/widgets/idle_screen_widget.dart';
@@ -20,7 +19,7 @@ class _adminViewState extends ConsumerState<adminView> {
   TableScreenWidget? tabla;
   List<String> tablas = [];
   bool tablaCargada = false;
-  String tablaActual = "";
+  String nombreLocal = "";
 
   @override
   void initState() {
@@ -50,7 +49,7 @@ class _adminViewState extends ConsumerState<adminView> {
                   children: [
                     Text("Cherry Café", style: Styles.titleText),
                     SizedBox(width: 30),
-                    Text("NOMBRE DEL LOCAL", style: Styles.baseText),
+                    Text(nombreLocal, style: Styles.baseText),
                     Expanded(child: SizedBox()),
                     ElevatedButton(
                       style: Styles.buttonStyle,
@@ -68,22 +67,29 @@ class _adminViewState extends ConsumerState<adminView> {
                     child: PanelWidget(
                       padding: EdgeInsets.all(20),
                       colorBase: Styles.fondoClaro,
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height * .8,
-                        child: ListView.builder(
-                          itemCount: tablas.length,
-                          itemBuilder: (_, i) => ListTile(
-                            style: ListTileStyle.drawer,
-                            title: Text(tablas[i]),
-                            onTap: () => {
-                              setState(() {
-                                tablaActual = tablas[i];
-                                cargarTabla(tablas[i]);
-                                tablaCargada = true;
-                              }),
-                            },
+                      child: Column(
+                        children: [
+                          Text(
+                            "Tablas",
+                            style: Styles.titleText,
                           ),
-                        ),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * .76,
+                            child: ListView.builder(
+                              itemCount: tablas.length,
+                              itemBuilder: (_, i) => ListTile(
+                                style: ListTileStyle.drawer,
+                                title: Text(tablas[i]),
+                                onTap: () => {
+                                  setState(() {
+                                    cargarTabla(tablas[i]);
+                                    tablaCargada = true;
+                                  }),
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -114,7 +120,9 @@ class _adminViewState extends ConsumerState<adminView> {
 
   void cargarInfo() async {
     final adminDao = ref.read(adminDaoProvider);
+    final daoHelper = ref.read(daoHelperProvider);
     final tablas = await adminDao.obtenerNombresTablas();
+    nombreLocal = await daoHelper.nombreLocal(1);
     setState(() {
       this.tablas = tablas;
     });
@@ -141,7 +149,6 @@ class _adminViewState extends ConsumerState<adminView> {
   }
 
   void cerrarSesion() {
-    //cerrar conexion con BD antes de retirarse de la vista
     Navigator.pop(context);
   }
 }

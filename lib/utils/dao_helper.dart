@@ -34,6 +34,11 @@ class DaoHelper extends DatabaseAccessor<AppDatabase> with _$DaoHelperMixin {
 
   Future<String> nombreCategoria(int id) async { 
     final row = await (db.select(db.categorias)..where((c) => c.id.equals(id))).getSingleOrNull();
-    return row?.nombre ?? 'Desconocido';
+    return  row?.nombre ?? 'Desconocido';
+  }
+
+  Future<String> nombreLocal(int id) async {
+    final row = await (db.select(db.cherryLocals)..where((cl) => cl.id.equals(id))).getSingleOrNull();
+    return '${row?.nombre} (${row?.direccion})' ?? 'Desconocido';
   }
 }

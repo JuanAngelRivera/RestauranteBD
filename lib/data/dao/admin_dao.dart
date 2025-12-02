@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:restaurante_base_de_datos/data/dao/daos.dart';
 import '../app_database.dart';
 import '../tables/database.dart';
 part 'admin_dao.g.dart';
@@ -49,12 +50,38 @@ class AdminDao extends DatabaseAccessor<AppDatabase> with _$AdminDaoMixin {
     }).toList();
   }
 
-  Future<List<String>> obtenerNombresTablas() async {
-    final result = await customSelect(
-      "SELECT name FROM sqlite_master WHERE type='table';",
-    ).get();
-    return result.map((row) => row.data['name'] as String).toList();
+  Future<List<Map<String, dynamic>>> obtenerCategorias() async {
+    final result = await CategoriasDao(db).getAll();
+    return result.map((row) {
+      return {
+        'id': row.id,
+        'nombre': row.nombre,
+        'descripcion': row?.descripcion,
+      };
+    }).toList();
   }
+
+  Future<List<String>> obtenerNombresTablas() async {
+  const tablasExcluidas = {
+    "sqlite_sequence",
+    "TablaError",
+    "CherryLocal",
+    "Nomina",
+    "Pago",
+    "Contiene",
+    "Ingredientes",
+  };
+  
+  final result = await customSelect(
+    "SELECT name FROM sqlite_master WHERE type='table' order by 1 asc;",
+  ).get();
+
+  return result
+      .map((row) => row.data['name'] as String)
+      .where((nombre) => !tablasExcluidas.contains(nombre))
+      .toList();
+}
+
 
   Future<List<Map<String, dynamic>>> obtenerColumnasTabla(
     String tableName,
@@ -69,6 +96,8 @@ class AdminDao extends DatabaseAccessor<AppDatabase> with _$AdminDaoMixin {
     switch (nombreTabla) {
       case 'Producto':
         return obtenerProductos();
+      case 'Categoria':
+        return obtenerCategorias();
       default:
         return [];
     }
