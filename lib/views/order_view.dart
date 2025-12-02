@@ -5,6 +5,7 @@ import 'package:restaurante_base_de_datos/data/dao/daos.dart';
 import 'package:restaurante_base_de_datos/providers/admin_provider.dart';
 import 'package:restaurante_base_de_datos/providers/dao_helper_provider.dart';
 import 'package:restaurante_base_de_datos/providers/dao_providers.dart';
+import 'package:restaurante_base_de_datos/providers/session_provider.dart';
 import 'package:restaurante_base_de_datos/utils/dao_helper.dart';
 import 'package:restaurante_base_de_datos/utils/styles.dart';
 import 'package:restaurante_base_de_datos/widgets/discount_list_tile_widget.dart';
@@ -32,6 +33,7 @@ class _orderViewState extends ConsumerState<orderView> {
   late CategoriasDao categoriaDao;
   late DaoHelper daoHelper;
   late AdminDao adminDao;
+  SessionState empleado = SessionState();
   
   @override
   void initState(){
@@ -43,7 +45,8 @@ class _orderViewState extends ConsumerState<orderView> {
     categoriaDao = ref.read(categoriasDaoProvider);
     daoHelper = ref.read(daoHelperProvider);
     adminDao = ref.read(adminDaoProvider);
-
+    final sessionState = ref.read(sessionProvider);
+    empleado = sessionState.copyWith();
     idCategoriaActual = 1;
 
     local = await daoHelper.nombreLocal(1);
@@ -117,13 +120,14 @@ class _orderViewState extends ConsumerState<orderView> {
                       image: DecorationImage(
                         fit: BoxFit.fill,
                         image: AssetImage(
-                          "sources/images/fotosEmpleado/empleadoDelMes.png",
+                          empleado.foto != null 
+                          ? "sources/images/fotosEmpleado/${empleado.foto}"
+                          : "sources/images/fotosEmpleado/empleadoDelMes.png",
                         ),
                       ),
                     ),
                   ),
-                  Text("id Empleado", style: Styles.baseText),
-                  Text("Nombre empleado", style: Styles.baseText),
+                  Text('Bienvenido: ${empleado.nombreUsuario!}', style: Styles.baseText),
                   Expanded(child: SizedBox()),
                   ElevatedButton(
                     onPressed: () {},

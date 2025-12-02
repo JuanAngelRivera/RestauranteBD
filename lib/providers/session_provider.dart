@@ -8,14 +8,24 @@ class SessionState {
   final int? empleadoId;
   final String? nombreUsuario;
   final bool isAdmin;
+  final String? foto;
 
-  SessionState({this.empleadoId, this.nombreUsuario, this.isAdmin = false});
+  SessionState({
+    this.empleadoId, 
+    this.nombreUsuario, 
+    this.isAdmin = false,
+    this.foto});
 
-  SessionState copyWith({int? empleadoId, String? nombreUsuario, bool? isAdmin}) {
+  SessionState copyWith({
+    int? empleadoId, 
+    String? nombreUsuario, 
+    bool? isAdmin,
+    String? foto}) {
     return SessionState(
       empleadoId: empleadoId ?? this.empleadoId,
       nombreUsuario: nombreUsuario ?? this.nombreUsuario,
       isAdmin: isAdmin ?? this.isAdmin,
+      foto: foto ?? this.foto
     );
   }
 
@@ -32,9 +42,7 @@ class SessionNotifier extends StateNotifier<SessionState> {
   }
 
   Future<void> _initAdmin() async {
-    print("INIT ADMIN");
     final exists = await loginDao.validarUsuario('ADMIN', 'ADMIN');
-    print("EXISTS: " + exists.toString());
     if (!exists) {
       await loginDao.into(loginDao.cuentas).insert(
         CuentasCompanion(
@@ -44,7 +52,6 @@ class SessionNotifier extends StateNotifier<SessionState> {
         ),
         mode: InsertMode.insertOrIgnore,
       );
-      print("Insert desde dao");
     }
   }
 
@@ -52,11 +59,14 @@ class SessionNotifier extends StateNotifier<SessionState> {
     final valid = await loginDao.validarUsuario(nombreUsuario, password);
     if (!valid) return false;
 
+    final cuenta = await loginDao.obtenerCuenta(nombreUsuario);
     final empleado = await loginDao.obtenerEmpleado(nombreUsuario);
+    
     state = SessionState(
       empleadoId: empleado?.id,
-      nombreUsuario: nombreUsuario,
-      isAdmin: nombreUsuario == 'ADMIN',
+      nombreUsuario: cuenta!.usuario,
+      isAdmin: cuenta.tipo == 0 ? false : true,
+      foto: empleado?.foto
     );
     return true;
   }

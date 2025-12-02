@@ -81,15 +81,16 @@ class _ImageListTileWidgetState extends State<ImageListTileWidget> {
                       '\$${(widget.precio - widget.precio * descuento / 100).toStringAsFixed(2)}',
                       style: Styles.priceText)
                     : SizedBox(),
-                    TextButton(
-                      style: Styles.imageListAddButtonStyle,
+                    IconButton(
                       onPressed: () {
-                        widget.onAdd(widget.title, widget.precio);
+                        widget.onAdd(
+                          widget.title, 
+                          widget.precio);
                       },
-                      child: Image.asset(
-                        "sources/images/loginImage.png",
-                        width: 80,
-                      ),
+                      icon: const Icon(
+                        Icons.add,
+                        color: Colors.black87,
+                        size: 50,),
                     ),
                   ],
                 ),
