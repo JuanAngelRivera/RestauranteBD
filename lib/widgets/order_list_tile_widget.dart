@@ -69,7 +69,7 @@ class _OrderListTileWidgetState extends State<OrderListTileWidget> {
             spacing: 10,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(widget.nombreProducto, style: Styles.titleText),
+              Text(widget.nombreProducto, style: Styles.baseText),
               SizedBox(width: MediaQuery.of(context).size.width * 0.001),
               Text("\$${widget.precio.toStringAsFixed(2)}"),
               SizedBox(width: MediaQuery.of(context).size.width * 0.001),

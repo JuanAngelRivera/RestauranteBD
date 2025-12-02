@@ -3,12 +3,12 @@ import 'package:restaurante_base_de_datos/utils/styles.dart';
 
 class DiscountListTileWidget extends StatefulWidget {
   final String nombre;
-  final int descuento;
+  final int? descuento;
   final double subtotal;
   const DiscountListTileWidget({
     super.key, 
     required this.nombre, 
-    required this.descuento, 
+    this.descuento, 
     required this.subtotal});
 
   @override
@@ -18,7 +18,9 @@ class DiscountListTileWidget extends StatefulWidget {
 class _DiscountListTileWidgetState extends State<DiscountListTileWidget> {
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return widget.descuento == null 
+    ? SizedBox() 
+    : Row(
       mainAxisAlignment: MainAxisAlignment.end,
       spacing: 30,
       children: [

@@ -34,7 +34,7 @@ class _orderViewState extends ConsumerState<orderView> {
   late DaoHelper daoHelper;
   late AdminDao adminDao;
   SessionState empleado = SessionState();
-  
+  late List<Map<int, int>> descuentosActivos = [];
   @override
   void initState(){
     super.initState();
@@ -62,7 +62,7 @@ class _orderViewState extends ConsumerState<orderView> {
 
   List<Map<String, dynamic>> pedido = [];
 
-  void agregarPedido(String nombre, double precio) {
+  void agregarPedido(String nombre, double precio, int id) {
     setState(() {
       final index = pedido.indexWhere((item) => item["nombre"] == nombre);
 
@@ -77,6 +77,7 @@ class _orderViewState extends ConsumerState<orderView> {
           "precio": precio,
           "cantidad": 1,
           "subtotal": precio,
+          "id": id
         });
       }
     });
@@ -239,6 +240,7 @@ class _orderViewState extends ConsumerState<orderView> {
                                 title: productos[i]["nombre"],
                                 imagen: productos[i]["foto"],
                                 precio: productos[i]["precio"],
+                                id: productos[i]["id"],
                                 onAdd: agregarPedido,
                               ),
                             ),
@@ -325,7 +327,7 @@ class _orderViewState extends ConsumerState<orderView> {
                                             final item = pedido[index];
                                             return DiscountListTileWidget(
                                             nombre: item["nombre"], 
-                                            descuento: 10, 
+                                            descuento: item["descuento"], 
                                             subtotal: item["cantidad"] * item["precio"] * 10 / 100);
                                           }),
                                   ),
@@ -368,6 +370,5 @@ class _orderViewState extends ConsumerState<orderView> {
   }
 
   void busqueda() {
-    print("Soy gay");
   }
 }

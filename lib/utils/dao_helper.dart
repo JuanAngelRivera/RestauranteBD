@@ -32,26 +32,43 @@ part 'dao_helper.g.dart';
 class DaoHelper extends DatabaseAccessor<AppDatabase> with _$DaoHelperMixin {
   DaoHelper(AppDatabase db) : super(db);
 
-  Future<String> nombreCategoria(int id) async { 
-    final row = await (db.select(categorias)..where((c) => c.id.equals(id))).getSingleOrNull();
-    return  row?.nombre ?? 'Desconocido';
+  Future<String> nombreCategoria(int id) async {
+    final row = await (db.select(
+      categorias,
+    )..where((c) => c.id.equals(id))).getSingleOrNull();
+    return row?.nombre ?? 'Desconocido';
   }
 
   Future<String> nombreLocal(int id) async {
-    final row = await (db.select(cherryLocals)..where((cl) => cl.id.equals(id))).getSingleOrNull();
+    final row = await (db.select(
+      cherryLocals,
+    )..where((cl) => cl.id.equals(id))).getSingleOrNull();
     return '${row?.nombre} (${row?.direccion})';
   }
 
-  Future <List<Map<String, dynamic>>> productosPorCategoria(int idCategoria) async {
-    final query = await (db.select(productos)..where((producto) => producto.idCategoria.equals(idCategoria))).get();
+  Future<List<Map<String, dynamic>>> productosPorCategoria(
+    int idCategoria,
+  ) async {
+    final query = await (db.select(
+      productos,
+    )..where((producto) => producto.idCategoria.equals(idCategoria))).get();
     return query.map((row) {
       return {
         'id': row.id,
         'nombre': row.nombre,
         'idCategoria': row.idCategoria,
-        'foto': 'sources/images/fotosProducto/placeholder.png',
-        'precio' : row.precio
+        'foto': row.foto,
+        'precio': row.precio,
       };
-    }).toList(); 
+    }).toList();
+  }
+
+  Future<Map<String, dynamic>?> obtenerDescuentos(int idProducto) async {
+    final query =
+        await (db.select(descuentos)
+              ..where((descuento) => descuento.idProducto.equals(idProducto)))
+            .getSingleOrNull();
+    if (query == null) return null;
+    return {'porcentaje': query.porcentaje};
   }
 }
