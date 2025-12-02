@@ -6,6 +6,7 @@ class CellBuilderWidgets {
     DataCell(Text(p['nombre'] ?? '')),
     DataCell(Text(p['precio'].toString())),
     DataCell(Text(p['categoria'] ?? 'Desconocido')),
+    DataCell(Text(p['foto'] ?? ''))
   ];
 
   List<DataCell> obtenerCellBuilder(

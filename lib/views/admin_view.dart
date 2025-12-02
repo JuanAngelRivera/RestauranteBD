@@ -17,9 +17,10 @@ class adminView extends ConsumerStatefulWidget {
 }
 
 class _adminViewState extends ConsumerState<adminView> {
-  late TableScreenWidget tabla;
+  TableScreenWidget? tabla;
   List<String> tablas = [];
   bool tablaCargada = false;
+  String tablaActual = "";
 
   @override
   void initState() {
@@ -65,7 +66,7 @@ class _adminViewState extends ConsumerState<adminView> {
                   Expanded(
                     flex: 1,
                     child: PanelWidget(
-                      padding: EdgeInsets.all(10),
+                      padding: EdgeInsets.all(20),
                       colorBase: Styles.fondoClaro,
                       child: SizedBox(
                         height: MediaQuery.of(context).size.height * .8,
@@ -76,9 +77,10 @@ class _adminViewState extends ConsumerState<adminView> {
                             title: Text(tablas[i]),
                             onTap: () => {
                               setState(() {
+                                tablaActual = tablas[i];
+                                cargarTabla(tablas[i]);
                                 tablaCargada = true;
                               }),
-                              //despliegue de las tablas
                             },
                           ),
                         ),
@@ -88,13 +90,16 @@ class _adminViewState extends ConsumerState<adminView> {
                   Expanded(
                     flex: 2,
                     child: PanelWidget(
-                      padding: EdgeInsets.all(10),
+                      padding: EdgeInsets.all(20),
                       colorBase: Styles.fondoClaro,
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height * .8,
-                        child: tablaCargada == true
-                            ? tabla
-                            : IdleScreenWidget(),
+                      child: Container(
+                        alignment: Alignment.center,
+                        height: MediaQuery.of(context).size.height * 0.8,
+                        child: tablaCargada == true && tabla != null
+                              ? Expanded(
+                                child: tabla!)
+                              : Expanded(
+                                child: IdleScreenWidget()),
                       ),
                     ),
                   ),
@@ -118,17 +123,13 @@ class _adminViewState extends ConsumerState<adminView> {
   void cargarTabla(String tablaNombre) async {
     final adminDao = ref.read(adminDaoProvider);
     final cellBuilderHelper = CellBuilderWidgets();
-
-    // Columnas
     final columnas = await adminDao.obtenerColumnasTabla(tablaNombre);
     final nombresColumnas = columnas.map((c) => c['name'] as String).toList();
-
-    // Registros
     final registros = await adminDao.obtenerRegistros(tablaNombre);
 
     setState(() {
       tablaCargada = true;
-      this.tabla = TableScreenWidget(
+      tabla = TableScreenWidget(
         titulo: tablaNombre,
         columnas: nombresColumnas,
         dataStream: Stream.fromFuture(Future.value(registros)),
