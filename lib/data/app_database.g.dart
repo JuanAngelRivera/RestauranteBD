@@ -1013,7 +1013,7 @@ class $TurnosTable extends Turnos with TableInfo<$TurnosTable, Turno> {
   );
   @override
   late final GeneratedColumn<String> horaInicio = GeneratedColumn<String>(
-    'hora_inicio',
+    'horaInicio',
     aliasedName,
     true,
     type: DriftSqlType.string,
@@ -1024,7 +1024,7 @@ class $TurnosTable extends Turnos with TableInfo<$TurnosTable, Turno> {
   );
   @override
   late final GeneratedColumn<String> horaFin = GeneratedColumn<String>(
-    'hora_fin',
+    'horaFin',
     aliasedName,
     true,
     type: DriftSqlType.string,
@@ -1058,16 +1058,16 @@ class $TurnosTable extends Turnos with TableInfo<$TurnosTable, Turno> {
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('hora_inicio')) {
+    if (data.containsKey('horaInicio')) {
       context.handle(
         _horaInicioMeta,
-        horaInicio.isAcceptableOrUnknown(data['hora_inicio']!, _horaInicioMeta),
+        horaInicio.isAcceptableOrUnknown(data['horaInicio']!, _horaInicioMeta),
       );
     }
-    if (data.containsKey('hora_fin')) {
+    if (data.containsKey('horaFin')) {
       context.handle(
         _horaFinMeta,
-        horaFin.isAcceptableOrUnknown(data['hora_fin']!, _horaFinMeta),
+        horaFin.isAcceptableOrUnknown(data['horaFin']!, _horaFinMeta),
       );
     }
     if (data.containsKey('descripcion')) {
@@ -1094,11 +1094,11 @@ class $TurnosTable extends Turnos with TableInfo<$TurnosTable, Turno> {
       )!,
       horaInicio: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}hora_inicio'],
+        data['${effectivePrefix}horaInicio'],
       ),
       horaFin: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}hora_fin'],
+        data['${effectivePrefix}horaFin'],
       ),
       descripcion: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -1129,10 +1129,10 @@ class Turno extends DataClass implements Insertable<Turno> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     if (!nullToAbsent || horaInicio != null) {
-      map['hora_inicio'] = Variable<String>(horaInicio);
+      map['horaInicio'] = Variable<String>(horaInicio);
     }
     if (!nullToAbsent || horaFin != null) {
-      map['hora_fin'] = Variable<String>(horaFin);
+      map['horaFin'] = Variable<String>(horaFin);
     }
     if (!nullToAbsent || descripcion != null) {
       map['descripcion'] = Variable<String>(descripcion);
@@ -1250,8 +1250,8 @@ class TurnosCompanion extends UpdateCompanion<Turno> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (horaInicio != null) 'hora_inicio': horaInicio,
-      if (horaFin != null) 'hora_fin': horaFin,
+      if (horaInicio != null) 'horaInicio': horaInicio,
+      if (horaFin != null) 'horaFin': horaFin,
       if (descripcion != null) 'descripcion': descripcion,
     });
   }
@@ -1277,10 +1277,10 @@ class TurnosCompanion extends UpdateCompanion<Turno> {
       map['id'] = Variable<int>(id.value);
     }
     if (horaInicio.present) {
-      map['hora_inicio'] = Variable<String>(horaInicio.value);
+      map['horaInicio'] = Variable<String>(horaInicio.value);
     }
     if (horaFin.present) {
-      map['hora_fin'] = Variable<String>(horaFin.value);
+      map['horaFin'] = Variable<String>(horaFin.value);
     }
     if (descripcion.present) {
       map['descripcion'] = Variable<String>(descripcion.value);
@@ -5547,7 +5547,7 @@ class $InsumosTable extends Insumos with TableInfo<$InsumosTable, Insumo> {
   );
   @override
   late final GeneratedColumn<int> enAlmacen = GeneratedColumn<int>(
-    'en_almacen',
+    'enAlmacen',
     aliasedName,
     true,
     type: DriftSqlType.int,
@@ -5604,10 +5604,10 @@ class $InsumosTable extends Insumos with TableInfo<$InsumosTable, Insumo> {
         idMedida.isAcceptableOrUnknown(data['id_medida']!, _idMedidaMeta),
       );
     }
-    if (data.containsKey('en_almacen')) {
+    if (data.containsKey('enAlmacen')) {
       context.handle(
         _enAlmacenMeta,
-        enAlmacen.isAcceptableOrUnknown(data['en_almacen']!, _enAlmacenMeta),
+        enAlmacen.isAcceptableOrUnknown(data['enAlmacen']!, _enAlmacenMeta),
       );
     }
     return context;
@@ -5641,7 +5641,7 @@ class $InsumosTable extends Insumos with TableInfo<$InsumosTable, Insumo> {
       ),
       enAlmacen: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
-        data['${effectivePrefix}en_almacen'],
+        data['${effectivePrefix}enAlmacen'],
       ),
     );
   }
@@ -5684,7 +5684,7 @@ class Insumo extends DataClass implements Insertable<Insumo> {
       map['id_medida'] = Variable<int>(idMedida);
     }
     if (!nullToAbsent || enAlmacen != null) {
-      map['en_almacen'] = Variable<int>(enAlmacen);
+      map['enAlmacen'] = Variable<int>(enAlmacen);
     }
     return map;
   }
@@ -5830,7 +5830,7 @@ class InsumosCompanion extends UpdateCompanion<Insumo> {
       if (costo != null) 'costo': costo,
       if (descripcion != null) 'descripcion': descripcion,
       if (idMedida != null) 'id_medida': idMedida,
-      if (enAlmacen != null) 'en_almacen': enAlmacen,
+      if (enAlmacen != null) 'enAlmacen': enAlmacen,
     });
   }
 
@@ -5871,7 +5871,7 @@ class InsumosCompanion extends UpdateCompanion<Insumo> {
       map['id_medida'] = Variable<int>(idMedida.value);
     }
     if (enAlmacen.present) {
-      map['en_almacen'] = Variable<int>(enAlmacen.value);
+      map['enAlmacen'] = Variable<int>(enAlmacen.value);
     }
     return map;
   }

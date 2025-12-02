@@ -40,8 +40,8 @@ class Rols extends Table {
 
 class Turnos extends Table {
   IntColumn get id => integer().autoIncrement()();
-  TextColumn get horaInicio => text().nullable()();
-  TextColumn get horaFin => text().nullable()();
+  TextColumn get horaInicio => text().named("horaInicio").nullable()();
+  TextColumn get horaFin => text().named("horaFin").nullable()();
   TextColumn get descripcion => text().nullable()();
 
   @override
@@ -239,7 +239,7 @@ class Insumos extends Table {
   IntColumn get idMedida =>
       integer().nullable().references(Medidas, #id)();
 
-  IntColumn get enAlmacen => integer().nullable()();
+  IntColumn get enAlmacen => integer().named("enAlmacen").nullable()();
 
   @override
   String get tableName => 'Insumo';

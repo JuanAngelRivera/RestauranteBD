@@ -1,128 +1,132 @@
 import 'package:flutter/material.dart';
 
 class CellBuilderWidgets {
+  DataCell cell(dynamic v) => DataCell(Text(v?.toString() ?? ''));
+
   List<DataCell> productoCellBuilder(Map<String, dynamic> e) => [
-    DataCell(Text(e['id'].toString())),
-    DataCell(Text(e['nombre'] ?? '')),
-    DataCell(Text(e['precio'].toString())),
-    DataCell(Text(e['categoria'] ?? 'Desconocido')),
-    DataCell(Text(e['foto'] ?? ''))
+    cell(e['id']),
+    cell(e['nombre']),
+    cell(e['precio']),
+    cell(e['categoria']),
+    cell(e['foto']),
   ];
 
   List<DataCell> categoriaCellBuilder(Map<String, dynamic> e) => [
-    DataCell(Text(e['id'].toString())),
-    DataCell(Text(e['nombre'] ?? '')),
-    DataCell(Text(e['descripcion'] ?? ''))
+    cell(e['id']),
+    cell(e['nombre']),
+    cell(e['descripcion']),
   ];
 
   List<DataCell> turnoCellBuilder(Map<String, dynamic> e) => [
-    DataCell(Text(e['id'].toString())),
-    DataCell(Text(e['horaInicio'])),
-    DataCell(Text(e['horaFin'])),
-    DataCell(Text(e['descripcion'])),
+    cell(e['id']),
+    cell(e['horaInicio']),
+    cell(e['horaFin']),
+    cell(e['descripcion']),
   ];
 
   List<DataCell> rolCellBuilder(Map<String, dynamic> e) => [
-    DataCell(Text(e['id'].toString())),
-    DataCell(Text(e['descripcion'])),
-    DataCell(Text(e['sueldo'].toString()))
+    cell(e['id']),
+    cell(e['descripcion']),
+    cell(e['sueldo']),
   ];
 
   List<DataCell> proveedorCellBuilder(Map<String, dynamic> e) => [
-    DataCell(Text(e['id'].toString())),
-    DataCell(Text(e['nombre'])),
-    DataCell(Text(e['direccion'])),
-    DataCell(Text(e['descripcion'])),
+    cell(e['id']),
+    cell(e['nombre']),
+    cell(e['direccion']),
+    cell(e['descripcion']),
   ];
 
   List<DataCell> metodoPagoCellBuilder(Map<String, dynamic> e) => [
-    DataCell(Text(e['id'].toString())),
-    DataCell(Text(e['descripcion'])),
+    cell(e['id']),
+    cell(e['descripcion']),
   ];
 
   List<DataCell> medidaCellBuilder(Map<String, dynamic> e) => [
-    DataCell(Text(e['id'].toString())),
-    DataCell(Text(e['descripcion'])),
+    cell(e['id']),
+    cell(e['descripcion']),
   ];
 
   List<DataCell> insumoCellBuilder(Map<String, dynamic> e) => [
-    DataCell(Text(e['id'].toString())),
-    DataCell(Text(e['nombre'])),
-    DataCell(Text(e['costo'].toString())),
-    DataCell(Text(e['descripcion'])),
-    DataCell(Text(e['medida'])),
-    DataCell(Text(e['enAlmacen'].toString()))
+    cell(e['id']),
+    cell(e['nombre']),
+    cell(e['costo']),
+    cell(e['descripcion']),
+    cell(e['medida']),
+    cell(e['enAlmacen']),
   ];
 
   List<DataCell> empleadoCellBuilder(Map<String, dynamic> e) => [
-    DataCell(Text(e['id'].toString())),
-    DataCell(Text(e['nombre'])),
-    DataCell(Text(e['telefono'])),
-    DataCell(Text(e['curp'])),
-    DataCell(Text(e['rfc'])),
-    DataCell(Text(e['fechaIngreso'])),
-    DataCell(Text(e['nss'])),
-    DataCell(Text(e['foto'])),
-    DataCell(Text(e['rol'])),
-    DataCell(Text(e['turno'])),
+    cell(e['id']),
+    cell(e['nombre']),
+    cell(e['telefono']),
+    cell(e['curp']),
+    cell(e['rfc']),
+    cell(e['fechaIngreso']),
+    cell(e['nss']),
+    cell(e['foto']),
+    cell(e['rol']),
+    cell(e['turno']),
   ];
 
   List<DataCell> descuentoCellBuilder(Map<String, dynamic> e) => [
-    DataCell(Text(e['id'].toString())),
-    DataCell(Text(e['descripcion'])),
-    DataCell(Text(e['porcentaje'].toString())),
-    DataCell(Text(e['producto']))
+    cell(e['id']),
+    cell(e['descripcion']),
+    cell(e['porcentaje']),
+    cell(e['producto']),
   ];
 
   List<DataCell> cuentaCellBuilder(Map<String, dynamic> e) => [
-    DataCell(Text(e['id'].toString())),
-    DataCell(Text(e['usuario'])),
-    DataCell(Text(e['contraseña'])),
+    cell(e['id']),
+    cell(e['usuario']),
+    cell(e['contraseña']),
   ];
 
   List<DataCell> contactoCellBuilder(Map<String, dynamic> e) => [
-    DataCell(Text(e['id'].toString())),
-    DataCell(Text(e['numero'])),
-    DataCell(Text(e['nombre'])),
-    DataCell(Text(e['telefono']))
+    cell(e['id']),
+    cell(e['numero']),
+    cell(e['nombre']),
+    cell(e['telefono']),
   ];
 
   List<DataCell> bonusCellBuilder(Map<String, dynamic> e) => [
-    DataCell(Text(e['id'].toString())),
-    DataCell(Text(e['valor'].toString())),
-    DataCell(Text(e['descripcion'])),
+    cell(e['id']),
+    cell(e['valor']),
+    cell(e['descripcion']),
   ];
 
   List<DataCell> obtenerCellBuilder(
     String tabla,
     Map<String, dynamic> registro,
   ) {
-    switch (tabla) {
-      case 'Producto':
+    final t = tabla.toLowerCase(); // normalizamos
+
+    switch (t) {
+      case 'producto':
         return productoCellBuilder(registro);
-      case 'Categoria':
+      case 'categoria':
         return categoriaCellBuilder(registro);
-      case 'Bonus':
+      case 'bonus':
         return bonusCellBuilder(registro);
-      case 'Contacto':
+      case 'contacto':
         return contactoCellBuilder(registro);
-      case 'Cuenta':
+      case 'cuenta':
         return cuentaCellBuilder(registro);
-      case 'Descuento':
+      case 'descuento':
         return descuentoCellBuilder(registro);
-      case 'Empleado':
+      case 'empleado':
         return empleadoCellBuilder(registro);
-      case 'Insumo':
+      case 'insumo':
         return insumoCellBuilder(registro);
-      case 'Medida':
+      case 'medida':
         return medidaCellBuilder(registro);
-      case 'MetodoPago':
+      case 'metodopago':
         return metodoPagoCellBuilder(registro);
-      case 'Proveedor':
+      case 'proveedor':
         return proveedorCellBuilder(registro);
-      case 'Rol':
+      case 'rol':
         return rolCellBuilder(registro);
-      case 'Turno':
+      case 'turno':
         return turnoCellBuilder(registro);
       default:
         return [];

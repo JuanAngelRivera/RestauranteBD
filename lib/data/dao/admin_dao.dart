@@ -149,7 +149,7 @@ class AdminDao extends DatabaseAccessor<AppDatabase> with _$AdminDaoMixin {
 
   Future<List<Map<String, dynamic>>> obtenerInsumo() async {
     final query = select(insumos).join([
-      leftOuterJoin(medidas, medidas.id.equalsExp(insumos.id)),
+      leftOuterJoin(medidas, medidas.id.equalsExp(insumos.idMedida)),
     ]);
     final result = await query.get();
     return result.map((row) {
@@ -161,7 +161,7 @@ class AdminDao extends DatabaseAccessor<AppDatabase> with _$AdminDaoMixin {
         'costo': i.costo,
         'descripcion': i.descripcion,
         'medida': m?.descripcion,
-        'enAlmacen': i.descripcion
+        'enAlmacen': i.enAlmacen
       };
     }).toList();
   }
@@ -215,7 +215,7 @@ class AdminDao extends DatabaseAccessor<AppDatabase> with _$AdminDaoMixin {
       return {
         'id': row.id,
         'horaInicio': row.horaInicio,
-        'horarioFin': row.horaFin,
+        'horaFin': row.horaFin,
         'descripcion': row.descripcion,
       };
     }).toList();
