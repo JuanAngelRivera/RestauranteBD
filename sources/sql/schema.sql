@@ -70,6 +70,7 @@ CREATE TABLE Cuenta (
     id_Empleado INTEGER NOT NULL,
     nombreUsuario TEXT NOT NULL,
     contraseña TEXT,
+    tipo INTEGER NOT NULL DEFAULT 0,
     PRIMARY KEY (id_Empleado, nombreUsuario),
     FOREIGN KEY (id_Empleado) REFERENCES Empleado(id)
 );

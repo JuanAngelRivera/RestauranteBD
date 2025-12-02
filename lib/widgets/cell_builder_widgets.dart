@@ -80,6 +80,7 @@ class CellBuilderWidgets {
     cell(e['id']),
     cell(e['usuario']),
     cell(e['contraseña']),
+    cell(e['tipo'] == 0 ? "normal" : "administrador")
   ];
 
   List<DataCell> contactoCellBuilder(Map<String, dynamic> e) => [

@@ -298,7 +298,7 @@ INSERT INTO Contacto (id_Proveedor, numero, nombre, telefono) VALUES
 (12, 2, 'Pedidos Avícola', '4665566778');
 
 insert into Empleado (nombre) values
-('ADMIN');
+('admin');
 
 insert into Cuenta values
-(1, 'ADMIN', 'ADMIN');
+(1, 'ADMIN', 'ADMIN', 1);

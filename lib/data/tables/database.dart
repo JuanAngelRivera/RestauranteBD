@@ -117,6 +117,8 @@ class Cuentas extends Table {
 
   TextColumn get password => text().named("contraseña").nullable()();
 
+  IntColumn get tipo => integer().withDefault(const Constant(0))();
+
   @override
   Set<Column> get primaryKey => {idEmpleado, usuario};
 

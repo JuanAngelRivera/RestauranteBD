@@ -64,7 +64,7 @@ part 'app_database.g.dart';
     LoginDao,
     AdminDao,
     DaoHelper,
-  ]
+  ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
@@ -74,28 +74,40 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        onCreate: (Migrator m) async {
-          final schemaSql =
-              await rootBundle.loadString('sources/sql/schema.sql');
+    onCreate: (Migrator m) async {
+      final schemaSql = await rootBundle.loadString('sources/sql/schema.sql');
 
-          for (final stmt in schemaSql.split(';')) {
-            final trimmed = stmt.trim();
-            if (trimmed.isNotEmpty) {
-              await customStatement(trimmed);
-            }
-          }
+      for (final stmt in schemaSql.split(';')) {
+        final trimmed = stmt.trim();
+        if (trimmed.isNotEmpty) {
+          await customStatement(trimmed);
+        }
+      }
 
-          final seedSql =
-              await rootBundle.loadString('sources/sql/seed.sql');
+      final seedSql = await rootBundle.loadString('sources/sql/seed.sql');
 
-          for (final stmt in seedSql.split(';')) {
-            final trimmed = stmt.trim();
-            if (trimmed.isNotEmpty) {
-              await customStatement(trimmed);
-            }
-          }
-        },
-      );
+      for (final stmt in seedSql.split(';')) {
+        final trimmed = stmt.trim();
+        if (trimmed.isNotEmpty) {
+          await customStatement(trimmed);
+        }
+      }
+
+      await customStatement('''
+          CREATE TRIGGER IF NOT EXISTS crear_cuenta_empleado
+          AFTER INSERT ON Empleado
+          BEGIN
+            INSERT INTO Cuenta (id_Empleado, usuario, contrasena, tipo)
+            VALUES (
+              NEW.id,
+              LOWER(REPLACE(NEW.nombre, ' ', '')),
+              LOWER(REPLACE(NEW.nombre, ' ', '')),
+              0
+            );
+          END;
+        ''');
+    },
+  );
 }
 
 LazyDatabase _openConnection() {

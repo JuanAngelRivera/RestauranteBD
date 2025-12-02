@@ -178,7 +178,9 @@ class _adminViewState extends ConsumerState<adminView> {
             cellBuilderHelper.obtenerCellBuilder(tablaNombre, registro),
         columnasPorPagina: nombresColumnas.length,
         onEdit: (row) {
-          mostrarFormulario(tablaNombre, id: row["id"]);
+          mostrarFormulario(
+            tablaNombre, 
+            id: row["id"]);
         },
         onDelete: (row) async {
           await db.customStatement(
@@ -190,7 +192,7 @@ class _adminViewState extends ConsumerState<adminView> {
     });
   }
 
-  void mostrarFormulario(String tabla, {int? id}) async {
+  void mostrarFormulario(String tabla, {dynamic? id}) async {
     final resultado = await showDialog(
       context: context,
       builder: (_) => FormularioGenerico(tabla: tabla, id: id),

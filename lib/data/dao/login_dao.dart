@@ -9,16 +9,6 @@ class LoginDao extends DatabaseAccessor<AppDatabase> with _$LoginDaoMixin {
   LoginDao(AppDatabase db) : super(db);
 
   Future<bool> validarUsuario(String nombreUsuario, String password) async {
-    print("LLAMANDO FUNCION VALIDARUSUARIO");
-
-     final s = await db.customSelect(
-    'SELECT COUNT(*) AS total FROM Cuenta;',
-  ).getSingle();
-
-  // Drift devuelve un QueryRow, usamos el alias que pusimos en la consulta
-  final total = s.read<int>('total');
-  print(total);
-
     final query = await (select(cuentas)
           ..where((c) => c.usuario.equals(nombreUsuario) &
               (c.password.equals(password))))
