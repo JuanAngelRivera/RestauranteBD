@@ -12,7 +12,7 @@ class ImageListTileWidget extends ConsumerStatefulWidget {
 
   final void Function(
     String nombre, 
-    double precio,
+    double precio, 
     int id) onAdd;
 
   const ImageListTileWidget({
@@ -20,11 +20,13 @@ class ImageListTileWidget extends ConsumerStatefulWidget {
     required this.title,
     this.imagen,
     required this.precio,
-    required this.onAdd, required this.id,
+    required this.onAdd,
+    required this.id,
   });
 
   @override
-  ConsumerState<ImageListTileWidget> createState() => _ImageListTileWidgetState();
+  ConsumerState<ImageListTileWidget> createState() =>
+      _ImageListTileWidgetState();
 }
 
 class _ImageListTileWidgetState extends ConsumerState<ImageListTileWidget> {
@@ -33,7 +35,7 @@ class _ImageListTileWidgetState extends ConsumerState<ImageListTileWidget> {
   late int descuento;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     init();
   }
@@ -56,80 +58,103 @@ class _ImageListTileWidgetState extends ConsumerState<ImageListTileWidget> {
     return Stack(
       children: [
         Container(
-        margin: EdgeInsets.all(10),
-        child: TextButton(
-          style: Styles.imageListButtonStyle,
-          onPressed: () {
-            setState(() {
-              masInformacion = !masInformacion;
-            });
-          },
-          child: Container(
-            padding: EdgeInsets.all(20),
-            child: Column(
-              children: [
-                Column(
-                  children: [
-                    Image.asset(
-                      widget.imagen!.isEmpty
-                          ? "sources/images/fotosProducto/placeholder.png"
-                          : 'sources/images/fotosProducto/${widget.imagen!}',
-                      width: 100,
-                    ),
-                    masInformacion == false ? Text(". . .", style: Styles.phantomPointsText) : SizedBox(height: 10,),
-                    masInformacion == true
-                        ? Text(
-                            "Ingredientes\nIngredientes\nIngredientes\nIngredientes\nIngredientes\n",
-                            style: Styles.phantomText,
-                            textAlign: TextAlign.left,
-                          )
-                        : SizedBox(),
-                  ],
-                ),
-                Divider(),
-                SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      spacing: 10,
-                      children: [
-            
-                    Text(widget.title, style: Styles.titleText),
-                    Text(
-                      '\$${(widget.precio).toStringAsFixed(2)}',
-                      style: tieneDescuento == true ? Styles.discountText_ : Styles.priceText),
-                      ],
-                    ),
-                    tieneDescuento == true ? 
-                    Text(
-                      '\$${(widget.precio - widget.precio * descuento / 100).toStringAsFixed(2)}',
-                      style: Styles.priceText)
-                    : SizedBox(),
-                    ElevatedButton(
-                      onPressed: () {
-                        widget.onAdd(
-                          widget.title, 
-                          widget.precio,
-                          widget.id);
-                      },
-                      style: Styles.buttonStyle,
-                      child: Text("+", style: TextStyle(fontSize: 40), textAlign: TextAlign.center,),
-                    ),
-                  ],
-                ),
-              ],
+          margin: EdgeInsets.all(10),
+          child: TextButton(
+            style: Styles.imageListButtonStyle,
+            onPressed: () {
+              setState(() {
+                masInformacion = !masInformacion;
+              });
+            },
+            child: Container(
+              padding: EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  Column(
+                    children: [
+                      Container(
+                        width: 300,
+                        height: 100,
+                        child: Image.asset(
+                          widget.imagen!.isEmpty
+                              ? "sources/images/fotosProducto/placeholder.png"
+                              : 'sources/images/fotosProducto/${widget.imagen!}',
+                        ),
+                      ),
+                      masInformacion == false
+                          ? Text(". . .", style: Styles.phantomPointsText)
+                          : SizedBox(height: 10),
+                      masInformacion == true
+                          ? Text(
+                              "Ingredientes\nIngredientes\nIngredientes\nIngredientes\nIngredientes\n",
+                              style: Styles.phantomText,
+                              textAlign: TextAlign.left,
+                            )
+                          : SizedBox(),
+                    ],
+                  ),
+                  Divider(),
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        // ocupa el espacio disponible
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                widget.title,
+                                style: Styles.titleText,
+                                overflow:
+                                    TextOverflow.ellipsis, // recorta con "..."
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              '\$${(widget.precio).toStringAsFixed(2)}',
+                              style: tieneDescuento == true
+                                  ? Styles.discountText_
+                                  : Styles.priceText,
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (tieneDescuento)
+                        Text(
+                          '\$${(widget.precio - widget.precio * descuento / 100).toStringAsFixed(2)}',
+                          style: Styles.priceText,
+                        ),
+                      SizedBox(width: 10),
+                      ElevatedButton(
+                        onPressed: () {
+                          widget.onAdd(
+                            widget.title, 
+                            widget.precio, 
+                            widget.id);
+                        },
+                        style: Styles.buttonStyle,
+                        child: Text(
+                          "+",
+                          style: TextStyle(fontSize: 40),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-      ),
-      tieneDescuento == true ? 
-      Positioned(
-          top: 20,
-          right: 20,
-          child: DiscountStickerWidget(
-            descuento: descuento.toString())) : 
-      SizedBox(),
-    ]);
+        tieneDescuento == true
+            ? Positioned(
+                top: 20,
+                right: 20,
+                child: DiscountStickerWidget(descuento: descuento.toString()),
+              )
+            : SizedBox(),
+      ],
+    );
   }
 }

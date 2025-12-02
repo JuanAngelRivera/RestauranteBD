@@ -118,7 +118,8 @@ class AdminDao extends DatabaseAccessor<AppDatabase> with _$AdminDaoMixin {
         'id': d.id,
         'descripcion': d.descripcion,
         'porcentaje': d.porcentaje,
-        'producto': p?.nombre
+        'producto': p?.nombre,
+        'id_Producto': p?.id
       };
     }).toList();
   }

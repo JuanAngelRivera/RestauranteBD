@@ -142,7 +142,7 @@ INSERT INTO Producto (nombre, precio, id_Categoria, foto) VALUES
 ('Cappuccino', 55.00, 1, 'cappuccino.png'), -- imagen 
 ('Té Verde', 30.00, 2, 'teverde.png'),  -- imagen 
 ('Frappé de Chocolate', 60.00, 3, 'frappe.png'), -- imagen 	
-('Muffin de Chocolate', 28.00, 4, 'muffin.jpg'),  -- imagen 
+('Muffin de Chocolate', 28.00, 4, 'muffin.png'),  -- imagen 
 ('Sándwich Jamón y Queso', 50.00, 5, 'sandwich.png'),  -- imagen 
 ('Café en Grano 250g', 120.00, 6, 'cafegrano.png'),  -- imagen 
 ('Latte Vainilla', 58.00, 1, 'lattevainilla.png'),  -- imagen 
@@ -159,7 +159,7 @@ INSERT INTO Producto (nombre, precio, id_Categoria, foto) VALUES
 ('Ensalada de Pollo', 68.00, 5, 'ensalada.png'),          -- 19  imagen
 ('Frappe de Caramelo', 62.00, 3, 'frappecaramelo.png'),   -- 20 imagen
 ('Taza Cherry', 95.00, 6, 'taza.png'),                    -- 21 imagen
-('Termo Cherry', 180.00, 6, 'termo.pngg');                 -- 22 
+('Termo Cherry', 180.00, 6, 'termo.png');                 -- 22 
 
 INSERT INTO Ingredientes (id_Producto, id_Insumo, cantidad) VALUES
 -- Café Americano

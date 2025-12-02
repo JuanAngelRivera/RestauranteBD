@@ -36,7 +36,7 @@ class _orderViewState extends ConsumerState<orderView> {
   SessionState empleado = SessionState();
   late List<Map<int, int>> descuentosActivos = [];
   @override
-  void initState(){
+  void initState() {
     super.initState();
     init();
   }
@@ -54,21 +54,27 @@ class _orderViewState extends ConsumerState<orderView> {
     productos = await daoHelper.productosPorCategoria(idCategoriaActual);
     descuentos = await adminDao.obtenerDescuento();
 
-    nombreCategoria(idCategoriaActual);   
-    setState(() {
-      
-    }); 
+    nombreCategoria(idCategoriaActual);
+    setState(() {});
   }
 
   List<Map<String, dynamic>> pedido = [];
 
   void agregarPedido(String nombre, double precio, int id) {
+    int descuento = 0;
+    final descuentoItem = descuentos.firstWhere(
+      (d) => d["id_Producto"] == id,
+      orElse: () => {},
+    );
+    if (descuentoItem.isNotEmpty) {
+      descuento = descuentoItem["porcentaje"];
+    }
+
     setState(() {
-      final index = pedido.indexWhere((item) => item["nombre"] == nombre);
+      final index = pedido.indexWhere((item) => item["id"] == id);
 
       if (index != -1) {
         pedido[index]["cantidad"] += 1;
-
         pedido[index]["subtotal"] =
             pedido[index]["cantidad"] * pedido[index]["precio"];
       } else {
@@ -77,7 +83,8 @@ class _orderViewState extends ConsumerState<orderView> {
           "precio": precio,
           "cantidad": 1,
           "subtotal": precio,
-          "id": id
+          "id": id,
+          "descuento": descuento,
         });
       }
     });
@@ -121,14 +128,17 @@ class _orderViewState extends ConsumerState<orderView> {
                       image: DecorationImage(
                         fit: BoxFit.fill,
                         image: AssetImage(
-                          empleado.foto != null 
-                          ? "sources/images/fotosEmpleado/${empleado.foto}"
-                          : "sources/images/fotosEmpleado/empleadoDelMes.png",
+                          empleado.foto != null
+                              ? "sources/images/fotosEmpleado/${empleado.foto}"
+                              : "sources/images/fotosEmpleado/empleadoDelMes.png",
                         ),
                       ),
                     ),
                   ),
-                  Text('Bienvenido: ${empleado.nombreUsuario!}', style: Styles.baseText),
+                  Text(
+                    'Bienvenido: ${empleado.nombreUsuario!}',
+                    style: Styles.baseText,
+                  ),
                   Expanded(child: SizedBox()),
                   ElevatedButton(
                     onPressed: () {},
@@ -241,7 +251,13 @@ class _orderViewState extends ConsumerState<orderView> {
                                 imagen: productos[i]["foto"],
                                 precio: productos[i]["precio"],
                                 id: productos[i]["id"],
-                                onAdd: agregarPedido,
+                                onAdd: (nombre, precio, id) {
+                                  agregarPedido(
+                                    nombre,
+                                    precio,
+                                    id,
+                                  );
+                                },
                               ),
                             ),
                           ),
@@ -258,7 +274,7 @@ class _orderViewState extends ConsumerState<orderView> {
                         left: 20,
                         right: 20,
                         top: 10,
-                        bottom: 10
+                        bottom: 10,
                       ),
                       child: Column(
                         spacing: 10,
@@ -277,29 +293,31 @@ class _orderViewState extends ConsumerState<orderView> {
                               SizedBox(width: 50),
                             ],
                           ),
-                          SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.32,
-                            child: Scrollbar(
-                              child: ListView.builder(
-                                itemCount: pedido.length,
-                                itemBuilder: (context, index) {
-                                  final item = pedido[index];
-                                  return OrderListTileWidget(
-                                    nombreProducto: item["nombre"],
-                                    precio: item["precio"],
-                                    cantidad: item["cantidad"],
-                                    subtotal: item["subtotal"],
-                                    onCantidadChanged: (nuevaCantidad) {
-                                      item["cantidad"] = nuevaCantidad;
-                                      item["subtotal"] =
-                                          nuevaCantidad * item["precio"];
-                                      setState(() {});
-                                    },
-                                    onRemove: () {
-                                      setState(() => pedido.removeAt(index));
-                                    },
-                                  );
-                                },
+                          Expanded(
+                            child: SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.32,
+                              child: Scrollbar(
+                                child: ListView.builder(
+                                  itemCount: pedido.length,
+                                  itemBuilder: (context, index) {
+                                    final item = pedido[index];
+                                    return OrderListTileWidget(
+                                      nombreProducto: item["nombre"],
+                                      precio: item["precio"],
+                                      cantidad: item["cantidad"],
+                                      subtotal: item["subtotal"],
+                                      onCantidadChanged: (nuevaCantidad) {
+                                        item["cantidad"] = nuevaCantidad;
+                                        item["subtotal"] =
+                                            nuevaCantidad * item["precio"];
+                                        setState(() {});
+                                      },
+                                      onRemove: () {
+                                        setState(() => pedido.removeAt(index));
+                                      },
+                                    );
+                                  },
+                                ),
                               ),
                             ),
                           ),
@@ -310,33 +328,42 @@ class _orderViewState extends ConsumerState<orderView> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 Divider(),
-                                Text(
-                                  "Subtotal:",
-                                  style: Styles.baseText,
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text("Subtotal:", style: Styles.baseText),
+                                    Text(
+                                      "\$${calcularSubtotal().toStringAsFixed(2)}",
+                                      style: Styles.baseText,
+                                    ),
+                                  ],
                                 ),
-                                Text(
-                                  "Descuentos:",
-                                  style: Styles.baseText,
-                                ),
-                                SizedBox(
-                                  height: MediaQuery.of(context).size.height * 0.12,
-                                  child: Scrollbar(
-                                    child: ListView.builder(
-                                          itemCount: pedido.length,
-                                          itemBuilder: (context, index){
-                                            final item = pedido[index];
-                                            return DiscountListTileWidget(
-                                            nombre: item["nombre"], 
-                                            descuento: item["descuento"], 
-                                            subtotal: item["cantidad"] * item["precio"] * 10 / 100);
-                                          }),
-                                  ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text("Descuentos:", style: Styles.baseText),
+                                    Text(
+                                      "-\$${calcularDescuentos().toStringAsFixed(2)}",
+                                      style: Styles.baseText,
+                                    ),
+                                  ],
                                 ),
                                 Divider(),
-                                Text(
-                                  "Total:",
-                                  style: Styles.baseText,
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text("Total:", style: Styles.baseText),
+                                    Text(
+                                      "\$${calcularTotal().toStringAsFixed(2)}",
+                                      style: Styles.baseText,
+                                    ),
+                                  ],
                                 ),
+
+                                SizedBox(height: 10),
                                 ElevatedButton(
                                   style: Styles.buttonStyle,
                                   onPressed: () {},
@@ -369,6 +396,24 @@ class _orderViewState extends ConsumerState<orderView> {
     productos = query;
   }
 
-  void busqueda() {
+  void busqueda() {}
+
+  double calcularSubtotal() {
+    return pedido.fold(
+      0,
+      (sum, item) => sum + (item["precio"] * item["cantidad"]),
+    );
+  }
+
+  double calcularDescuentos() {
+    return pedido.fold(
+      0,
+      (sum, item) =>
+          sum + (item["precio"] * item["cantidad"] * item["descuento"] / 100),
+    );
+  }
+
+  double calcularTotal() {
+    return calcularSubtotal() - calcularDescuentos();
   }
 }
