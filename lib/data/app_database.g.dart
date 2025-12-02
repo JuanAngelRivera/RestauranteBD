@@ -6543,6 +6543,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   );
   late final ContactosDao contactosDao = ContactosDao(this as AppDatabase);
   late final LoginDao loginDao = LoginDao(this as AppDatabase);
+  late final AdminDao adminDao = AdminDao(this as AppDatabase);
+  late final DaoHelper daoHelper = DaoHelper(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
