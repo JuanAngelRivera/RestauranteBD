@@ -296,9 +296,3 @@ INSERT INTO Contacto (id_Proveedor, numero, nombre, telefono) VALUES
 -- Proveedor 12: Granja Avícola La Palma
 (12, 1, 'José Martínez', '4663344556'),
 (12, 2, 'Pedidos Avícola', '4665566778');
-
-insert into Empleado (nombre) values
-('admin');
-
-insert into Cuenta values
-(1, 'ADMIN', 'ADMIN', 1);

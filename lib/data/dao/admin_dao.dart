@@ -253,6 +253,20 @@ class AdminDao extends DatabaseAccessor<AppDatabase> with _$AdminDaoMixin {
     return result.map((row) => row.data).toList();
   }
 
+  Future<List<Map<String, dynamic>>> obtenerCuentasNormales() async {
+  final result = await db.customSelect(
+    '''
+    SELECT e.id, e.nombre, c.nombreUsuario, c.tipo
+    FROM Empleado e
+    INNER JOIN Cuenta c ON c.id_Empleado = e.id
+    WHERE c.tipo = 0
+    ''',
+  ).get();
+
+  return result.map((row) => row.data).toList();
+}
+
+
   Future<List<Map<String, dynamic>>> obtenerRegistros(
     String nombreTabla,
   ) async {

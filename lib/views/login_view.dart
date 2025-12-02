@@ -20,6 +20,19 @@ class _LoginViewState extends ConsumerState<LoginView> {
   bool _loginError = false;
 
   @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  void init() async {
+    final loginDao = ref.read(loginDaoProvider);
+    if (!await loginDao.existenCuentas()) {
+      loginDao.crearAdministrador();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Styles.fondoOscuro,
@@ -47,21 +60,29 @@ class _LoginViewState extends ConsumerState<LoginView> {
                           TextFormField(
                             style: Styles.baseText,
                             controller: conUser,
-                            decoration: Styles.createInputDecoration("Usuario", Colors.white),
+                            decoration: Styles.createInputDecoration(
+                              "Usuario",
+                              Colors.white,
+                            ),
                             validator: (value) {
-                              if (value == null || value.isEmpty) return 'Ingresa un usuario';
+                              if (value == null || value.isEmpty)
+                                return 'Ingresa un usuario';
                               return null;
                             },
                             onFieldSubmitted: (_) => _login(),
                           ),
-                          SizedBox(height: 10,),
+                          SizedBox(height: 10),
                           TextFormField(
                             style: Styles.baseText,
                             controller: conPassword,
                             obscureText: true,
-                            decoration: Styles.createInputDecoration("Contraseña", Colors.white),
+                            decoration: Styles.createInputDecoration(
+                              "Contraseña",
+                              Colors.white,
+                            ),
                             validator: (value) {
-                              if (value == null || value.isEmpty) return 'Ingresa la contraseña';
+                              if (value == null || value.isEmpty)
+                                return 'Ingresa la contraseña';
                               return null;
                             },
                             onFieldSubmitted: (_) => _login(),
@@ -102,38 +123,41 @@ class _LoginViewState extends ConsumerState<LoginView> {
   }
 
   void _login() async {
-  final loginDao = ref.read(loginDaoProvider);
+    final loginDao = ref.read(loginDaoProvider);
 
-  final valid = await loginDao.validarUsuario(
-    conUser.text.trim(),
-    conPassword.text.trim(),
-  );
-
-  setState(() {
-    _loginError = !valid;
-  });
-
-  if (valid) {
-    final empleado = await loginDao.obtenerEmpleado(conUser.text.trim());
-
-    if (empleado == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Empleado no encontrado")),
-      );
-      return;
-    }
-
-    ref.read(sessionProvider.notifier).login(conUser.text.trim(), conPassword.text.trim());
-
-    if (conUser.text.trim().startsWith('A')) {
-      Navigator.pushNamed(context, "/admin");
-    } else {
-      Navigator.pushNamed(context, "/order");
-    }
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Usuario o contraseña incorrectos")),
+    final valid = await loginDao.validarUsuario(
+      conUser.text.trim(),
+      conPassword.text.trim(),
     );
+
+    setState(() {
+      _loginError = !valid;
+    });
+
+    if (valid) {
+      final empleado = await loginDao.obtenerEmpleado(conUser.text.trim());
+
+      if (empleado == null) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Empleado no encontrado")));
+        return;
+      }
+
+      ref
+          .read(sessionProvider.notifier)
+          .login(conUser.text.trim(), conPassword.text.trim());
+      final cuenta = await loginDao.obtenerCuenta(conUser.text.trim());
+
+      if (cuenta?.tipo == 0) {
+        Navigator.pushNamed(context, "/order");
+      } else {
+        Navigator.pushNamed(context, "/admin");
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Usuario o contraseña incorrectos")),
+      );
+    }
   }
-}
 }

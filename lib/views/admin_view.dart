@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:restaurante_base_de_datos/data/app_database.dart';
@@ -126,11 +127,16 @@ class _adminViewState extends ConsumerState<adminView> {
                                     child: ElevatedButton(
                                       style: Styles.buttonStyle,
                                       onPressed: () {
-                                        mostrarFormulario(
-                                          tabla!.titulo,
-                                          id: null,
-                                        );
+                                        if (tabla!.titulo == "Cuenta") {
+                                          mostrarFormularioCuentaAdmin();
+                                        } else {
+                                          mostrarFormulario(
+                                            tabla!.titulo,
+                                            id: null,
+                                          );
+                                        }
                                       },
+
                                       child: Text("Insertar"),
                                     ),
                                   ),
@@ -178,13 +184,39 @@ class _adminViewState extends ConsumerState<adminView> {
             cellBuilderHelper.obtenerCellBuilder(tablaNombre, registro),
         columnasPorPagina: nombresColumnas.length,
         onEdit: (row) {
-          mostrarFormulario(
-            tablaNombre, 
-            id: row["id"]);
+          mostrarFormulario(tablaNombre, id: row["id"]);
         },
         onDelete: (row) async {
+          final adminDao = ref.read(adminDaoProvider);
+
+          // Obtener columnas de la tabla
+          final columnas = await adminDao.obtenerColumnasTabla(tablaNombre);
+
+          // Filtrar las columnas que sean PK
+          final pkCols = columnas.where((c) => c['pk'] == 1).toList();
+
+          if (pkCols.isEmpty) {
+            print("⚠ No se encontró columna PK para $tablaNombre");
+            return;
+          }
+
+          // Construir la cláusula WHERE y la lista de variables
+          final whereClause = pkCols
+              .map((c) => "${c['name']} = ?")
+              .join(" AND ");
+          final variables = pkCols.map((c) {
+  final value = row[c['name']];
+  if (value == null) return Variable(null); // <- aquí protegemos null
+  if (value is int) return Variable.withInt(value);
+  if (value is double) return Variable.withReal(value);
+  if (value is String) return Variable.withString(value);
+  throw UnsupportedError("Tipo no soportado en PK: $value");
+}).toList();
+
+
           await db.customStatement(
-            "DELETE FROM $tablaNombre WHERE id = ${row["id"]}",
+            "DELETE FROM $tablaNombre WHERE $whereClause",
+            variables 
           );
           cargarTabla(tablaNombre);
         },
@@ -192,7 +224,7 @@ class _adminViewState extends ConsumerState<adminView> {
     });
   }
 
-  void mostrarFormulario(String tabla, {dynamic? id}) async {
+  void mostrarFormulario(String tabla, {dynamic id}) async {
     final resultado = await showDialog(
       context: context,
       builder: (_) => FormularioGenerico(tabla: tabla, id: id),
@@ -205,5 +237,95 @@ class _adminViewState extends ConsumerState<adminView> {
 
   void cerrarSesion() {
     Navigator.pop(context);
+  }
+
+  void mostrarFormularioCuentaAdmin() async {
+    final adminDao = ref.read(adminDaoProvider);
+    final cuentasNormales = await adminDao.obtenerCuentasNormales();
+
+    int? empleadoSeleccionado;
+
+    await showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text("Crear cuenta administrador"),
+        content: DropdownButtonFormField<int>(
+          decoration: InputDecoration(labelText: "Empleado con cuenta normal"),
+          items: cuentasNormales
+              .map((e) {
+                final id = e["id"];
+                final nombre = e["nombreUsuario"] ?? "Sin nombre";
+
+                if (id == null) {
+                  print("ERROR: idEmpleado es null en: $e");
+                  return null;
+                }
+
+                return DropdownMenuItem<int>(
+                  value: id as int,
+                  child: Text(nombre),
+                );
+              })
+              .whereType<DropdownMenuItem<int>>()
+              .toList(),
+
+          onChanged: (v) => empleadoSeleccionado = v,
+        ),
+        actions: [
+          TextButton(
+            child: Text("Cancelar"),
+            onPressed: () => Navigator.pop(context),
+          ),
+          ElevatedButton(
+            child: Text("Crear"),
+            onPressed: () async {
+              if (empleadoSeleccionado != null) {
+                await crearCuentaAdmin(empleadoSeleccionado!);
+                Navigator.pop(context, true);
+              }
+            },
+          ),
+        ],
+      ),
+    );
+
+    cargarTabla("Cuenta");
+  }
+
+  Future<void> crearCuentaAdmin(int idEmpleado) async {
+    final resultado = await db
+        .customSelect(
+          "SELECT id_Empleado FROM Cuenta WHERE id_Empleado = ? AND tipo = 1",
+          variables: [Variable.withInt(idEmpleado)],
+        )
+        .get();
+
+    if (resultado.isNotEmpty) {
+      print("⚠ Ya existe un administrador para este empleado.");
+      return;
+    }
+
+    final empleado = await db
+        .customSelect(
+          "SELECT nombre FROM Empleado WHERE id = ?",
+          variables: [Variable.withInt(idEmpleado)],
+        )
+        .getSingle();
+
+    final nombre = empleado.data["nombre"] as String;
+    final usuario = nombre.toLowerCase().replaceAll(RegExp(r"\s+"), "");
+    final password = usuario;
+
+    await db.customInsert(
+      """
+    INSERT INTO Cuenta (id_Empleado, nombreUsuario, contraseña, tipo)
+    VALUES (?, ?, ?, 1)
+    """,
+      variables: [
+        Variable.withInt(idEmpleado),
+        Variable.withString("$usuario"),
+        Variable.withString(password),
+      ],
+    );
   }
 }

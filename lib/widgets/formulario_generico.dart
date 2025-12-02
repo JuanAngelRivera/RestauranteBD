@@ -7,7 +7,7 @@ import 'package:restaurante_base_de_datos/utils/styles.dart';
 
 class FormularioGenerico extends ConsumerStatefulWidget {
   final String tabla;
-  final dynamic? id;
+  final dynamic id;
   const FormularioGenerico({super.key, required this.tabla, this.id});
 
   @override

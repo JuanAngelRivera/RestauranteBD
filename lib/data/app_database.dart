@@ -97,7 +97,7 @@ class AppDatabase extends _$AppDatabase {
           CREATE TRIGGER IF NOT EXISTS crear_cuenta_empleado
           AFTER INSERT ON Empleado
           BEGIN
-            INSERT INTO Cuenta (id_Empleado, usuario, contrasena, tipo)
+            INSERT INTO Cuenta (id_Empleado, nombreUsuario, contraseña, tipo)
             VALUES (
               NEW.id,
               LOWER(REPLACE(NEW.nombre, ' ', '')),
