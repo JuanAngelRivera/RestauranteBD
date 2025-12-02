@@ -138,28 +138,28 @@ INSERT INTO Insumo (nombre, costo, descripcion, id_Medida, enAlmacen) VALUES
 ('Crema', 28.00, 'Crema para café', 2, 3000);           -- id 26
 
 INSERT INTO Producto (nombre, precio, id_Categoria, foto) VALUES
-('Café Americano', 35.00, 1, 'americano.jpg'),
-('Cappuccino', 55.00, 1, 'cappuccino.jpg'),
-('Té Verde', 30.00, 2, 'teverde.jpg'),
-('Frappé de Chocolate', 60.00, 3, 'frappe.jpg'),
-('Muffin de Chocolate', 28.00, 4, 'muffin.jpg'),
-('Sándwich Jamón y Queso', 50.00, 5, 'sandwich.jpg'),
-('Café en Grano 250g', 120.00, 6, 'cafegrano.jpg'),
-('Latte Vainilla', 58.00, 1, 'lattevainilla.jpg'),
-('Chocolate Caliente', 40.00, 2, 'chocolatecaliente.jpg'),
-('Smoothie de Fresa', 55.00, 3, 'smoothiefresa.jpg'),
-('Croissant de Mantequilla', 32.00, 4, 'croissant.jpg'),
-('Panini de Jamón Serrano', 65.00, 5, 'panini.jpg'),
-('Latte Caramelo', 60.00, 1, 'lattecaramelo.jpg'),         -- 13
-('Espresso Doble', 45.00, 1, 'espressodoble.jpg'),        -- 14
-('Avena con Fruta', 42.00, 2, 'avena.jpg'),               -- 15
-('Malteada de Chocolate', 58.00, 3, 'malteada.jpg'),      -- 16
-('Galletas de Avena', 25.00, 4, 'galletas.jpg'),          -- 17
-('Baguette de Pollo', 70.00, 5, 'baguette.jpg'),          -- 18
-('Ensalada de Pollo', 68.00, 5, 'ensalada.jpg'),          -- 19
-('Frappe de Caramelo', 62.00, 3, 'frappecaramelo.jpg'),   -- 20
-('Taza Cherry', 95.00, 6, 'taza.jpg'),                    -- 21
-('Termo Cherry', 180.00, 6, 'termo.jpg');                 -- 22
+('Café Americano', 35.00, 1, 'americano.png'),  -- imagen 
+('Cappuccino', 55.00, 1, 'cappuccino.png'), -- imagen 
+('Té Verde', 30.00, 2, 'teverde.png'),  -- imagen 
+('Frappé de Chocolate', 60.00, 3, 'frappe.png'), -- imagen 	
+('Muffin de Chocolate', 28.00, 4, 'muffin.jpg'),  -- imagen 
+('Sándwich Jamón y Queso', 50.00, 5, 'sandwich.png'),  -- imagen 
+('Café en Grano 250g', 120.00, 6, 'cafegrano.png'),  -- imagen 
+('Latte Vainilla', 58.00, 1, 'lattevainilla.png'),  -- imagen 
+('Chocolate Caliente', 40.00, 2, 'chocolatecaliente.png'), -- imagen
+('Smoothie de Fresa', 55.00, 3, 'smoothiefresa.png'), -- imagen
+('Croissant de Mantequilla', 32.00, 4, 'croissant.png'), -- imagen
+('Panini de Jamón Serrano', 65.00, 5, 'panini.png'), -- imagen
+('Latte Caramelo', 60.00, 1, 'lattecaramelo.png'),         -- 13 imagen
+('Espresso Doble', 45.00, 1, 'espressodoble.png'),        -- 14 imagen
+('Avena con Fruta', 42.00, 2, 'avena.png'),               -- 15 imagen
+('Malteada de Chocolate', 58.00, 3, 'malteada.png'),      -- 16 imagen
+('Galletas de Avena', 25.00, 4, 'galletas.png'),          -- 17 imagen
+('Baguette de Pollo', 70.00, 5, 'baguette.png'),          -- 18 imagen
+('Ensalada de Pollo', 68.00, 5, 'ensalada.png'),          -- 19  imagen
+('Frappe de Caramelo', 62.00, 3, 'frappecaramelo.png'),   -- 20 imagen
+('Taza Cherry', 95.00, 6, 'taza.png'),                    -- 21 imagen
+('Termo Cherry', 180.00, 6, 'termo.pngg');                 -- 22 
 
 INSERT INTO Ingredientes (id_Producto, id_Insumo, cantidad) VALUES
 -- Café Americano
