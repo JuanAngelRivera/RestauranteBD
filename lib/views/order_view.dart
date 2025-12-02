@@ -1,46 +1,61 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:restaurante_base_de_datos/data/dao/admin_dao.dart';
+import 'package:restaurante_base_de_datos/data/dao/daos.dart';
+import 'package:restaurante_base_de_datos/providers/admin_provider.dart';
+import 'package:restaurante_base_de_datos/providers/dao_helper_provider.dart';
+import 'package:restaurante_base_de_datos/providers/dao_providers.dart';
+import 'package:restaurante_base_de_datos/utils/dao_helper.dart';
 import 'package:restaurante_base_de_datos/utils/styles.dart';
 import 'package:restaurante_base_de_datos/widgets/discount_list_tile_widget.dart';
 import 'package:restaurante_base_de_datos/widgets/image_list_tile_widget.dart';
 import 'package:restaurante_base_de_datos/widgets/order_list_tile_widget.dart';
 import 'package:restaurante_base_de_datos/widgets/panel_widget.dart';
 
-class orderView extends StatefulWidget {
+class orderView extends ConsumerStatefulWidget {
   const orderView({super.key});
 
   @override
-  State<orderView> createState() => _orderViewState();
+  ConsumerState<orderView> createState() => _orderViewState();
 }
 
-class _orderViewState extends State<orderView> {
+class _orderViewState extends ConsumerState<orderView> {
   final _searchKey = GlobalKey<FormState>();
-  final List<String> categorias = [
-    "cat1",
-    "cat2",
-    "cat3",
-    "cat4",
-    "seccion Gay",
-  ];
-
-  final List<String> productos = [
-    "producto1",
-    "producto2",
-    "producto3",
-    "producto4",
-    "producto5",
-  ];
-
-  final List<int> descuentos = [
-    10,
-    20,
-    30,
-    40,
-    50
-
-  ];
-
-  bool categoriaCargada = false;
+  String local = '';
+  late List<Map<String, dynamic>> categorias = [];
+  late List<Map<String, dynamic>> productos = [];
+  late List<Map<String, dynamic>> descuentos = [];
+  int idCategoriaActual = 1;
+  String nombreCategoriaActual = '';
   bool productoEnOrden = false;
+  bool categoriaCargada = false;
+  late CategoriasDao categoriaDao;
+  late DaoHelper daoHelper;
+  late AdminDao adminDao;
+  
+  @override
+  void initState(){
+    super.initState();
+    init();
+  }
+
+  void init() async {
+    categoriaDao = ref.read(categoriasDaoProvider);
+    daoHelper = ref.read(daoHelperProvider);
+    adminDao = ref.read(adminDaoProvider);
+
+    idCategoriaActual = 1;
+
+    local = await daoHelper.nombreLocal(1);
+    categorias = await adminDao.obtenerCategorias();
+    productos = await daoHelper.productosPorCategoria(idCategoriaActual);
+    descuentos = await adminDao.obtenerDescuento();
+
+    nombreCategoria(idCategoriaActual);   
+    setState(() {
+      
+    }); 
+  }
 
   List<Map<String, dynamic>> pedido = [];
 
@@ -82,7 +97,7 @@ class _orderViewState extends State<orderView> {
                 children: [
                   Text("Cherry Café", style: Styles.titleText),
                   SizedBox(width: 30),
-                  Text("NOMBRE DEL LOCAL", style: Styles.baseText),
+                  Text(local, style: Styles.baseText),
                   Expanded(child: SizedBox()),
                   Image.asset("sources/images/loginImage.png", width: 50),
                 ],
@@ -120,7 +135,6 @@ class _orderViewState extends State<orderView> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      //cerrar conexion
                       Navigator.pop(context);
                     },
                     style: Styles.buttonStyle,
@@ -186,11 +200,12 @@ class _orderViewState extends State<orderView> {
                                 itemBuilder: (_, i) => ListTile(
                                   style: ListTileStyle.drawer,
                                   title: Text(
-                                    categorias[i],
+                                    categorias[i]["nombre"],
                                     style: Styles.titleText,
                                   ),
                                   onTap: () => {
                                     setState(() {
+                                      actualizarProductos(categorias[i]["id"]);
                                       categoriaCargada = true;
                                     }),
                                     //despliegue de las tablas
@@ -212,14 +227,14 @@ class _orderViewState extends State<orderView> {
                       child: Column(
                         spacing: 10,
                         children: [
-                          Text("Categoria.nombrexd", style: Styles.titleText),
+                          Text(nombreCategoriaActual, style: Styles.titleText),
                           Expanded(
                             child: ListView.builder(
                               itemCount: productos.length,
                               itemBuilder: (_, i) => ImageListTileWidget(
-                                title: productos[i],
-                                imagen: "",
-                                precio: 10.0,
+                                title: productos[i]["nombre"],
+                                imagen: productos[i]["foto"],
+                                precio: productos[i]["precio"],
                                 onAdd: agregarPedido,
                               ),
                             ),
@@ -336,6 +351,18 @@ class _orderViewState extends State<orderView> {
       ),
     );
   }
+
+  void nombreCategoria(int id) async {
+    final query = await categoriaDao.getById(id);
+    nombreCategoriaActual = query?.nombre! ?? '';
+  }
+
+  void actualizarProductos(int idCategoria) async {
+    nombreCategoria(idCategoria);
+    final query = await daoHelper.productosPorCategoria(idCategoria);
+    productos = query;
+  }
+
   void busqueda() {
     print("Soy gay");
   }
