@@ -115,6 +115,7 @@ CREATE TABLE Contiene (
     id_Orden INTEGER,
     id_CherryLocal INTEGER,
     id_Producto INTEGER,
+    cantidad INTEGER,
     PRIMARY KEY (id_Orden, id_CherryLocal, id_Producto),
     FOREIGN KEY (id_Orden) REFERENCES Orden(id),
     FOREIGN KEY (id_CherryLocal) REFERENCES CherryLocal(id),

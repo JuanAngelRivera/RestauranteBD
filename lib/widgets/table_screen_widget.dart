@@ -84,7 +84,11 @@ class _TableScreenWidgetState extends State<TableScreenWidget> {
                           cells.add(
                             DataCell(
                               IconButton(
-                                icon: const Icon(Icons.edit, color: Colors.black87),
+                                icon: Icon(
+                                  Icons.edit, 
+                                  color: widget.onEdit == null 
+                                  ?Colors.grey 
+                                  : Colors.black87),
                                 onPressed: widget.onEdit == null
                                     ? null
                                     : () => widget.onEdit!(reg),
@@ -94,7 +98,11 @@ class _TableScreenWidgetState extends State<TableScreenWidget> {
                           cells.add(
                             DataCell(
                               IconButton(
-                                icon: const Icon(Icons.delete, color: Colors.black87),
+                                icon: Icon(
+                                  Icons.delete, 
+                                  color: widget.onDelete == null
+                                  ? Colors.grey
+                                  : Colors.black87),
                                 onPressed: widget.onDelete == null
                                     ? null
                                     : () => widget.onDelete!(reg),

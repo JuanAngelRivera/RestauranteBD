@@ -437,7 +437,7 @@ class _orderViewState extends ConsumerState<orderView> {
     final idOrden = await daoHelper.insertarOrden(1, total, fecha, idEmpleado);
     
     for (final item in pedido) {
-      await daoHelper.insertarContiene(1, idOrden, item["id"]);
+      await daoHelper.insertarContiene(1, idOrden, item["id"], item["cantidad"]);
     }
 
     setState(() {

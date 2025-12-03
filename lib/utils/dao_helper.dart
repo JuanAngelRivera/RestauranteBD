@@ -1,5 +1,3 @@
-import 'dart:nativewrappers/_internal/vm/lib/ffi_native_type_patch.dart';
-
 import 'package:drift/drift.dart';
 import 'package:restaurante_base_de_datos/data/app_database.dart';
 import '../data/tables/database.dart';
@@ -88,15 +86,16 @@ class DaoHelper extends DatabaseAccessor<AppDatabase> with _$DaoHelperMixin {
     );
   }
 
-  Future<int> insertarContiene(int cherryLocal, int idOrden, int idProducto) async {
+  Future<int> insertarContiene(int cherryLocal, int idOrden, int idProducto, int cantidad) async {
     return await db.customInsert(
       '''
-        insert into Contiene (id_CherryLocal, id_Orden, id_Producto) values (?, ?, ?);
+        insert into Contiene (id_CherryLocal, id_Orden, id_Producto, cantidad) values (?, ?, ?, ?);
       ''',
       variables: [
         Variable.withInt(cherryLocal),
         Variable.withInt(idOrden),
-        Variable.withInt(idProducto)
+        Variable.withInt(idProducto),
+        Variable.withInt(cantidad)
       ]
     );
   }
@@ -105,10 +104,10 @@ class DaoHelper extends DatabaseAccessor<AppDatabase> with _$DaoHelperMixin {
     int idEmpleado,
   ) async {
     final query = await (db.select(
-      ordens,
+      ordens
     )..where((orden) => orden.idEmpleado.equals(idEmpleado))).get();
     if (query.isEmpty) return [];
-    
+
     return query.map((row) {
       return {
         'idLocal': row.idCherryLocal,

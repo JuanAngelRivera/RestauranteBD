@@ -96,6 +96,13 @@ class CellBuilderWidgets {
     cell(e['descripcion']),
   ];
 
+  List<DataCell> orderCellBuilder(Map<String, dynamic> e) => [
+    cell(e['idLocal']),
+    cell(e['id']),
+    cell(e['fecha']),
+    cell(e['total'])
+  ];
+
   List<DataCell> obtenerCellBuilder(
     String tabla,
     Map<String, dynamic> registro,
