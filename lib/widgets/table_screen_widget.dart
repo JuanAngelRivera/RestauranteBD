@@ -54,6 +54,18 @@ class _TableScreenWidgetState extends State<TableScreenWidget> {
 
               final registros = snapshot.data!;
 
+              final columnas = <DataColumn>[
+                ...widget.columnas.map((c) => DataColumn(label: Text(c))),
+              ];
+
+              if (widget.onEdit != null) {
+                columnas.add(const DataColumn(label: Text("Editar")));
+              }
+
+              if (widget.onDelete != null) {
+                columnas.add(const DataColumn(label: Text("Eliminar")));
+              }
+
               return Scrollbar(
                 controller: verticalCtrl,
                 thumbVisibility: true,
@@ -68,48 +80,45 @@ class _TableScreenWidgetState extends State<TableScreenWidget> {
                       controller: horizontalCtrl,
                       scrollDirection: Axis.horizontal,
                       child: DataTable(
-                        columns: [
-                          ...widget.columnas.map(
-                            (c) => DataColumn(label: Text(c)),
-                          ),
-                          const DataColumn(label: Text("Editar")),
-                          const DataColumn(label: Text("Eliminar")),
-                        ],
+                        columns: columnas,
                         rows: registros.map((reg) {
                           final cells = widget.cellBuilder(reg);
-                    
+
+                          // Rellenar para que siempre tenga las columnas base
                           while (cells.length < widget.columnas.length) {
                             cells.add(const DataCell(Text("")));
                           }
-                          cells.add(
-                            DataCell(
-                              IconButton(
-                                icon: Icon(
-                                  Icons.edit, 
-                                  color: widget.onEdit == null 
-                                  ?Colors.grey 
-                                  : Colors.black87),
-                                onPressed: widget.onEdit == null
-                                    ? null
-                                    : () => widget.onEdit!(reg),
+
+                          // Agregar celda Editar SOLO si onEdit != null
+                          if (widget.onEdit != null) {
+                            cells.add(
+                              DataCell(
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.edit,
+                                    color: Colors.black87,
+                                  ),
+                                  onPressed: () => widget.onEdit!(reg),
+                                ),
                               ),
-                            ),
-                          );
-                          cells.add(
-                            DataCell(
-                              IconButton(
-                                icon: Icon(
-                                  Icons.delete, 
-                                  color: widget.onDelete == null
-                                  ? Colors.grey
-                                  : Colors.black87),
-                                onPressed: widget.onDelete == null
-                                    ? null
-                                    : () => widget.onDelete!(reg),
+                            );
+                          }
+
+                          // Agregar celda Eliminar SOLO si onDelete != null
+                          if (widget.onDelete != null) {
+                            cells.add(
+                              DataCell(
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.black87,
+                                  ),
+                                  onPressed: () => widget.onDelete!(reg),
+                                ),
                               ),
-                            ),
-                          );
-                    
+                            );
+                          }
+
                           return DataRow(cells: cells);
                         }).toList(),
                       ),

@@ -17,28 +17,25 @@ class HistorialView extends ConsumerStatefulWidget {
 
 class _HistorialViewState extends ConsumerState<HistorialView> {
   late DaoHelper daoHelper;
-  late Future<List<Map<String, dynamic>>> registros;
+  Future<List<Map<String, dynamic>>>? registrosFuture;
   late SessionState empleado;
+
   CellBuilderWidgets cellb = CellBuilderWidgets();
-  bool hayRegistros = false;
+
   @override
   void initState() {
     super.initState();
     init();
   }
 
-  void init() async {
+  void init() {
     empleado = ref.read(sessionProvider);
     daoHelper = ref.read(daoHelperProvider);
-    obtenerRegistros(empleado.empleadoId!);
-  }
 
-  void obtenerRegistros(int idEmpleado) async {
-    final query = await daoHelper.ordenesPorEmpleado(idEmpleado);
-    if (query.isNotEmpty) {
-      registros = daoHelper.ordenesPorEmpleado(idEmpleado);
-      hayRegistros = true;
-    }
+    // Carga directa del Future
+    registrosFuture = daoHelper.ordenesPorEmpleado(empleado.empleadoId!);
+
+    setState(() {});
   }
 
   @override
@@ -47,27 +44,46 @@ class _HistorialViewState extends ConsumerState<HistorialView> {
       backgroundColor: Styles.fondoOscuro,
       appBar: AppBar(
         foregroundColor: Colors.white,
-        title: Text(
-          "Historial de órdenes", 
-          style: Styles.titleTextW),
-        backgroundColor: Styles.fondoOscuro,),
-      body: hayRegistros == false
-          ? Center(child: Text("Aún no hay registros"))
-          : Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: PanelWidget(
-                padding: EdgeInsets.all(20),
-                child: TableScreenWidget(
-                  titulo: "Órdenes de ${empleado.nombreUsuario}",
-                  columnas: ["Local", "Orden", "Fecha", "Total"],
-                  dataStream: Stream.fromFuture(Future.value(registros)),
-                  columnasPorPagina: 5,
-                  onEdit: null,
-                  onDelete: null,
-                  cellBuilder: (registro) =>
-                      cellb.orderCellBuilder(registro)
-                ),
-              ),
+        title: Text("Historial de órdenes", style: Styles.titleTextW),
+        backgroundColor: Styles.fondoOscuro,
+      ),
+      body: registrosFuture == null
+          ? Center(child: CircularProgressIndicator())
+          : FutureBuilder<List<Map<String, dynamic>>>(
+              future: registrosFuture!,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Center(child: CircularProgressIndicator());
+                }
+
+                if (snapshot.data!.isEmpty) {
+                  return Center(
+                    child: Text(
+                      "Aún no hay registros",
+                      style: Styles.titleTextW,
+                    ),
+                  );
+                }
+
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: PanelWidget(
+                      padding: EdgeInsets.all(20),
+                      child: TableScreenWidget(
+                        titulo: "Órdenes de ${empleado.nombreUsuario}",
+                        columnas: ["Local", "Orden", "Fecha", "Total"],
+                        dataStream: Stream.value(snapshot.data!),
+                        columnasPorPagina: 5,
+                        onEdit: null,
+                        onDelete: null,
+                        cellBuilder: (registro) =>
+                            cellb.orderCellBuilder(registro),
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
     );
   }
