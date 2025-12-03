@@ -8,7 +8,6 @@ import 'package:restaurante_base_de_datos/providers/dao_providers.dart';
 import 'package:restaurante_base_de_datos/providers/session_provider.dart';
 import 'package:restaurante_base_de_datos/utils/dao_helper.dart';
 import 'package:restaurante_base_de_datos/utils/styles.dart';
-import 'package:restaurante_base_de_datos/widgets/discount_list_tile_widget.dart';
 import 'package:restaurante_base_de_datos/widgets/image_list_tile_widget.dart';
 import 'package:restaurante_base_de_datos/widgets/order_list_tile_widget.dart';
 import 'package:restaurante_base_de_datos/widgets/panel_widget.dart';
@@ -141,7 +140,9 @@ class _orderViewState extends ConsumerState<orderView> {
                   ),
                   Expanded(child: SizedBox()),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(context, "/historial");
+                    },
                     style: Styles.buttonStyle,
                     child: Text(
                       "Historial de ordenes",
@@ -366,7 +367,9 @@ class _orderViewState extends ConsumerState<orderView> {
                                 SizedBox(height: 10),
                                 ElevatedButton(
                                   style: Styles.buttonStyle,
-                                  onPressed: () {},
+                                  onPressed: () async {
+                                    await registrarOrden();
+                                  },
                                   child: Text("Proceder"),
                                 ),
                               ],
@@ -416,4 +419,44 @@ class _orderViewState extends ConsumerState<orderView> {
   double calcularTotal() {
     return calcularSubtotal() - calcularDescuentos();
   }
+
+  Future<void> registrarOrden() async {
+  if (pedido.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(
+        "No hay productos en la orden")),
+    );
+    return;
+  }
+
+  final total = calcularTotal();
+  final idEmpleado = empleado.empleadoId!;
+  final fecha = DateTime.now().toIso8601String();
+
+  try {
+    final idOrden = await daoHelper.insertarOrden(1, total, fecha, idEmpleado);
+    
+    for (final item in pedido) {
+      await daoHelper.insertarContiene(1, idOrden, item["id"]);
+    }
+
+    setState(() {
+      pedido.clear();
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          "Orden registrada correctamente")),
+    );
+  } catch (e) {
+    print("Error registrando orden: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          "Error al registrar la orden")),
+    );
+  }
+}
+
 }

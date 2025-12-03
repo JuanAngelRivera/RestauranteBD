@@ -1,3 +1,5 @@
+import 'dart:nativewrappers/_internal/vm/lib/ffi_native_type_patch.dart';
+
 import 'package:drift/drift.dart';
 import 'package:restaurante_base_de_datos/data/app_database.dart';
 import '../data/tables/database.dart';
@@ -70,5 +72,51 @@ class DaoHelper extends DatabaseAccessor<AppDatabase> with _$DaoHelperMixin {
             .getSingleOrNull();
     if (query == null) return null;
     return {'porcentaje': query.porcentaje};
+  }
+
+  Future<int> insertarOrden(int cherryLocal, double total, String fecha, int idEmpleado) async {
+    return await db.customInsert(
+      '''
+        insert into Orden (id_CherryLocal, total, fechaRealizada, id_Empleado) values (?, ?, ?, ?);
+      ''',
+      variables: [
+        Variable.withInt(cherryLocal),
+        Variable.withReal(total),
+        Variable.withString(fecha),
+        Variable.withInt(idEmpleado)
+      ]
+    );
+  }
+
+  Future<int> insertarContiene(int cherryLocal, int idOrden, int idProducto) async {
+    return await db.customInsert(
+      '''
+        insert into Contiene (id_CherryLocal, id_Orden, id_Producto) values (?, ?, ?);
+      ''',
+      variables: [
+        Variable.withInt(cherryLocal),
+        Variable.withInt(idOrden),
+        Variable.withInt(idProducto)
+      ]
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> ordenesPorEmpleado(
+    int idEmpleado,
+  ) async {
+    final query = await (db.select(
+      ordens,
+    )..where((orden) => orden.idEmpleado.equals(idEmpleado))).get();
+    if (query.isEmpty) return [];
+    
+    return query.map((row) {
+      return {
+        'idLocal': row.idCherryLocal,
+        'id': row.id,
+        'fecha': row.fechaRealizada,
+        'idEmpleado': row.idEmpleado,
+        'total': row.total,
+      };
+    }).toList();
   }
 }
