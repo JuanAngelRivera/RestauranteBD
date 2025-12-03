@@ -34,9 +34,14 @@ class _orderViewState extends ConsumerState<orderView> {
   late AdminDao adminDao;
   SessionState empleado = SessionState();
   late List<Map<int, int>> descuentosActivos = [];
+  List<Map<String, dynamic>> pedido = [];
+  late ScrollController _pedidoCtrl;
+  late ScrollController _scrollCtrl;
   @override
   void initState() {
     super.initState();
+    _pedidoCtrl  = ScrollController();
+    _scrollCtrl = ScrollController();
     init();
   }
 
@@ -56,8 +61,6 @@ class _orderViewState extends ConsumerState<orderView> {
     nombreCategoria(idCategoriaActual);
     setState(() {});
   }
-
-  List<Map<String, dynamic>> pedido = [];
 
   void agregarPedido(String nombre, double precio, int id) {
     int descuento = 0;
@@ -211,7 +214,12 @@ class _orderViewState extends ConsumerState<orderView> {
                           SizedBox(height: 10),
                           Expanded(
                             child: Scrollbar(
+                              trackVisibility: true,
+                              interactive: false,
+                              controller: _scrollCtrl,
+                              thumbVisibility: true,
                               child: ListView.builder(
+                                controller: _scrollCtrl,
                                 itemCount: categorias.length,
                                 itemBuilder: (_, i) => ListTile(
                                   style: ListTileStyle.drawer,
@@ -224,7 +232,6 @@ class _orderViewState extends ConsumerState<orderView> {
                                       actualizarProductos(categorias[i]["id"]);
                                       categoriaCargada = true;
                                     }),
-                                    //despliegue de las tablas
                                   },
                                 ),
                               ),
@@ -295,30 +302,29 @@ class _orderViewState extends ConsumerState<orderView> {
                             ],
                           ),
                           Expanded(
-                            child: SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.32,
-                              child: Scrollbar(
-                                child: ListView.builder(
-                                  itemCount: pedido.length,
-                                  itemBuilder: (context, index) {
-                                    final item = pedido[index];
-                                    return OrderListTileWidget(
-                                      nombreProducto: item["nombre"],
-                                      precio: item["precio"],
-                                      cantidad: item["cantidad"],
-                                      subtotal: item["subtotal"],
-                                      onCantidadChanged: (nuevaCantidad) {
-                                        item["cantidad"] = nuevaCantidad;
-                                        item["subtotal"] =
-                                            nuevaCantidad * item["precio"];
-                                        setState(() {});
-                                      },
-                                      onRemove: () {
-                                        setState(() => pedido.removeAt(index));
-                                      },
-                                    );
-                                  },
-                                ),
+                            child: Scrollbar(
+                              controller: _pedidoCtrl,
+                              child: ListView.builder(
+                                controller: _pedidoCtrl,
+                                itemCount: pedido.length,
+                                itemBuilder: (context, index) {
+                                  final item = pedido[index];
+                                  return OrderListTileWidget(
+                                    nombreProducto: item["nombre"],
+                                    precio: item["precio"],
+                                    cantidad: item["cantidad"],
+                                    subtotal: item["subtotal"],
+                                    onCantidadChanged: (nuevaCantidad) {
+                                      item["cantidad"] = nuevaCantidad;
+                                      item["subtotal"] =
+                                          nuevaCantidad * item["precio"];
+                                      setState(() {});
+                                    },
+                                    onRemove: () {
+                                      setState(() => pedido.removeAt(index));
+                                    },
+                                  );
+                                },
                               ),
                             ),
                           ),
