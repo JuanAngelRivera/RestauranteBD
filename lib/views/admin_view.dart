@@ -187,36 +187,10 @@ class _adminViewState extends ConsumerState<adminView> {
           mostrarFormulario(tablaNombre, id: row["id"]);
         },
         onDelete: (row) async {
-          final adminDao = ref.read(adminDaoProvider);
-
-          // Obtener columnas de la tabla
-          final columnas = await adminDao.obtenerColumnasTabla(tablaNombre);
-
-          // Filtrar las columnas que sean PK
-          final pkCols = columnas.where((c) => c['pk'] == 1).toList();
-
-          if (pkCols.isEmpty) {
-            print("⚠ No se encontró columna PK para $tablaNombre");
-            return;
-          }
-
-          // Construir la cláusula WHERE y la lista de variables
-          final whereClause = pkCols
-              .map((c) => "${c['name']} = ?")
-              .join(" AND ");
-          final variables = pkCols.map((c) {
-  final value = row[c['name']];
-  if (value == null) return Variable(null); // <- aquí protegemos null
-  if (value is int) return Variable.withInt(value);
-  if (value is double) return Variable.withReal(value);
-  if (value is String) return Variable.withString(value);
-  throw UnsupportedError("Tipo no soportado en PK: $value");
-}).toList();
-
+  final value = row['id'];
 
           await db.customStatement(
-            "DELETE FROM $tablaNombre WHERE $whereClause",
-            variables 
+            "DELETE FROM $tablaNombre WHERE id = $value;", 
           );
           cargarTabla(tablaNombre);
         },

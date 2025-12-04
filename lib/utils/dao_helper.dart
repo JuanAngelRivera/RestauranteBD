@@ -157,4 +157,33 @@ class DaoHelper extends DatabaseAccessor<AppDatabase> with _$DaoHelperMixin {
   }
 }
 
+Future<List<String>> ingredientesPorProducto(int idProducto) async {
+  List<String> ingredientes = [];
+    final query = '''
+    SELECT 
+      ing.cantidad as cantidad, ins.nombre as nombre, ins.descripcion as descripcionI, m.descripcion as descripcionM
+    FROM Ingredientes ing
+    LEFT OUTER JOIN Insumo ins
+      ON ing.id_Insumo = ins.id
+    LEFT OUTER JOIN Medida m
+      ON ins.id_Medida = m.id
+    WHERE ing.id_Producto = ?;
+  ''';
+
+    final result = await db
+        .customSelect(
+          query,
+          variables: [Variable.withInt(idProducto)],
+          readsFrom: {ingredients, insumos, medidas},
+        )
+        .get();
+    print("Producto $idProducto");
+    if (result.isEmpty) return ["No hay ingredientes que mostrar"];
+    for (var row in result) {
+      ingredientes.add('${row.read<String>("nombre")} (${row.read<String>("descripcionI")}) - ${row.read<int>("cantidad")} ${row.read<String>("descripcionM")}');
+      print('${row.read<String>("nombre")} (${row.read<String>("descripcionI")}) - ${row.read<int>("cantidad")} ${row.read<String>("descripcionM")}');
+    }
+    return ingredientes;
+  }
+
 }

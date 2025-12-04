@@ -20,7 +20,7 @@ class orderView extends ConsumerStatefulWidget {
 }
 
 class _orderViewState extends ConsumerState<orderView> {
-  final _searchKey = GlobalKey<FormState>();
+  //final _searchKey = GlobalKey<FormState>();
   String local = '';
   late List<Map<String, dynamic>> categorias = [];
   late List<Map<String, dynamic>> productos = [];
@@ -28,7 +28,6 @@ class _orderViewState extends ConsumerState<orderView> {
   int idCategoriaActual = 1;
   String nombreCategoriaActual = '';
   bool productoEnOrden = false;
-  bool categoriaCargada = false;
   late CategoriasDao categoriaDao;
   late DaoHelper daoHelper;
   late AdminDao adminDao;
@@ -166,7 +165,6 @@ class _orderViewState extends ConsumerState<orderView> {
             Expanded(
               child: Row(
                 children: [
-                  //columna Categorias
                   Expanded(
                     flex: 1,
                     child: PanelWidget(
@@ -174,6 +172,7 @@ class _orderViewState extends ConsumerState<orderView> {
                       colorBase: Styles.fondoClaro,
                       child: Column(
                         children: [
+                          /*
                           Form(
                             key: _searchKey,
                             child: Row(
@@ -208,7 +207,7 @@ class _orderViewState extends ConsumerState<orderView> {
                                 ),
                               ],
                             ),
-                          ),
+                          ), */
                           SizedBox(height: 10),
                           Text("Categorias", style: Styles.titleText),
                           SizedBox(height: 10),
@@ -227,11 +226,8 @@ class _orderViewState extends ConsumerState<orderView> {
                                     categorias[i]["nombre"],
                                     style: Styles.titleText,
                                   ),
-                                  onTap: () => {
-                                    setState(() {
-                                      actualizarProductos(categorias[i]["id"]);
-                                      categoriaCargada = true;
-                                    }),
+                                  onTap: () async {
+                                    await actualizarProductos(categorias[i]["id"]);
                                   },
                                 ),
                               ),
@@ -255,6 +251,7 @@ class _orderViewState extends ConsumerState<orderView> {
                             child: ListView.builder(
                               itemCount: productos.length,
                               itemBuilder: (_, i) => ImageListTileWidget(
+                                key: ValueKey(productos[i]["id"]),
                                 title: productos[i]["nombre"],
                                 imagen: productos[i]["foto"],
                                 precio: productos[i]["precio"],
@@ -394,16 +391,26 @@ class _orderViewState extends ConsumerState<orderView> {
     );
   }
 
-  void nombreCategoria(int id) async {
+  Future<void> nombreCategoria(int id) async {
     final query = await categoriaDao.getById(id);
     nombreCategoriaActual = query?.nombre! ?? '';
   }
 
-  void actualizarProductos(int idCategoria) async {
-    nombreCategoria(idCategoria);
-    final query = await daoHelper.productosPorCategoria(idCategoria);
-    productos = query;
-  }
+  Future<void> actualizarProductos(int idCategoria) async {
+    print("LLAMADA A ACTUALIZARPRODUCTOS");
+  idCategoriaActual = idCategoria;
+
+  final queryCategoria = await categoriaDao.getById(idCategoria);
+  final nombre = queryCategoria?.nombre ?? '';
+
+  final queryProductos = await daoHelper.productosPorCategoria(idCategoria);
+
+  setState(() {
+    nombreCategoriaActual = nombre;
+    productos = queryProductos;
+  });
+}
+
 
   void busqueda() {}
 
