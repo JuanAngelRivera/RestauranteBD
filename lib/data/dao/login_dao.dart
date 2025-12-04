@@ -14,8 +14,8 @@ class LoginDao extends DatabaseAccessor<AppDatabase> with _$LoginDaoMixin {
   }
 
   Future<bool> crearAdministrador() async {
-    await (customStatement('''insert into Empleado (nombre) values
-        ('admin');'''));
+    await (customStatement('''insert into Empleado (nombre, id_Rol, id_Turno) values
+        ('admin', 1, 1);'''));
     await (customStatement(
       '''insert into Cuenta (id_Empleado, nombreUsuario, contraseña, tipo) values
         (1, 'ADMIN', 'ADMIN', 1);''',

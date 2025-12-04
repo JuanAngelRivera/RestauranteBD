@@ -59,7 +59,6 @@ part 'app_database.g.dart';
     InsumosDao,
     IngredientsDao,
     ContactosDao,
-
     // vistas
     LoginDao,
     AdminDao,
@@ -75,47 +74,68 @@ class AppDatabase extends _$AppDatabase {
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (Migrator m) async {
-      final schemaSql = await rootBundle.loadString('sources/sql/schema.sql');
-
-      for (final stmt in schemaSql.split(';')) {
-        final trimmed = stmt.trim();
-        if (trimmed.isNotEmpty) {
-          await customStatement(trimmed);
-        }
-      }
-
-      final seedSql = await rootBundle.loadString('sources/sql/seed.sql');
-
-      for (final stmt in seedSql.split(';')) {
-        final trimmed = stmt.trim();
-        if (trimmed.isNotEmpty) {
-          await customStatement(trimmed);
-        }
-      }
+      await _crearSchema();
+      await _insertarSeed();
 
       await customStatement('''
-          CREATE TRIGGER IF NOT EXISTS crear_cuenta_empleado
-          AFTER INSERT ON Empleado
-          BEGIN
-            INSERT INTO Cuenta (id_Empleado, nombreUsuario, contraseña, tipo)
-            VALUES (
-              NEW.id,
-              LOWER(REPLACE(NEW.nombre, ' ', '')),
-              LOWER(REPLACE(NEW.nombre, ' ', '')),
-              0
-            );
-          END;
-        ''');
+            CREATE TRIGGER IF NOT EXISTS crear_cuenta_empleado
+            AFTER INSERT ON Empleado
+            BEGIN
+              INSERT INTO Cuenta (id_Empleado, nombreUsuario, contraseña, tipo)
+              VALUES (
+                NEW.id,
+                LOWER(REPLACE(NEW.nombre, ' ', '')),
+                LOWER(REPLACE(NEW.nombre, ' ', '')),
+                0
+              );
+            END;
+          ''');
+
+      await customStatement('''
+  CREATE TRIGGER IF NOT EXISTS actualizar_nombre_cuenta
+  AFTER UPDATE ON Empleado
+  BEGIN
+    UPDATE Cuenta
+    SET nombreUsuario = LOWER(REPLACE(NEW.nombre, ' ', ''))
+    WHERE id_Empleado = NEW.id AND tipo = 0;
+
+    UPDATE Cuenta
+    SET nombreUsuario = 'A' || LOWER(REPLACE(NEW.nombre, ' ', ''))
+    WHERE id_Empleado = NEW.id AND tipo = 1;
+  END;
+''');
+
+      await customStatement('PRAGMA foreign_keys = ON;');
     },
   );
+
+  Future<void> _crearSchema() async {
+    final schemaSql = await rootBundle.loadString('sources/sql/schema.sql');
+    final statements = schemaSql
+        .split(';')
+        .map((s) => s.trim())
+        .where((s) => s.isNotEmpty);
+    for (final stmt in statements) {
+      await customStatement(stmt);
+    }
+  }
+
+  Future<void> _insertarSeed() async {
+    final seedSql = await rootBundle.loadString('sources/sql/seed.sql');
+    final statements = seedSql
+        .split(';')
+        .map((s) => s.trim())
+        .where((s) => s.isNotEmpty);
+    for (final stmt in statements) {
+      await customStatement(stmt);
+    }
+  }
 }
 
 LazyDatabase _openConnection() {
-  print("abriendo conexion");
   return LazyDatabase(() async {
     final dir = await getApplicationDocumentsDirectory();
     final file = File(p.join(dir.path, 'cherry.db'));
-    print("Ubicación de la base de datos: ${file.path}");
     return NativeDatabase(file);
   });
 }

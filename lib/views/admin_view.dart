@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:restaurante_base_de_datos/data/app_database.dart';
 import 'package:restaurante_base_de_datos/providers/dao_helper_provider.dart';
 import 'package:restaurante_base_de_datos/providers/dao_providers.dart';
-import 'package:restaurante_base_de_datos/utils/dao_helper.dart';
 import 'package:restaurante_base_de_datos/utils/styles.dart';
 import 'package:restaurante_base_de_datos/widgets/cell_builder_widgets.dart';
 import 'package:restaurante_base_de_datos/widgets/formulario_dependencia.dart';
@@ -185,15 +184,20 @@ class _adminViewState extends ConsumerState<adminView> {
         cellBuilder: (registro) =>
             cellBuilderHelper.obtenerCellBuilder(tablaNombre, registro),
         columnasPorPagina: nombresColumnas.length,
-        onEdit: (row) {
-          if (tablaNombre == "Contacto") {
-            mostrarFormulario(
-              tablaNombre,
-              id: {'fk': row["id"], 'pk': row["numero"]},
-            );
-          } else {
-            mostrarFormulario(tablaNombre, id: row['id']);
-          }
+        onEdit: tablaNombre == 'Cuenta'
+        ? null
+        : (row) {
+          switch(tablaNombre){
+            case 'Contacto':
+              mostrarFormulario(
+                tablaNombre,
+                id: {'fk': row["id"], 'pk': row["numero"]},
+              );
+              break;
+            default:
+              mostrarFormulario(tablaNombre, id: row['id']);
+              break;
+          }   
         },
         onDelete: (row) async {
           List<Map<String, dynamic>> pkColumns = [{"name": "id"}];
@@ -225,7 +229,10 @@ class _adminViewState extends ConsumerState<adminView> {
             if (val is String) return Variable.withString(val);
             return Variable.withString(val.toString());
           }).toList();
-          final filasAfectadas = await db.customUpdate(
+
+
+          try{
+            final filasAfectadas = await db.customUpdate(
             "DELETE FROM $tablaNombre WHERE $whereClauses;",
             variables: whereVars,
           );
@@ -249,6 +256,17 @@ class _adminViewState extends ConsumerState<adminView> {
                 ),
                 backgroundColor: Styles.contraste,
               ),
+            );
+          }
+          }
+          catch(e){
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  "No se puede eliminar el elemento de $tablaNombre por que está siendo referenciado en otra tabla",
+                  style: Styles.snackText,
+                ),
+                backgroundColor: Styles.contraste,)
             );
           }
 
@@ -366,7 +384,7 @@ class _adminViewState extends ConsumerState<adminView> {
     """,
       variables: [
         Variable.withInt(idEmpleado),
-        Variable.withString("$usuario"),
+        Variable.withString("A$usuario"),
         Variable.withString(password),
       ],
     );

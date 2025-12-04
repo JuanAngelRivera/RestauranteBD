@@ -7,21 +7,9 @@ import 'package:restaurante_base_de_datos/views/historial_view.dart';
 import 'package:restaurante_base_de_datos/views/login_view.dart';
 import 'package:restaurante_base_de_datos/views/order_view.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
   final database = AppDatabase();
-  /*
-  final result = await database
-      .customSelect(
-        "PRAGMA table_info('Empleado');", // usa el nombre real de la tabla en la DB
-      )
-      .get();
-
-  for (final row in result) {
-    print(
-      'Columna: ${row.read<String>('name')} - Tipo: ${row.read<String>('type')}',
-    );
-  } */
 
   runApp(
     ProviderScope(

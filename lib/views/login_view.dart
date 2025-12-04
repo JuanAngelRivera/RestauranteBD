@@ -27,6 +27,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
 
   void init() async {
     final loginDao = ref.read(loginDaoProvider);
+    
     if (!await loginDao.existenCuentas()) {
       loginDao.crearAdministrador();
     }
