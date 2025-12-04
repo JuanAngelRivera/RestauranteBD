@@ -1,0 +1,95 @@
+DEPENDENCIAS FUNCIONALES
+
+MetodoPago
+id → descripción
+
+CherryLocal
+id → dirección
+id → nombre
+id → teléfono
+
+Rol
+id → descripcion
+id → sueldo
+
+Turno
+id → horaInicio
+id → horaFin
+id → descripción
+
+Bonus
+id → valor
+id → descripción
+
+Empleado
+id → nombre
+id → teléfono
+id <--→ CURP 
+id <--→ RFC
+id → fechaIngreso
+id <--→ NSS
+id → foto 
+id → id_Rol
+id → id_Turno
+
+Nomina
+(id_Empleado, fechaPago) → salarioTotal
+
+Beneficios
+(id_Empleado, fechaPago_Nomina, id_Bonus)
+
+Cuenta
+(id_Empleado, nombreUsuario) → contraseña  
+(id_Empleado, nombreUsuario) → tipo  
+
+Orden
+id → id_CherryLocal  
+id → total
+id → fechaRealizada
+id → id_Empleado
+
+Pago
+id → descripción
+id → id_metodoPago
+id → id_orden
+id → id_cherryLocal
+
+Categoria
+id → nombre
+id → descripción
+
+Producto
+id → nombre 
+id → precio
+id → id_Categoria
+id → foto
+
+Contiene
+(id_Orden, id_CherryLocal, id_Producto) 
+
+Descuento
+id → descripción
+id → porcentaje
+id → id_Producto
+
+Medida
+id → descripcion
+
+Proveedor
+id → nombre
+id → dirección
+id → descripción
+
+Insumo
+id → nombre 
+id → costo
+id → descripción
+id → id_Medida
+id → enAlmacen
+
+Ingredientes
+(id_Insumo, id_Producto) → cantidad
+
+Contacto	
+(id_Proveedor, numero) → nombre,
+(id_Proveedor, numero) → telefono
