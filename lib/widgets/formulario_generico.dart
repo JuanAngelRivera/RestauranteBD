@@ -1,8 +1,10 @@
 import 'package:drift/drift.dart' hide Column;
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:restaurante_base_de_datos/data/app_database.dart';
+import 'package:restaurante_base_de_datos/providers/dao_helper_provider.dart';
 import 'package:restaurante_base_de_datos/providers/dao_providers.dart';
 import 'package:restaurante_base_de_datos/utils/styles.dart';
 
@@ -72,20 +74,53 @@ class FormularioGenericoState extends ConsumerState<FormularioGenerico> {
   }
 
   Future<void> cargarDatos() async {
-    final query = "SELECT * FROM ${widget.tabla} WHERE $pkName = ?";
+  if (widget.id == null) return;
 
-    final variable = _variableFromId(widget.id, pkType);
+  String query;
+  List<Variable> variables = [];
 
-    final row = await db
-        .customSelect(query, variables: [variable])
-        .getSingleOrNull();
+  if (widget.id is Map<String, dynamic>) {
+    final idMap = widget.id as Map<String, dynamic>;
 
-    if (row != null) {
-      row.data.forEach((key, value) {
-        controllers[key]?.text = value?.toString() ?? "";
-      });
+    if (idMap["fk"] == null || idMap["pk"] == null) {
+      mostrarSnackError("Error interno: PK compuesta no detectada.");
+      return;
     }
+
+    String pkPrim = '';
+    String pkSec = '';
+    int pk = 1;
+    int discriminante = 1;
+
+    if (widget.tabla == "Contacto"){
+      final daoHelper = ref.read(daoHelperProvider);
+      final idProveedor = await daoHelper.obtenerProveedorPorNombre(idMap["fk"]);
+     pkPrim = "id_Proveedor";
+     pkSec = "numero";
+     pk = idProveedor;
+     discriminante = idMap["pk"];
+    }
+
+    query = "SELECT * FROM ${widget.tabla} WHERE  $pkPrim = ? AND $pkSec = ?";
+
+    variables = [
+      variableFromDynamic(pk),
+      variableFromDynamic(discriminante),
+    ];
+  } else {
+    query = "SELECT * FROM ${widget.tabla} WHERE $pkName = ?";
+    variables = [_variableFromId(widget.id, pkType)];
   }
+
+  final row = await db.customSelect(query, variables: variables).getSingleOrNull();
+
+  if (row != null) {
+    row.data.forEach((key, value) {
+      controllers[key]?.text = value?.toString() ?? "";
+    });
+  }
+}
+
 
   Variable _variableFromId(dynamic idValue, String tipo) {
     if (idValue == null) return const Variable(null);
@@ -109,70 +144,82 @@ class FormularioGenericoState extends ConsumerState<FormularioGenerico> {
     return fk.isEmpty ? null : fk;
   }
 
-  Future<Widget> buildDropdownFK(String columna) async {
-    final fk = getFK(columna);
+Future<Widget> buildDropdownFK(String columna) async {
+  final fk = getFK(columna);
 
-    if (fk == null) {
-      return Text(
-        "Error FK en $columna",
-        style: const TextStyle(color: Colors.red),
-      );
-    }
-
-    final tablaFk = fk["table"].toString();
-    final campoId = fk["to"].toString();
-
-    final metaColumns = await db
-        .customSelect("PRAGMA table_info($tablaFk)")
-        .get();
-    final columnasFk = metaColumns.map((c) => c.data).toList();
-
-    String? columnaDescripcion;
-    for (var c in columnasFk) {
-      final type = (c["type"] ?? "").toString().toUpperCase();
-      if (type.contains("CHAR") || type == "TEXT" || type == "VARCHAR") {
-        if (c["name"] != campoId &&
-            (c["name"] == "nombre" || c["name"] == "descripcion")) {
-          if (columnaDescripcion != null) break;
-          columnaDescripcion = c["name"];
-          break;
-        }
-      }
-    }
-    columnaDescripcion ??= campoId;
-
-    final opciones = await db
-        .customSelect(
-          "SELECT $campoId AS id, $columnaDescripcion AS nombre FROM $tablaFk",
-        )
-        .get();
-
-    final listaOpciones = opciones
-        .map((r) => r.data)
-        .toList()
-        .cast<Map<String, dynamic>>();
-
-    final valorActual = int.tryParse(controllers[columna]!.text);
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: DropdownButtonFormField<int>(
-        decoration: Styles.createInputDecoration(columna, Colors.grey.shade300),
-        initialValue: valorActual,
-        items: listaOpciones.map((row) {
-          return DropdownMenuItem<int>(
-            value: (row["id"] is int)
-                ? row["id"] as int
-                : int.tryParse(row["id"].toString()),
-            child: Text(row["nombre"]?.toString() ?? ""),
-          );
-        }).toList(),
-        onChanged: (value) {
-          controllers[columna]!.text = value?.toString() ?? "";
-        },
-      ),
+  if (fk == null) {
+    return Text(
+      "Error FK en $columna",
+      style: const TextStyle(color: Colors.red),
     );
   }
+
+  final tablaFk = fk["table"].toString();
+  final campoId = fk["to"].toString();
+
+  final metaColumns = await db.customSelect("PRAGMA table_info($tablaFk)").get();
+  final columnasFk = metaColumns.map((c) => c.data).toList();
+
+  // Detectar la mejor columna para mostrar texto
+  String? columnaDescripcion;
+  for (var c in columnasFk) {
+    final type = (c["type"] ?? "").toString().toUpperCase();
+    if ((type.contains("CHAR") || type.contains("TEXT") || type.contains("VARCHAR"))
+        && c["name"] != campoId) {
+      if (c["name"] == "nombre" || c["name"] == "descripcion") {
+        columnaDescripcion = c["name"];
+        break;
+      }
+    }
+  }
+
+  columnaDescripcion ??= campoId;
+
+  final opciones = await db.customSelect(
+    "SELECT $campoId AS id, $columnaDescripcion AS nombre FROM $tablaFk",
+  ).get();
+
+  final listaOpciones = opciones
+      .map((r) => r.data)
+      .toList()
+      .cast<Map<String, dynamic>>();
+
+  final valorActual = int.tryParse(controllers[columna]!.text);
+
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 10),
+    child: DropdownButtonFormField2<int>(
+      isExpanded: true,
+      decoration: Styles.createInputDecoration(columna, Colors.grey.shade300),
+
+      value: valorActual,
+
+      dropdownStyleData: const DropdownStyleData(
+        maxHeight: 250,
+      ),
+
+      menuItemStyleData: const MenuItemStyleData(
+        height: 48,
+      ),
+
+      items: listaOpciones.map((row) {
+        final id = (row["id"] is int)
+            ? row["id"] as int
+            : int.tryParse(row["id"].toString());
+
+        return DropdownMenuItem<int>(
+          value: id,
+          child: Text(row["nombre"]?.toString() ?? ""),
+        );
+      }).toList(),
+
+      onChanged: (value) {
+        controllers[columna]!.text = value?.toString() ?? "";
+      },
+    ),
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {

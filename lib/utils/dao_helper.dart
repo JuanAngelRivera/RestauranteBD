@@ -91,6 +91,12 @@ class DaoHelper extends DatabaseAccessor<AppDatabase> with _$DaoHelperMixin {
     );
   }
 
+  Future<int> obtenerProveedorPorNombre(String nombre) async {
+    final query = (db.select(proveedors)..where((proveedor) => proveedor.nombre.equals(nombre))).getSingle();
+    final result = await query;
+    return result.id;
+  }
+
   Future<int> insertarContiene(
     int cherryLocal,
     int idOrden,

@@ -3067,9 +3067,9 @@ class $OrdensTable extends Ordens with TableInfo<$OrdensTable, Orden> {
   late final GeneratedColumn<int> idCherryLocal = GeneratedColumn<int>(
     'id_cherry_local',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.int,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES CherryLocal (id)',
     ),
@@ -3101,9 +3101,9 @@ class $OrdensTable extends Ordens with TableInfo<$OrdensTable, Orden> {
   late final GeneratedColumn<int> idEmpleado = GeneratedColumn<int>(
     'id_empleado',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.int,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES Empleado (id)',
     ),
@@ -3139,6 +3139,8 @@ class $OrdensTable extends Ordens with TableInfo<$OrdensTable, Orden> {
           _idCherryLocalMeta,
         ),
       );
+    } else if (isInserting) {
+      context.missing(_idCherryLocalMeta);
     }
     if (data.containsKey('total')) {
       context.handle(
@@ -3160,6 +3162,8 @@ class $OrdensTable extends Ordens with TableInfo<$OrdensTable, Orden> {
         _idEmpleadoMeta,
         idEmpleado.isAcceptableOrUnknown(data['id_empleado']!, _idEmpleadoMeta),
       );
+    } else if (isInserting) {
+      context.missing(_idEmpleadoMeta);
     }
     return context;
   }
@@ -3177,7 +3181,7 @@ class $OrdensTable extends Ordens with TableInfo<$OrdensTable, Orden> {
       idCherryLocal: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id_cherry_local'],
-      ),
+      )!,
       total: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}total'],
@@ -3189,7 +3193,7 @@ class $OrdensTable extends Ordens with TableInfo<$OrdensTable, Orden> {
       idEmpleado: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id_empleado'],
-      ),
+      )!,
     );
   }
 
@@ -3201,51 +3205,43 @@ class $OrdensTable extends Ordens with TableInfo<$OrdensTable, Orden> {
 
 class Orden extends DataClass implements Insertable<Orden> {
   final int id;
-  final int? idCherryLocal;
+  final int idCherryLocal;
   final double? total;
   final String? fechaRealizada;
-  final int? idEmpleado;
+  final int idEmpleado;
   const Orden({
     required this.id,
-    this.idCherryLocal,
+    required this.idCherryLocal,
     this.total,
     this.fechaRealizada,
-    this.idEmpleado,
+    required this.idEmpleado,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
-    if (!nullToAbsent || idCherryLocal != null) {
-      map['id_cherry_local'] = Variable<int>(idCherryLocal);
-    }
+    map['id_cherry_local'] = Variable<int>(idCherryLocal);
     if (!nullToAbsent || total != null) {
       map['total'] = Variable<double>(total);
     }
     if (!nullToAbsent || fechaRealizada != null) {
       map['fecha_realizada'] = Variable<String>(fechaRealizada);
     }
-    if (!nullToAbsent || idEmpleado != null) {
-      map['id_empleado'] = Variable<int>(idEmpleado);
-    }
+    map['id_empleado'] = Variable<int>(idEmpleado);
     return map;
   }
 
   OrdensCompanion toCompanion(bool nullToAbsent) {
     return OrdensCompanion(
       id: Value(id),
-      idCherryLocal: idCherryLocal == null && nullToAbsent
-          ? const Value.absent()
-          : Value(idCherryLocal),
+      idCherryLocal: Value(idCherryLocal),
       total: total == null && nullToAbsent
           ? const Value.absent()
           : Value(total),
       fechaRealizada: fechaRealizada == null && nullToAbsent
           ? const Value.absent()
           : Value(fechaRealizada),
-      idEmpleado: idEmpleado == null && nullToAbsent
-          ? const Value.absent()
-          : Value(idEmpleado),
+      idEmpleado: Value(idEmpleado),
     );
   }
 
@@ -3256,10 +3252,10 @@ class Orden extends DataClass implements Insertable<Orden> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Orden(
       id: serializer.fromJson<int>(json['id']),
-      idCherryLocal: serializer.fromJson<int?>(json['idCherryLocal']),
+      idCherryLocal: serializer.fromJson<int>(json['idCherryLocal']),
       total: serializer.fromJson<double?>(json['total']),
       fechaRealizada: serializer.fromJson<String?>(json['fechaRealizada']),
-      idEmpleado: serializer.fromJson<int?>(json['idEmpleado']),
+      idEmpleado: serializer.fromJson<int>(json['idEmpleado']),
     );
   }
   @override
@@ -3267,29 +3263,27 @@ class Orden extends DataClass implements Insertable<Orden> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'idCherryLocal': serializer.toJson<int?>(idCherryLocal),
+      'idCherryLocal': serializer.toJson<int>(idCherryLocal),
       'total': serializer.toJson<double?>(total),
       'fechaRealizada': serializer.toJson<String?>(fechaRealizada),
-      'idEmpleado': serializer.toJson<int?>(idEmpleado),
+      'idEmpleado': serializer.toJson<int>(idEmpleado),
     };
   }
 
   Orden copyWith({
     int? id,
-    Value<int?> idCherryLocal = const Value.absent(),
+    int? idCherryLocal,
     Value<double?> total = const Value.absent(),
     Value<String?> fechaRealizada = const Value.absent(),
-    Value<int?> idEmpleado = const Value.absent(),
+    int? idEmpleado,
   }) => Orden(
     id: id ?? this.id,
-    idCherryLocal: idCherryLocal.present
-        ? idCherryLocal.value
-        : this.idCherryLocal,
+    idCherryLocal: idCherryLocal ?? this.idCherryLocal,
     total: total.present ? total.value : this.total,
     fechaRealizada: fechaRealizada.present
         ? fechaRealizada.value
         : this.fechaRealizada,
-    idEmpleado: idEmpleado.present ? idEmpleado.value : this.idEmpleado,
+    idEmpleado: idEmpleado ?? this.idEmpleado,
   );
   Orden copyWithCompanion(OrdensCompanion data) {
     return Orden(
@@ -3335,10 +3329,10 @@ class Orden extends DataClass implements Insertable<Orden> {
 
 class OrdensCompanion extends UpdateCompanion<Orden> {
   final Value<int> id;
-  final Value<int?> idCherryLocal;
+  final Value<int> idCherryLocal;
   final Value<double?> total;
   final Value<String?> fechaRealizada;
-  final Value<int?> idEmpleado;
+  final Value<int> idEmpleado;
   const OrdensCompanion({
     this.id = const Value.absent(),
     this.idCherryLocal = const Value.absent(),
@@ -3348,11 +3342,12 @@ class OrdensCompanion extends UpdateCompanion<Orden> {
   });
   OrdensCompanion.insert({
     this.id = const Value.absent(),
-    this.idCherryLocal = const Value.absent(),
+    required int idCherryLocal,
     this.total = const Value.absent(),
     this.fechaRealizada = const Value.absent(),
-    this.idEmpleado = const Value.absent(),
-  });
+    required int idEmpleado,
+  }) : idCherryLocal = Value(idCherryLocal),
+       idEmpleado = Value(idEmpleado);
   static Insertable<Orden> custom({
     Expression<int>? id,
     Expression<int>? idCherryLocal,
@@ -3371,10 +3366,10 @@ class OrdensCompanion extends UpdateCompanion<Orden> {
 
   OrdensCompanion copyWith({
     Value<int>? id,
-    Value<int?>? idCherryLocal,
+    Value<int>? idCherryLocal,
     Value<double?>? total,
     Value<String?>? fechaRealizada,
-    Value<int?>? idEmpleado,
+    Value<int>? idEmpleado,
   }) {
     return OrdensCompanion(
       id: id ?? this.id,
@@ -3455,9 +3450,9 @@ class $PagosTable extends Pagos with TableInfo<$PagosTable, Pago> {
   late final GeneratedColumn<int> idMetodoPago = GeneratedColumn<int>(
     'id_metodo_pago',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.int,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES MetodoPago (id)',
     ),
@@ -3469,9 +3464,9 @@ class $PagosTable extends Pagos with TableInfo<$PagosTable, Pago> {
   late final GeneratedColumn<int> idOrden = GeneratedColumn<int>(
     'id_orden',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.int,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES Orden (id)',
     ),
@@ -3483,9 +3478,9 @@ class $PagosTable extends Pagos with TableInfo<$PagosTable, Pago> {
   late final GeneratedColumn<int> idCherryLocal = GeneratedColumn<int>(
     'id_cherry_local',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.int,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES CherryLocal (id)',
     ),
@@ -3530,12 +3525,16 @@ class $PagosTable extends Pagos with TableInfo<$PagosTable, Pago> {
           _idMetodoPagoMeta,
         ),
       );
+    } else if (isInserting) {
+      context.missing(_idMetodoPagoMeta);
     }
     if (data.containsKey('id_orden')) {
       context.handle(
         _idOrdenMeta,
         idOrden.isAcceptableOrUnknown(data['id_orden']!, _idOrdenMeta),
       );
+    } else if (isInserting) {
+      context.missing(_idOrdenMeta);
     }
     if (data.containsKey('id_cherry_local')) {
       context.handle(
@@ -3545,6 +3544,8 @@ class $PagosTable extends Pagos with TableInfo<$PagosTable, Pago> {
           _idCherryLocalMeta,
         ),
       );
+    } else if (isInserting) {
+      context.missing(_idCherryLocalMeta);
     }
     return context;
   }
@@ -3566,15 +3567,15 @@ class $PagosTable extends Pagos with TableInfo<$PagosTable, Pago> {
       idMetodoPago: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id_metodo_pago'],
-      ),
+      )!,
       idOrden: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id_orden'],
-      ),
+      )!,
       idCherryLocal: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id_cherry_local'],
-      ),
+      )!,
     );
   }
 
@@ -3587,15 +3588,15 @@ class $PagosTable extends Pagos with TableInfo<$PagosTable, Pago> {
 class Pago extends DataClass implements Insertable<Pago> {
   final int id;
   final String? descripcion;
-  final int? idMetodoPago;
-  final int? idOrden;
-  final int? idCherryLocal;
+  final int idMetodoPago;
+  final int idOrden;
+  final int idCherryLocal;
   const Pago({
     required this.id,
     this.descripcion,
-    this.idMetodoPago,
-    this.idOrden,
-    this.idCherryLocal,
+    required this.idMetodoPago,
+    required this.idOrden,
+    required this.idCherryLocal,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -3604,15 +3605,9 @@ class Pago extends DataClass implements Insertable<Pago> {
     if (!nullToAbsent || descripcion != null) {
       map['descripcion'] = Variable<String>(descripcion);
     }
-    if (!nullToAbsent || idMetodoPago != null) {
-      map['id_metodo_pago'] = Variable<int>(idMetodoPago);
-    }
-    if (!nullToAbsent || idOrden != null) {
-      map['id_orden'] = Variable<int>(idOrden);
-    }
-    if (!nullToAbsent || idCherryLocal != null) {
-      map['id_cherry_local'] = Variable<int>(idCherryLocal);
-    }
+    map['id_metodo_pago'] = Variable<int>(idMetodoPago);
+    map['id_orden'] = Variable<int>(idOrden);
+    map['id_cherry_local'] = Variable<int>(idCherryLocal);
     return map;
   }
 
@@ -3622,15 +3617,9 @@ class Pago extends DataClass implements Insertable<Pago> {
       descripcion: descripcion == null && nullToAbsent
           ? const Value.absent()
           : Value(descripcion),
-      idMetodoPago: idMetodoPago == null && nullToAbsent
-          ? const Value.absent()
-          : Value(idMetodoPago),
-      idOrden: idOrden == null && nullToAbsent
-          ? const Value.absent()
-          : Value(idOrden),
-      idCherryLocal: idCherryLocal == null && nullToAbsent
-          ? const Value.absent()
-          : Value(idCherryLocal),
+      idMetodoPago: Value(idMetodoPago),
+      idOrden: Value(idOrden),
+      idCherryLocal: Value(idCherryLocal),
     );
   }
 
@@ -3642,9 +3631,9 @@ class Pago extends DataClass implements Insertable<Pago> {
     return Pago(
       id: serializer.fromJson<int>(json['id']),
       descripcion: serializer.fromJson<String?>(json['descripcion']),
-      idMetodoPago: serializer.fromJson<int?>(json['idMetodoPago']),
-      idOrden: serializer.fromJson<int?>(json['idOrden']),
-      idCherryLocal: serializer.fromJson<int?>(json['idCherryLocal']),
+      idMetodoPago: serializer.fromJson<int>(json['idMetodoPago']),
+      idOrden: serializer.fromJson<int>(json['idOrden']),
+      idCherryLocal: serializer.fromJson<int>(json['idCherryLocal']),
     );
   }
   @override
@@ -3653,26 +3642,24 @@ class Pago extends DataClass implements Insertable<Pago> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'descripcion': serializer.toJson<String?>(descripcion),
-      'idMetodoPago': serializer.toJson<int?>(idMetodoPago),
-      'idOrden': serializer.toJson<int?>(idOrden),
-      'idCherryLocal': serializer.toJson<int?>(idCherryLocal),
+      'idMetodoPago': serializer.toJson<int>(idMetodoPago),
+      'idOrden': serializer.toJson<int>(idOrden),
+      'idCherryLocal': serializer.toJson<int>(idCherryLocal),
     };
   }
 
   Pago copyWith({
     int? id,
     Value<String?> descripcion = const Value.absent(),
-    Value<int?> idMetodoPago = const Value.absent(),
-    Value<int?> idOrden = const Value.absent(),
-    Value<int?> idCherryLocal = const Value.absent(),
+    int? idMetodoPago,
+    int? idOrden,
+    int? idCherryLocal,
   }) => Pago(
     id: id ?? this.id,
     descripcion: descripcion.present ? descripcion.value : this.descripcion,
-    idMetodoPago: idMetodoPago.present ? idMetodoPago.value : this.idMetodoPago,
-    idOrden: idOrden.present ? idOrden.value : this.idOrden,
-    idCherryLocal: idCherryLocal.present
-        ? idCherryLocal.value
-        : this.idCherryLocal,
+    idMetodoPago: idMetodoPago ?? this.idMetodoPago,
+    idOrden: idOrden ?? this.idOrden,
+    idCherryLocal: idCherryLocal ?? this.idCherryLocal,
   );
   Pago copyWithCompanion(PagosCompanion data) {
     return Pago(
@@ -3719,9 +3706,9 @@ class Pago extends DataClass implements Insertable<Pago> {
 class PagosCompanion extends UpdateCompanion<Pago> {
   final Value<int> id;
   final Value<String?> descripcion;
-  final Value<int?> idMetodoPago;
-  final Value<int?> idOrden;
-  final Value<int?> idCherryLocal;
+  final Value<int> idMetodoPago;
+  final Value<int> idOrden;
+  final Value<int> idCherryLocal;
   const PagosCompanion({
     this.id = const Value.absent(),
     this.descripcion = const Value.absent(),
@@ -3732,10 +3719,12 @@ class PagosCompanion extends UpdateCompanion<Pago> {
   PagosCompanion.insert({
     this.id = const Value.absent(),
     this.descripcion = const Value.absent(),
-    this.idMetodoPago = const Value.absent(),
-    this.idOrden = const Value.absent(),
-    this.idCherryLocal = const Value.absent(),
-  });
+    required int idMetodoPago,
+    required int idOrden,
+    required int idCherryLocal,
+  }) : idMetodoPago = Value(idMetodoPago),
+       idOrden = Value(idOrden),
+       idCherryLocal = Value(idCherryLocal);
   static Insertable<Pago> custom({
     Expression<int>? id,
     Expression<String>? descripcion,
@@ -3755,9 +3744,9 @@ class PagosCompanion extends UpdateCompanion<Pago> {
   PagosCompanion copyWith({
     Value<int>? id,
     Value<String?>? descripcion,
-    Value<int?>? idMetodoPago,
-    Value<int?>? idOrden,
-    Value<int?>? idCherryLocal,
+    Value<int>? idMetodoPago,
+    Value<int>? idOrden,
+    Value<int>? idCherryLocal,
   }) {
     return PagosCompanion(
       id: id ?? this.id,
@@ -4102,9 +4091,9 @@ class $ProductosTable extends Productos
   late final GeneratedColumn<int> idCategoria = GeneratedColumn<int>(
     'id_categoria',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.int,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES Categoria (id)',
     ),
@@ -4155,6 +4144,8 @@ class $ProductosTable extends Productos
           _idCategoriaMeta,
         ),
       );
+    } else if (isInserting) {
+      context.missing(_idCategoriaMeta);
     }
     if (data.containsKey('foto')) {
       context.handle(
@@ -4186,7 +4177,7 @@ class $ProductosTable extends Productos
       idCategoria: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id_categoria'],
-      ),
+      )!,
       foto: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}foto'],
@@ -4204,13 +4195,13 @@ class Producto extends DataClass implements Insertable<Producto> {
   final int id;
   final String? nombre;
   final double? precio;
-  final int? idCategoria;
+  final int idCategoria;
   final String? foto;
   const Producto({
     required this.id,
     this.nombre,
     this.precio,
-    this.idCategoria,
+    required this.idCategoria,
     this.foto,
   });
   @override
@@ -4223,9 +4214,7 @@ class Producto extends DataClass implements Insertable<Producto> {
     if (!nullToAbsent || precio != null) {
       map['precio'] = Variable<double>(precio);
     }
-    if (!nullToAbsent || idCategoria != null) {
-      map['id_categoria'] = Variable<int>(idCategoria);
-    }
+    map['id_categoria'] = Variable<int>(idCategoria);
     if (!nullToAbsent || foto != null) {
       map['foto'] = Variable<String>(foto);
     }
@@ -4241,9 +4230,7 @@ class Producto extends DataClass implements Insertable<Producto> {
       precio: precio == null && nullToAbsent
           ? const Value.absent()
           : Value(precio),
-      idCategoria: idCategoria == null && nullToAbsent
-          ? const Value.absent()
-          : Value(idCategoria),
+      idCategoria: Value(idCategoria),
       foto: foto == null && nullToAbsent ? const Value.absent() : Value(foto),
     );
   }
@@ -4257,7 +4244,7 @@ class Producto extends DataClass implements Insertable<Producto> {
       id: serializer.fromJson<int>(json['id']),
       nombre: serializer.fromJson<String?>(json['nombre']),
       precio: serializer.fromJson<double?>(json['precio']),
-      idCategoria: serializer.fromJson<int?>(json['idCategoria']),
+      idCategoria: serializer.fromJson<int>(json['idCategoria']),
       foto: serializer.fromJson<String?>(json['foto']),
     );
   }
@@ -4268,7 +4255,7 @@ class Producto extends DataClass implements Insertable<Producto> {
       'id': serializer.toJson<int>(id),
       'nombre': serializer.toJson<String?>(nombre),
       'precio': serializer.toJson<double?>(precio),
-      'idCategoria': serializer.toJson<int?>(idCategoria),
+      'idCategoria': serializer.toJson<int>(idCategoria),
       'foto': serializer.toJson<String?>(foto),
     };
   }
@@ -4277,13 +4264,13 @@ class Producto extends DataClass implements Insertable<Producto> {
     int? id,
     Value<String?> nombre = const Value.absent(),
     Value<double?> precio = const Value.absent(),
-    Value<int?> idCategoria = const Value.absent(),
+    int? idCategoria,
     Value<String?> foto = const Value.absent(),
   }) => Producto(
     id: id ?? this.id,
     nombre: nombre.present ? nombre.value : this.nombre,
     precio: precio.present ? precio.value : this.precio,
-    idCategoria: idCategoria.present ? idCategoria.value : this.idCategoria,
+    idCategoria: idCategoria ?? this.idCategoria,
     foto: foto.present ? foto.value : this.foto,
   );
   Producto copyWithCompanion(ProductosCompanion data) {
@@ -4327,7 +4314,7 @@ class ProductosCompanion extends UpdateCompanion<Producto> {
   final Value<int> id;
   final Value<String?> nombre;
   final Value<double?> precio;
-  final Value<int?> idCategoria;
+  final Value<int> idCategoria;
   final Value<String?> foto;
   const ProductosCompanion({
     this.id = const Value.absent(),
@@ -4340,9 +4327,9 @@ class ProductosCompanion extends UpdateCompanion<Producto> {
     this.id = const Value.absent(),
     this.nombre = const Value.absent(),
     this.precio = const Value.absent(),
-    this.idCategoria = const Value.absent(),
+    required int idCategoria,
     this.foto = const Value.absent(),
-  });
+  }) : idCategoria = Value(idCategoria);
   static Insertable<Producto> custom({
     Expression<int>? id,
     Expression<String>? nombre,
@@ -4363,7 +4350,7 @@ class ProductosCompanion extends UpdateCompanion<Producto> {
     Value<int>? id,
     Value<String?>? nombre,
     Value<double?>? precio,
-    Value<int?>? idCategoria,
+    Value<int>? idCategoria,
     Value<String?>? foto,
   }) {
     return ProductosCompanion(
@@ -4739,9 +4726,9 @@ class $DescuentosTable extends Descuentos
   late final GeneratedColumn<int> idProducto = GeneratedColumn<int>(
     'id_producto',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.int,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES Producto (id)',
     ),
@@ -4788,6 +4775,8 @@ class $DescuentosTable extends Descuentos
         _idProductoMeta,
         idProducto.isAcceptableOrUnknown(data['id_producto']!, _idProductoMeta),
       );
+    } else if (isInserting) {
+      context.missing(_idProductoMeta);
     }
     return context;
   }
@@ -4813,7 +4802,7 @@ class $DescuentosTable extends Descuentos
       idProducto: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id_producto'],
-      ),
+      )!,
     );
   }
 
@@ -4827,12 +4816,12 @@ class Descuento extends DataClass implements Insertable<Descuento> {
   final int id;
   final String? descripcion;
   final int? porcentaje;
-  final int? idProducto;
+  final int idProducto;
   const Descuento({
     required this.id,
     this.descripcion,
     this.porcentaje,
-    this.idProducto,
+    required this.idProducto,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -4844,9 +4833,7 @@ class Descuento extends DataClass implements Insertable<Descuento> {
     if (!nullToAbsent || porcentaje != null) {
       map['porcentaje'] = Variable<int>(porcentaje);
     }
-    if (!nullToAbsent || idProducto != null) {
-      map['id_producto'] = Variable<int>(idProducto);
-    }
+    map['id_producto'] = Variable<int>(idProducto);
     return map;
   }
 
@@ -4859,9 +4846,7 @@ class Descuento extends DataClass implements Insertable<Descuento> {
       porcentaje: porcentaje == null && nullToAbsent
           ? const Value.absent()
           : Value(porcentaje),
-      idProducto: idProducto == null && nullToAbsent
-          ? const Value.absent()
-          : Value(idProducto),
+      idProducto: Value(idProducto),
     );
   }
 
@@ -4874,7 +4859,7 @@ class Descuento extends DataClass implements Insertable<Descuento> {
       id: serializer.fromJson<int>(json['id']),
       descripcion: serializer.fromJson<String?>(json['descripcion']),
       porcentaje: serializer.fromJson<int?>(json['porcentaje']),
-      idProducto: serializer.fromJson<int?>(json['idProducto']),
+      idProducto: serializer.fromJson<int>(json['idProducto']),
     );
   }
   @override
@@ -4884,7 +4869,7 @@ class Descuento extends DataClass implements Insertable<Descuento> {
       'id': serializer.toJson<int>(id),
       'descripcion': serializer.toJson<String?>(descripcion),
       'porcentaje': serializer.toJson<int?>(porcentaje),
-      'idProducto': serializer.toJson<int?>(idProducto),
+      'idProducto': serializer.toJson<int>(idProducto),
     };
   }
 
@@ -4892,12 +4877,12 @@ class Descuento extends DataClass implements Insertable<Descuento> {
     int? id,
     Value<String?> descripcion = const Value.absent(),
     Value<int?> porcentaje = const Value.absent(),
-    Value<int?> idProducto = const Value.absent(),
+    int? idProducto,
   }) => Descuento(
     id: id ?? this.id,
     descripcion: descripcion.present ? descripcion.value : this.descripcion,
     porcentaje: porcentaje.present ? porcentaje.value : this.porcentaje,
-    idProducto: idProducto.present ? idProducto.value : this.idProducto,
+    idProducto: idProducto ?? this.idProducto,
   );
   Descuento copyWithCompanion(DescuentosCompanion data) {
     return Descuento(
@@ -4941,7 +4926,7 @@ class DescuentosCompanion extends UpdateCompanion<Descuento> {
   final Value<int> id;
   final Value<String?> descripcion;
   final Value<int?> porcentaje;
-  final Value<int?> idProducto;
+  final Value<int> idProducto;
   const DescuentosCompanion({
     this.id = const Value.absent(),
     this.descripcion = const Value.absent(),
@@ -4952,8 +4937,8 @@ class DescuentosCompanion extends UpdateCompanion<Descuento> {
     this.id = const Value.absent(),
     this.descripcion = const Value.absent(),
     this.porcentaje = const Value.absent(),
-    this.idProducto = const Value.absent(),
-  });
+    required int idProducto,
+  }) : idProducto = Value(idProducto);
   static Insertable<Descuento> custom({
     Expression<int>? id,
     Expression<String>? descripcion,
@@ -4972,7 +4957,7 @@ class DescuentosCompanion extends UpdateCompanion<Descuento> {
     Value<int>? id,
     Value<String?>? descripcion,
     Value<int?>? porcentaje,
-    Value<int?>? idProducto,
+    Value<int>? idProducto,
   }) {
     return DescuentosCompanion(
       id: id ?? this.id,
@@ -5581,9 +5566,9 @@ class $InsumosTable extends Insumos with TableInfo<$InsumosTable, Insumo> {
   late final GeneratedColumn<int> idMedida = GeneratedColumn<int>(
     'id_medida',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.int,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES Medida (id)',
     ),
@@ -5649,6 +5634,8 @@ class $InsumosTable extends Insumos with TableInfo<$InsumosTable, Insumo> {
         _idMedidaMeta,
         idMedida.isAcceptableOrUnknown(data['id_medida']!, _idMedidaMeta),
       );
+    } else if (isInserting) {
+      context.missing(_idMedidaMeta);
     }
     if (data.containsKey('enAlmacen')) {
       context.handle(
@@ -5684,7 +5671,7 @@ class $InsumosTable extends Insumos with TableInfo<$InsumosTable, Insumo> {
       idMedida: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id_medida'],
-      ),
+      )!,
       enAlmacen: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}enAlmacen'],
@@ -5703,14 +5690,14 @@ class Insumo extends DataClass implements Insertable<Insumo> {
   final String? nombre;
   final double? costo;
   final String? descripcion;
-  final int? idMedida;
+  final int idMedida;
   final int? enAlmacen;
   const Insumo({
     required this.id,
     this.nombre,
     this.costo,
     this.descripcion,
-    this.idMedida,
+    required this.idMedida,
     this.enAlmacen,
   });
   @override
@@ -5726,9 +5713,7 @@ class Insumo extends DataClass implements Insertable<Insumo> {
     if (!nullToAbsent || descripcion != null) {
       map['descripcion'] = Variable<String>(descripcion);
     }
-    if (!nullToAbsent || idMedida != null) {
-      map['id_medida'] = Variable<int>(idMedida);
-    }
+    map['id_medida'] = Variable<int>(idMedida);
     if (!nullToAbsent || enAlmacen != null) {
       map['enAlmacen'] = Variable<int>(enAlmacen);
     }
@@ -5747,9 +5732,7 @@ class Insumo extends DataClass implements Insertable<Insumo> {
       descripcion: descripcion == null && nullToAbsent
           ? const Value.absent()
           : Value(descripcion),
-      idMedida: idMedida == null && nullToAbsent
-          ? const Value.absent()
-          : Value(idMedida),
+      idMedida: Value(idMedida),
       enAlmacen: enAlmacen == null && nullToAbsent
           ? const Value.absent()
           : Value(enAlmacen),
@@ -5766,7 +5749,7 @@ class Insumo extends DataClass implements Insertable<Insumo> {
       nombre: serializer.fromJson<String?>(json['nombre']),
       costo: serializer.fromJson<double?>(json['costo']),
       descripcion: serializer.fromJson<String?>(json['descripcion']),
-      idMedida: serializer.fromJson<int?>(json['idMedida']),
+      idMedida: serializer.fromJson<int>(json['idMedida']),
       enAlmacen: serializer.fromJson<int?>(json['enAlmacen']),
     );
   }
@@ -5778,7 +5761,7 @@ class Insumo extends DataClass implements Insertable<Insumo> {
       'nombre': serializer.toJson<String?>(nombre),
       'costo': serializer.toJson<double?>(costo),
       'descripcion': serializer.toJson<String?>(descripcion),
-      'idMedida': serializer.toJson<int?>(idMedida),
+      'idMedida': serializer.toJson<int>(idMedida),
       'enAlmacen': serializer.toJson<int?>(enAlmacen),
     };
   }
@@ -5788,14 +5771,14 @@ class Insumo extends DataClass implements Insertable<Insumo> {
     Value<String?> nombre = const Value.absent(),
     Value<double?> costo = const Value.absent(),
     Value<String?> descripcion = const Value.absent(),
-    Value<int?> idMedida = const Value.absent(),
+    int? idMedida,
     Value<int?> enAlmacen = const Value.absent(),
   }) => Insumo(
     id: id ?? this.id,
     nombre: nombre.present ? nombre.value : this.nombre,
     costo: costo.present ? costo.value : this.costo,
     descripcion: descripcion.present ? descripcion.value : this.descripcion,
-    idMedida: idMedida.present ? idMedida.value : this.idMedida,
+    idMedida: idMedida ?? this.idMedida,
     enAlmacen: enAlmacen.present ? enAlmacen.value : this.enAlmacen,
   );
   Insumo copyWithCompanion(InsumosCompanion data) {
@@ -5844,7 +5827,7 @@ class InsumosCompanion extends UpdateCompanion<Insumo> {
   final Value<String?> nombre;
   final Value<double?> costo;
   final Value<String?> descripcion;
-  final Value<int?> idMedida;
+  final Value<int> idMedida;
   final Value<int?> enAlmacen;
   const InsumosCompanion({
     this.id = const Value.absent(),
@@ -5859,9 +5842,9 @@ class InsumosCompanion extends UpdateCompanion<Insumo> {
     this.nombre = const Value.absent(),
     this.costo = const Value.absent(),
     this.descripcion = const Value.absent(),
-    this.idMedida = const Value.absent(),
+    required int idMedida,
     this.enAlmacen = const Value.absent(),
-  });
+  }) : idMedida = Value(idMedida);
   static Insertable<Insumo> custom({
     Expression<int>? id,
     Expression<String>? nombre,
@@ -5885,7 +5868,7 @@ class InsumosCompanion extends UpdateCompanion<Insumo> {
     Value<String?>? nombre,
     Value<double?>? costo,
     Value<String?>? descripcion,
-    Value<int?>? idMedida,
+    Value<int>? idMedida,
     Value<int?>? enAlmacen,
   }) {
     return InsumosCompanion(
@@ -10068,18 +10051,18 @@ typedef $$CuentasTableProcessedTableManager =
 typedef $$OrdensTableCreateCompanionBuilder =
     OrdensCompanion Function({
       Value<int> id,
-      Value<int?> idCherryLocal,
+      required int idCherryLocal,
       Value<double?> total,
       Value<String?> fechaRealizada,
-      Value<int?> idEmpleado,
+      required int idEmpleado,
     });
 typedef $$OrdensTableUpdateCompanionBuilder =
     OrdensCompanion Function({
       Value<int> id,
-      Value<int?> idCherryLocal,
+      Value<int> idCherryLocal,
       Value<double?> total,
       Value<String?> fechaRealizada,
-      Value<int?> idEmpleado,
+      Value<int> idEmpleado,
     });
 
 final class $$OrdensTableReferences
@@ -10091,9 +10074,9 @@ final class $$OrdensTableReferences
         $_aliasNameGenerator(db.ordens.idCherryLocal, db.cherryLocals.id),
       );
 
-  $$CherryLocalsTableProcessedTableManager? get idCherryLocal {
-    final $_column = $_itemColumn<int>('id_cherry_local');
-    if ($_column == null) return null;
+  $$CherryLocalsTableProcessedTableManager get idCherryLocal {
+    final $_column = $_itemColumn<int>('id_cherry_local')!;
+
     final manager = $$CherryLocalsTableTableManager(
       $_db,
       $_db.cherryLocals,
@@ -10108,9 +10091,9 @@ final class $$OrdensTableReferences
   static $EmpleadosTable _idEmpleadoTable(_$AppDatabase db) => db.empleados
       .createAlias($_aliasNameGenerator(db.ordens.idEmpleado, db.empleados.id));
 
-  $$EmpleadosTableProcessedTableManager? get idEmpleado {
-    final $_column = $_itemColumn<int>('id_empleado');
-    if ($_column == null) return null;
+  $$EmpleadosTableProcessedTableManager get idEmpleado {
+    final $_column = $_itemColumn<int>('id_empleado')!;
+
     final manager = $$EmpleadosTableTableManager(
       $_db,
       $_db.empleados,
@@ -10503,10 +10486,10 @@ class $$OrdensTableTableManager
           updateCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
-                Value<int?> idCherryLocal = const Value.absent(),
+                Value<int> idCherryLocal = const Value.absent(),
                 Value<double?> total = const Value.absent(),
                 Value<String?> fechaRealizada = const Value.absent(),
-                Value<int?> idEmpleado = const Value.absent(),
+                Value<int> idEmpleado = const Value.absent(),
               }) => OrdensCompanion(
                 id: id,
                 idCherryLocal: idCherryLocal,
@@ -10517,10 +10500,10 @@ class $$OrdensTableTableManager
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
-                Value<int?> idCherryLocal = const Value.absent(),
+                required int idCherryLocal,
                 Value<double?> total = const Value.absent(),
                 Value<String?> fechaRealizada = const Value.absent(),
-                Value<int?> idEmpleado = const Value.absent(),
+                required int idEmpleado,
               }) => OrdensCompanion.insert(
                 id: id,
                 idCherryLocal: idCherryLocal,
@@ -10659,17 +10642,17 @@ typedef $$PagosTableCreateCompanionBuilder =
     PagosCompanion Function({
       Value<int> id,
       Value<String?> descripcion,
-      Value<int?> idMetodoPago,
-      Value<int?> idOrden,
-      Value<int?> idCherryLocal,
+      required int idMetodoPago,
+      required int idOrden,
+      required int idCherryLocal,
     });
 typedef $$PagosTableUpdateCompanionBuilder =
     PagosCompanion Function({
       Value<int> id,
       Value<String?> descripcion,
-      Value<int?> idMetodoPago,
-      Value<int?> idOrden,
-      Value<int?> idCherryLocal,
+      Value<int> idMetodoPago,
+      Value<int> idOrden,
+      Value<int> idCherryLocal,
     });
 
 final class $$PagosTableReferences
@@ -10681,9 +10664,9 @@ final class $$PagosTableReferences
         $_aliasNameGenerator(db.pagos.idMetodoPago, db.metodoPagos.id),
       );
 
-  $$MetodoPagosTableProcessedTableManager? get idMetodoPago {
-    final $_column = $_itemColumn<int>('id_metodo_pago');
-    if ($_column == null) return null;
+  $$MetodoPagosTableProcessedTableManager get idMetodoPago {
+    final $_column = $_itemColumn<int>('id_metodo_pago')!;
+
     final manager = $$MetodoPagosTableTableManager(
       $_db,
       $_db.metodoPagos,
@@ -10699,9 +10682,9 @@ final class $$PagosTableReferences
     $_aliasNameGenerator(db.pagos.idOrden, db.ordens.id),
   );
 
-  $$OrdensTableProcessedTableManager? get idOrden {
-    final $_column = $_itemColumn<int>('id_orden');
-    if ($_column == null) return null;
+  $$OrdensTableProcessedTableManager get idOrden {
+    final $_column = $_itemColumn<int>('id_orden')!;
+
     final manager = $$OrdensTableTableManager(
       $_db,
       $_db.ordens,
@@ -10718,9 +10701,9 @@ final class $$PagosTableReferences
         $_aliasNameGenerator(db.pagos.idCherryLocal, db.cherryLocals.id),
       );
 
-  $$CherryLocalsTableProcessedTableManager? get idCherryLocal {
-    final $_column = $_itemColumn<int>('id_cherry_local');
-    if ($_column == null) return null;
+  $$CherryLocalsTableProcessedTableManager get idCherryLocal {
+    final $_column = $_itemColumn<int>('id_cherry_local')!;
+
     final manager = $$CherryLocalsTableTableManager(
       $_db,
       $_db.cherryLocals,
@@ -11031,9 +11014,9 @@ class $$PagosTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<String?> descripcion = const Value.absent(),
-                Value<int?> idMetodoPago = const Value.absent(),
-                Value<int?> idOrden = const Value.absent(),
-                Value<int?> idCherryLocal = const Value.absent(),
+                Value<int> idMetodoPago = const Value.absent(),
+                Value<int> idOrden = const Value.absent(),
+                Value<int> idCherryLocal = const Value.absent(),
               }) => PagosCompanion(
                 id: id,
                 descripcion: descripcion,
@@ -11045,9 +11028,9 @@ class $$PagosTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<String?> descripcion = const Value.absent(),
-                Value<int?> idMetodoPago = const Value.absent(),
-                Value<int?> idOrden = const Value.absent(),
-                Value<int?> idCherryLocal = const Value.absent(),
+                required int idMetodoPago,
+                required int idOrden,
+                required int idCherryLocal,
               }) => PagosCompanion.insert(
                 id: id,
                 descripcion: descripcion,
@@ -11417,7 +11400,7 @@ typedef $$ProductosTableCreateCompanionBuilder =
       Value<int> id,
       Value<String?> nombre,
       Value<double?> precio,
-      Value<int?> idCategoria,
+      required int idCategoria,
       Value<String?> foto,
     });
 typedef $$ProductosTableUpdateCompanionBuilder =
@@ -11425,7 +11408,7 @@ typedef $$ProductosTableUpdateCompanionBuilder =
       Value<int> id,
       Value<String?> nombre,
       Value<double?> precio,
-      Value<int?> idCategoria,
+      Value<int> idCategoria,
       Value<String?> foto,
     });
 
@@ -11438,9 +11421,9 @@ final class $$ProductosTableReferences
         $_aliasNameGenerator(db.productos.idCategoria, db.categorias.id),
       );
 
-  $$CategoriasTableProcessedTableManager? get idCategoria {
-    final $_column = $_itemColumn<int>('id_categoria');
-    if ($_column == null) return null;
+  $$CategoriasTableProcessedTableManager get idCategoria {
+    final $_column = $_itemColumn<int>('id_categoria')!;
+
     final manager = $$CategoriasTableTableManager(
       $_db,
       $_db.categorias,
@@ -11844,7 +11827,7 @@ class $$ProductosTableTableManager
                 Value<int> id = const Value.absent(),
                 Value<String?> nombre = const Value.absent(),
                 Value<double?> precio = const Value.absent(),
-                Value<int?> idCategoria = const Value.absent(),
+                Value<int> idCategoria = const Value.absent(),
                 Value<String?> foto = const Value.absent(),
               }) => ProductosCompanion(
                 id: id,
@@ -11858,7 +11841,7 @@ class $$ProductosTableTableManager
                 Value<int> id = const Value.absent(),
                 Value<String?> nombre = const Value.absent(),
                 Value<double?> precio = const Value.absent(),
-                Value<int?> idCategoria = const Value.absent(),
+                required int idCategoria,
                 Value<String?> foto = const Value.absent(),
               }) => ProductosCompanion.insert(
                 id: id,
@@ -12483,14 +12466,14 @@ typedef $$DescuentosTableCreateCompanionBuilder =
       Value<int> id,
       Value<String?> descripcion,
       Value<int?> porcentaje,
-      Value<int?> idProducto,
+      required int idProducto,
     });
 typedef $$DescuentosTableUpdateCompanionBuilder =
     DescuentosCompanion Function({
       Value<int> id,
       Value<String?> descripcion,
       Value<int?> porcentaje,
-      Value<int?> idProducto,
+      Value<int> idProducto,
     });
 
 final class $$DescuentosTableReferences
@@ -12502,9 +12485,9 @@ final class $$DescuentosTableReferences
         $_aliasNameGenerator(db.descuentos.idProducto, db.productos.id),
       );
 
-  $$ProductosTableProcessedTableManager? get idProducto {
-    final $_column = $_itemColumn<int>('id_producto');
-    if ($_column == null) return null;
+  $$ProductosTableProcessedTableManager get idProducto {
+    final $_column = $_itemColumn<int>('id_producto')!;
+
     final manager = $$ProductosTableTableManager(
       $_db,
       $_db.productos,
@@ -12690,7 +12673,7 @@ class $$DescuentosTableTableManager
                 Value<int> id = const Value.absent(),
                 Value<String?> descripcion = const Value.absent(),
                 Value<int?> porcentaje = const Value.absent(),
-                Value<int?> idProducto = const Value.absent(),
+                Value<int> idProducto = const Value.absent(),
               }) => DescuentosCompanion(
                 id: id,
                 descripcion: descripcion,
@@ -12702,7 +12685,7 @@ class $$DescuentosTableTableManager
                 Value<int> id = const Value.absent(),
                 Value<String?> descripcion = const Value.absent(),
                 Value<int?> porcentaje = const Value.absent(),
-                Value<int?> idProducto = const Value.absent(),
+                required int idProducto,
               }) => DescuentosCompanion.insert(
                 id: id,
                 descripcion: descripcion,
@@ -13283,7 +13266,7 @@ typedef $$InsumosTableCreateCompanionBuilder =
       Value<String?> nombre,
       Value<double?> costo,
       Value<String?> descripcion,
-      Value<int?> idMedida,
+      required int idMedida,
       Value<int?> enAlmacen,
     });
 typedef $$InsumosTableUpdateCompanionBuilder =
@@ -13292,7 +13275,7 @@ typedef $$InsumosTableUpdateCompanionBuilder =
       Value<String?> nombre,
       Value<double?> costo,
       Value<String?> descripcion,
-      Value<int?> idMedida,
+      Value<int> idMedida,
       Value<int?> enAlmacen,
     });
 
@@ -13303,9 +13286,9 @@ final class $$InsumosTableReferences
   static $MedidasTable _idMedidaTable(_$AppDatabase db) => db.medidas
       .createAlias($_aliasNameGenerator(db.insumos.idMedida, db.medidas.id));
 
-  $$MedidasTableProcessedTableManager? get idMedida {
-    final $_column = $_itemColumn<int>('id_medida');
-    if ($_column == null) return null;
+  $$MedidasTableProcessedTableManager get idMedida {
+    final $_column = $_itemColumn<int>('id_medida')!;
+
     final manager = $$MedidasTableTableManager(
       $_db,
       $_db.medidas,
@@ -13584,7 +13567,7 @@ class $$InsumosTableTableManager
                 Value<String?> nombre = const Value.absent(),
                 Value<double?> costo = const Value.absent(),
                 Value<String?> descripcion = const Value.absent(),
-                Value<int?> idMedida = const Value.absent(),
+                Value<int> idMedida = const Value.absent(),
                 Value<int?> enAlmacen = const Value.absent(),
               }) => InsumosCompanion(
                 id: id,
@@ -13600,7 +13583,7 @@ class $$InsumosTableTableManager
                 Value<String?> nombre = const Value.absent(),
                 Value<double?> costo = const Value.absent(),
                 Value<String?> descripcion = const Value.absent(),
-                Value<int?> idMedida = const Value.absent(),
+                required int idMedida,
                 Value<int?> enAlmacen = const Value.absent(),
               }) => InsumosCompanion.insert(
                 id: id,

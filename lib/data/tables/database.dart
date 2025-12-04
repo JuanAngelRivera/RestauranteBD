@@ -111,7 +111,7 @@ class Beneficios extends Table {
 
 class Cuentas extends Table {
   IntColumn get idEmpleado =>
-      integer().references(Empleados, #id).nullable()();
+      integer().nullable().references(Empleados, #id)();
 
   TextColumn get usuario => text().named("nombreUsuario")();
 
@@ -130,14 +130,14 @@ class Ordens extends Table {
   IntColumn get id => integer().autoIncrement()();
 
   IntColumn get idCherryLocal =>
-      integer().nullable().references(CherryLocals, #id)();
+      integer().references(CherryLocals, #id)();
 
   RealColumn get total => real().nullable()();
 
   TextColumn get fechaRealizada => text().nullable()();
 
   IntColumn get idEmpleado =>
-      integer().nullable().references(Empleados, #id)();
+      integer().references(Empleados, #id)();
 
   @override
   String get tableName => 'Orden';
@@ -149,13 +149,13 @@ class Pagos extends Table {
   TextColumn get descripcion => text().nullable()();
 
   IntColumn get idMetodoPago =>
-      integer().nullable().references(MetodoPagos, #id)();
+      integer().references(MetodoPagos, #id)();
 
   IntColumn get idOrden =>
-      integer().nullable().references(Ordens, #id)();
+      integer().references(Ordens, #id)();
 
   IntColumn get idCherryLocal =>
-      integer().nullable().references(CherryLocals, #id)();
+      integer().references(CherryLocals, #id)();
 
   @override
   String get tableName => 'Pago';
@@ -176,7 +176,7 @@ class Productos extends Table {
   RealColumn get precio => real().nullable()();
 
   IntColumn get idCategoria =>
-      integer().nullable().references(Categorias, #id)();
+      integer().references(Categorias, #id)();
 
   TextColumn get foto => text().nullable()();
 
@@ -208,7 +208,7 @@ class Descuentos extends Table {
   IntColumn get porcentaje => integer().nullable()();
 
   IntColumn get idProducto =>
-      integer().nullable().references(Productos, #id)();
+      integer().references(Productos, #id)();
 
   @override
   String get tableName => 'Descuento';
@@ -239,7 +239,7 @@ class Insumos extends Table {
   TextColumn get descripcion => text().nullable()();
 
   IntColumn get idMedida =>
-      integer().nullable().references(Medidas, #id)();
+      integer().references(Medidas, #id)();
 
   IntColumn get enAlmacen => integer().named("enAlmacen").nullable()();
 

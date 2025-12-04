@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart' hide Column;
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:restaurante_base_de_datos/utils/styles.dart';
@@ -45,7 +46,8 @@ class _FormularioDependenciaState extends FormularioGenericoState {
 
   @override
   Widget buildFormulario() {
-    final pkSecundaria = nombrePKSecundaria();
+    final fkCol = nombreFkPK(); // id_proveedor
+    final pkSec = nombrePKSecundaria(); // numero
 
     return AlertDialog(
       backgroundColor: Styles.fondoClaro,
@@ -58,9 +60,11 @@ class _FormularioDependenciaState extends FormularioGenericoState {
           children: columnas.map((col) {
             final nombre = col["name"];
             final tipo = (col["type"] ?? "").toString().toUpperCase();
-      
-            if (nombre == pkSecundaria) {
-              if (widget.id == null) {
+
+            if (nombre == fkCol) {
+              // ── FK principal que forma parte de la PK compuesta ──
+              if (widget.id != null) {
+                // Update: mostrar como readOnly
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 10),
                   child: TextField(
@@ -72,49 +76,40 @@ class _FormularioDependenciaState extends FormularioGenericoState {
                     ),
                   ),
                 );
+              } else {
+                // Insert: mostrar como dropdown
+                return FutureBuilder<Widget>(
+                  future: buildDropdownFK(nombre),
+                  builder: (_, snap) {
+                    if (!snap.hasData) {
+                      return const Padding(
+                        padding: EdgeInsets.all(8),
+                        child: LinearProgressIndicator(),
+                      );
+                    }
+                    return snap.data!;
+                  },
+                );
               }
-      
-              return FutureBuilder<Widget>(
-                future: buildDropdownFK(nombre),
-                builder: (_, snap) {
-                  if (!snap.hasData) {
-                    return const Padding(
-                      padding: EdgeInsets.all(8),
-                      child: LinearProgressIndicator(),
-                    );
-                  }
-      
-                  return Column(
-                    children: [
-                      snap.data!,
-                      if (pkSecundaria != null)
-                        FutureBuilder(
-                          future: _recalcularNumero(pkSecundaria),
-                          builder: (_, __) {
-                            return const SizedBox.shrink();
-                          },
-                        ),
-                    ],
-                  );
-                },
+            }
+
+            // ── PK secundaria (numero) ──
+            if (nombre == pkSec) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: TextField(
+                  controller: controllers[nombre],
+                  readOnly:
+                      true, // siempre readOnly, se calcula automáticamente
+                  decoration: Styles.createInputDecoration(
+                    "$nombre (autocalculado)",
+                    Colors.grey.shade300,
+                  ),
+                ),
               );
             }
-      
-            if (esFK(nombre)) {
-              return FutureBuilder<Widget>(
-                future: buildDropdownFK(nombre),
-                builder: (_, snap) {
-                  if (!snap.hasData) {
-                    return const Padding(
-                      padding: EdgeInsets.all(8),
-                      child: LinearProgressIndicator(),
-                    );
-                  }
-                  return snap.data!;
-                },
-              );
-            }
-      
+
+            // ── Campos normales ──
             return Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: TextField(
@@ -264,9 +259,11 @@ class _FormularioDependenciaState extends FormularioGenericoState {
     String? columnaDescripcion;
     for (var c in columnasFk) {
       final type = (c["type"] ?? "").toString().toUpperCase();
-      if (type.contains("CHAR") || type == "TEXT" || type == "VARCHAR") {
-        if (c["name"] != campoId &&
-            (c["name"] == "nombre" || c["name"] == "descripcion")) {
+      if ((type.contains("CHAR") ||
+              type.contains("TEXT") ||
+              type.contains("VARCHAR")) &&
+          c["name"] != campoId) {
+        if (c["name"] == "nombre") {
           columnaDescripcion = c["name"];
           break;
         }
@@ -280,30 +277,37 @@ class _FormularioDependenciaState extends FormularioGenericoState {
         )
         .get();
 
-    final listaOpciones = opciones
-        .map((r) => r.data)
-        .toList()
-        .cast<Map<String, dynamic>>();
+    final listaOpciones = opciones.map((r) => r.data).toList();
 
-    final valorActual = int.tryParse(controllers[columna]!.text);
+    final int? valorActual = int.tryParse(controllers[columna]!.text);
 
     if (!esPKyFK(columna)) {
       return Padding(
         padding: const EdgeInsets.only(bottom: 10),
-        child: DropdownButtonFormField<int>(
+        child: DropdownButtonFormField2<int>(
+          isExpanded: true,
           decoration: Styles.createInputDecoration(
             columna,
             Colors.grey.shade300,
           ),
-          initialValue: valorActual,
+
+          value: valorActual,
+
+          dropdownStyleData: const DropdownStyleData(maxHeight: 250),
+
+          menuItemStyleData: const MenuItemStyleData(height: 48),
+
           items: listaOpciones.map((row) {
+            final id = row["id"] is int
+                ? row["id"]
+                : int.tryParse(row["id"].toString());
+
             return DropdownMenuItem<int>(
-              value: row["id"] is int
-                  ? row["id"]
-                  : int.parse(row["id"].toString()),
+              value: id,
               child: Text(row["nombre"].toString()),
             );
           }).toList(),
+
           onChanged: (value) {
             controllers[columna]!.text = value?.toString() ?? "";
           },
@@ -311,6 +315,9 @@ class _FormularioDependenciaState extends FormularioGenericoState {
       );
     }
 
+    // ============================
+    // CASO PK + FK (PK compuesta)
+    // ============================
     final pkSecundaria = nombrePKSecundaria();
     if (pkSecundaria == null) {
       return Text("Error PK secundaria");
@@ -318,21 +325,27 @@ class _FormularioDependenciaState extends FormularioGenericoState {
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
-      child: DropdownButtonFormField<int>(
-        
-        decoration: Styles.createInputDecoration(
-          columna,
-          Colors.grey.shade300,
-        ),
-        initialValue: valorActual,
+      child: DropdownButtonFormField2<int>(
+        isExpanded: true,
+        decoration: Styles.createInputDecoration(columna, Colors.grey.shade300),
+
+        value: valorActual,
+
+        dropdownStyleData: const DropdownStyleData(maxHeight: 250),
+
+        menuItemStyleData: const MenuItemStyleData(height: 48),
+
         items: listaOpciones.map((row) {
+          final id = row["id"] is int
+              ? row["id"]
+              : int.tryParse(row["id"].toString());
+
           return DropdownMenuItem<int>(
-            value: row["id"] is int
-                ? row["id"]
-                : int.parse(row["id"].toString()),
+            value: id,
             child: Text(row["nombre"].toString()),
           );
         }).toList(),
+
         onChanged: (value) async {
           controllers[columna]!.text = value?.toString() ?? "";
 

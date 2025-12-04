@@ -81,7 +81,7 @@ class AdminDao extends DatabaseAccessor<AppDatabase> with _$AdminDaoMixin {
       final c = row.readTable(contactos);
       final p = row.readTableOrNull(proveedors);
       return {
-        'id': p?.descripcion,
+        'id': p?.nombre,
         'numero': c.numero,
         'nombre': c.nombre,
         'telefono': c.telefono,

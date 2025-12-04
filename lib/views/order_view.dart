@@ -397,7 +397,6 @@ class _orderViewState extends ConsumerState<orderView> {
   }
 
   Future<void> actualizarProductos(int idCategoria) async {
-    print("LLAMADA A ACTUALIZARPRODUCTOS");
   idCategoriaActual = idCategoria;
 
   final queryCategoria = await categoriaDao.getById(idCategoria);
@@ -437,7 +436,9 @@ class _orderViewState extends ConsumerState<orderView> {
   if (pedido.isEmpty) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(
-        "No hay productos en la orden")),
+        "No hay productos en la orden",
+        style: Styles.snackText,),
+      backgroundColor: Styles.contraste,),
     );
     return;
   }
@@ -460,10 +461,11 @@ class _orderViewState extends ConsumerState<orderView> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          "Orden registrada correctamente")),
+          "Orden registrada correctamente",
+          style: Styles.snackText,),
+        backgroundColor: Styles.fondoOscuro,),
     );
   } catch (e) {
-    print("Error registrando orden: $e");
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(

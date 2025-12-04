@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:restaurante_base_de_datos/data/app_database.dart';
 import 'package:restaurante_base_de_datos/providers/dao_helper_provider.dart';
 import 'package:restaurante_base_de_datos/providers/dao_providers.dart';
+import 'package:restaurante_base_de_datos/utils/dao_helper.dart';
 import 'package:restaurante_base_de_datos/utils/styles.dart';
 import 'package:restaurante_base_de_datos/widgets/cell_builder_widgets.dart';
 import 'package:restaurante_base_de_datos/widgets/formulario_dependencia.dart';
@@ -185,15 +186,50 @@ class _adminViewState extends ConsumerState<adminView> {
             cellBuilderHelper.obtenerCellBuilder(tablaNombre, registro),
         columnasPorPagina: nombresColumnas.length,
         onEdit: (row) {
-          mostrarFormulario(tablaNombre, id: row["id"]);
+          if (tablaNombre == "Contacto") {
+            mostrarFormulario(
+              tablaNombre,
+              id: {'fk': row["id"], 'pk': row["numero"]},
+            );
+          } else {
+            mostrarFormulario(tablaNombre, id: row['id']);
+          }
         },
         onDelete: (row) async {
-          final value = row['id'];
+          List<Map<String, dynamic>> pkColumns = [{"name": "id"}];
+          
+          if (tablaNombre == "Contacto"){
+            pkColumns.clear();
+            pkColumns.add({"name" : "id"});
+            pkColumns.add({"name" : "numero"});
+          }
 
+          String whereClauses = pkColumns
+              .map((c) => "${c["name"]} = ?")
+              .join(" AND ");
+          int? pkReal;
+          if(row["id"] is int) pkReal = row["id"];
+
+          if(tablaNombre == "Contacto"){
+            whereClauses = "id_Proveedor = ? AND numero = ?";
+            final daoHelper = ref.read(daoHelperProvider);
+            pkReal = await daoHelper.obtenerProveedorPorNombre(row["id"]);
+          }
+          final whereVars = pkColumns.map((c) {
+            dynamic val = row[c["name"]];
+            if(tablaNombre == "Contacto" && c["name"] == "id"){
+              val = pkReal;
+              }
+            if (val is int) return Variable.withInt(val);
+            if (val is double) return Variable.withReal(val);
+            if (val is String) return Variable.withString(val);
+            return Variable.withString(val.toString());
+          }).toList();
           final filasAfectadas = await db.customUpdate(
-            "DELETE FROM $tablaNombre WHERE id = ?;",
-            variables: [Variable.withInt(value)],
+            "DELETE FROM $tablaNombre WHERE $whereClauses;",
+            variables: whereVars,
           );
+
           if (filasAfectadas > 0) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -204,7 +240,6 @@ class _adminViewState extends ConsumerState<adminView> {
                 backgroundColor: Styles.fondoOscuro,
               ),
             );
-            cargarTabla(tablaNombre);
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -215,8 +250,9 @@ class _adminViewState extends ConsumerState<adminView> {
                 backgroundColor: Styles.contraste,
               ),
             );
-            cargarTabla(tablaNombre);
           }
+
+          cargarTabla(tablaNombre);
         },
       );
     });
@@ -225,16 +261,16 @@ class _adminViewState extends ConsumerState<adminView> {
   void mostrarFormulario(String tabla, {dynamic id}) async {
     final resultado = await showDialog(
       context: context,
-      builder: (_)  {
-        switch (tabla){
+      builder: (_) {
+        switch (tabla) {
           case "Contacto":
             print("Formulario 1-n d");
-            return FormularioDependencia(tabla: tabla, id: id,);
+            return FormularioDependencia(tabla: tabla, id: id);
           default:
             print("Formulario 1-n");
             return FormularioGenerico(tabla: tabla, id: id);
-            }
         }
+      },
     );
 
     if (resultado == true) {

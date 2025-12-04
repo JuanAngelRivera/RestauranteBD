@@ -84,12 +84,10 @@ class _TableScreenWidgetState extends State<TableScreenWidget> {
                         rows: registros.map((reg) {
                           final cells = widget.cellBuilder(reg);
 
-                          // Rellenar para que siempre tenga las columnas base
                           while (cells.length < widget.columnas.length) {
                             cells.add(const DataCell(Text("")));
                           }
 
-                          // Agregar celda Editar SOLO si onEdit != null
                           if (widget.onEdit != null) {
                             cells.add(
                               DataCell(
@@ -104,7 +102,6 @@ class _TableScreenWidgetState extends State<TableScreenWidget> {
                             );
                           }
 
-                          // Agregar celda Eliminar SOLO si onDelete != null
                           if (widget.onDelete != null) {
                             cells.add(
                               DataCell(
