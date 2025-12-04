@@ -6,6 +6,7 @@ import 'package:restaurante_base_de_datos/providers/dao_helper_provider.dart';
 import 'package:restaurante_base_de_datos/providers/dao_providers.dart';
 import 'package:restaurante_base_de_datos/utils/styles.dart';
 import 'package:restaurante_base_de_datos/widgets/cell_builder_widgets.dart';
+import 'package:restaurante_base_de_datos/widgets/formulario_dependencia.dart';
 import 'package:restaurante_base_de_datos/widgets/formulario_generico.dart';
 import 'package:restaurante_base_de_datos/widgets/idle_screen_widget.dart';
 import 'package:restaurante_base_de_datos/widgets/panel_widget.dart';
@@ -187,12 +188,35 @@ class _adminViewState extends ConsumerState<adminView> {
           mostrarFormulario(tablaNombre, id: row["id"]);
         },
         onDelete: (row) async {
-  final value = row['id'];
+          final value = row['id'];
 
-          await db.customStatement(
-            "DELETE FROM $tablaNombre WHERE id = $value;", 
+          final filasAfectadas = await db.customUpdate(
+            "DELETE FROM $tablaNombre WHERE id = ?;",
+            variables: [Variable.withInt(value)],
           );
-          cargarTabla(tablaNombre);
+          if (filasAfectadas > 0) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  "Eliminación realizada correctamente",
+                  style: Styles.snackText,
+                ),
+                backgroundColor: Styles.fondoOscuro,
+              ),
+            );
+            cargarTabla(tablaNombre);
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  "Error en la eliminación",
+                  style: Styles.snackText,
+                ),
+                backgroundColor: Styles.contraste,
+              ),
+            );
+            cargarTabla(tablaNombre);
+          }
         },
       );
     });
@@ -201,7 +225,16 @@ class _adminViewState extends ConsumerState<adminView> {
   void mostrarFormulario(String tabla, {dynamic id}) async {
     final resultado = await showDialog(
       context: context,
-      builder: (_) => FormularioGenerico(tabla: tabla, id: id),
+      builder: (_)  {
+        switch (tabla){
+          case "Contacto":
+            print("Formulario 1-n d");
+            return FormularioDependencia(tabla: tabla, id: id,);
+          default:
+            print("Formulario 1-n");
+            return FormularioGenerico(tabla: tabla, id: id);
+            }
+        }
     );
 
     if (resultado == true) {

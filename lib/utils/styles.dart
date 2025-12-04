@@ -70,6 +70,8 @@ class Styles {
     fontSize: 16
   );
 
+  static final snackText = baseTextW.copyWith(fontSize: 20);
+
   static final TextStyle discountText_ = discountText.copyWith(
         decoration: TextDecoration.lineThrough,
   );
