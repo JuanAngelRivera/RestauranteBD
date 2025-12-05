@@ -20,7 +20,7 @@ class orderView extends ConsumerStatefulWidget {
 }
 
 class _orderViewState extends ConsumerState<orderView> {
-  final _searchKey = GlobalKey<FormState>();
+  //final _searchKey = GlobalKey<FormState>();
   String local = '';
   late List<Map<String, dynamic>> categorias = [];
   late List<Map<String, dynamic>> productos = [];
@@ -28,15 +28,19 @@ class _orderViewState extends ConsumerState<orderView> {
   int idCategoriaActual = 1;
   String nombreCategoriaActual = '';
   bool productoEnOrden = false;
-  bool categoriaCargada = false;
   late CategoriasDao categoriaDao;
   late DaoHelper daoHelper;
   late AdminDao adminDao;
   SessionState empleado = SessionState();
   late List<Map<int, int>> descuentosActivos = [];
+  List<Map<String, dynamic>> pedido = [];
+  late ScrollController _pedidoCtrl;
+  late ScrollController _scrollCtrl;
   @override
   void initState() {
     super.initState();
+    _pedidoCtrl  = ScrollController();
+    _scrollCtrl = ScrollController();
     init();
   }
 
@@ -56,8 +60,6 @@ class _orderViewState extends ConsumerState<orderView> {
     nombreCategoria(idCategoriaActual);
     setState(() {});
   }
-
-  List<Map<String, dynamic>> pedido = [];
 
   void agregarPedido(String nombre, double precio, int id) {
     int descuento = 0;
@@ -163,7 +165,6 @@ class _orderViewState extends ConsumerState<orderView> {
             Expanded(
               child: Row(
                 children: [
-                  //columna Categorias
                   Expanded(
                     flex: 1,
                     child: PanelWidget(
@@ -171,6 +172,7 @@ class _orderViewState extends ConsumerState<orderView> {
                       colorBase: Styles.fondoClaro,
                       child: Column(
                         children: [
+                          /*
                           Form(
                             key: _searchKey,
                             child: Row(
@@ -205,13 +207,18 @@ class _orderViewState extends ConsumerState<orderView> {
                                 ),
                               ],
                             ),
-                          ),
+                          ), */
                           SizedBox(height: 10),
                           Text("Categorias", style: Styles.titleText),
                           SizedBox(height: 10),
                           Expanded(
                             child: Scrollbar(
+                              trackVisibility: true,
+                              interactive: false,
+                              controller: _scrollCtrl,
+                              thumbVisibility: true,
                               child: ListView.builder(
+                                controller: _scrollCtrl,
                                 itemCount: categorias.length,
                                 itemBuilder: (_, i) => ListTile(
                                   style: ListTileStyle.drawer,
@@ -219,12 +226,8 @@ class _orderViewState extends ConsumerState<orderView> {
                                     categorias[i]["nombre"],
                                     style: Styles.titleText,
                                   ),
-                                  onTap: () => {
-                                    setState(() {
-                                      actualizarProductos(categorias[i]["id"]);
-                                      categoriaCargada = true;
-                                    }),
-                                    //despliegue de las tablas
+                                  onTap: () async {
+                                    await actualizarProductos(categorias[i]["id"]);
                                   },
                                 ),
                               ),
@@ -248,6 +251,7 @@ class _orderViewState extends ConsumerState<orderView> {
                             child: ListView.builder(
                               itemCount: productos.length,
                               itemBuilder: (_, i) => ImageListTileWidget(
+                                key: ValueKey(productos[i]["id"]),
                                 title: productos[i]["nombre"],
                                 imagen: productos[i]["foto"],
                                 precio: productos[i]["precio"],
@@ -295,30 +299,29 @@ class _orderViewState extends ConsumerState<orderView> {
                             ],
                           ),
                           Expanded(
-                            child: SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.32,
-                              child: Scrollbar(
-                                child: ListView.builder(
-                                  itemCount: pedido.length,
-                                  itemBuilder: (context, index) {
-                                    final item = pedido[index];
-                                    return OrderListTileWidget(
-                                      nombreProducto: item["nombre"],
-                                      precio: item["precio"],
-                                      cantidad: item["cantidad"],
-                                      subtotal: item["subtotal"],
-                                      onCantidadChanged: (nuevaCantidad) {
-                                        item["cantidad"] = nuevaCantidad;
-                                        item["subtotal"] =
-                                            nuevaCantidad * item["precio"];
-                                        setState(() {});
-                                      },
-                                      onRemove: () {
-                                        setState(() => pedido.removeAt(index));
-                                      },
-                                    );
-                                  },
-                                ),
+                            child: Scrollbar(
+                              controller: _pedidoCtrl,
+                              child: ListView.builder(
+                                controller: _pedidoCtrl,
+                                itemCount: pedido.length,
+                                itemBuilder: (context, index) {
+                                  final item = pedido[index];
+                                  return OrderListTileWidget(
+                                    nombreProducto: item["nombre"],
+                                    precio: item["precio"],
+                                    cantidad: item["cantidad"],
+                                    subtotal: item["subtotal"],
+                                    onCantidadChanged: (nuevaCantidad) {
+                                      item["cantidad"] = nuevaCantidad;
+                                      item["subtotal"] =
+                                          nuevaCantidad * item["precio"];
+                                      setState(() {});
+                                    },
+                                    onRemove: () {
+                                      setState(() => pedido.removeAt(index));
+                                    },
+                                  );
+                                },
                               ),
                             ),
                           ),
@@ -388,16 +391,25 @@ class _orderViewState extends ConsumerState<orderView> {
     );
   }
 
-  void nombreCategoria(int id) async {
+  Future<void> nombreCategoria(int id) async {
     final query = await categoriaDao.getById(id);
     nombreCategoriaActual = query?.nombre! ?? '';
   }
 
-  void actualizarProductos(int idCategoria) async {
-    nombreCategoria(idCategoria);
-    final query = await daoHelper.productosPorCategoria(idCategoria);
-    productos = query;
-  }
+  Future<void> actualizarProductos(int idCategoria) async {
+  idCategoriaActual = idCategoria;
+
+  final queryCategoria = await categoriaDao.getById(idCategoria);
+  final nombre = queryCategoria?.nombre ?? '';
+
+  final queryProductos = await daoHelper.productosPorCategoria(idCategoria);
+
+  setState(() {
+    nombreCategoriaActual = nombre;
+    productos = queryProductos;
+  });
+}
+
 
   void busqueda() {}
 
@@ -424,7 +436,9 @@ class _orderViewState extends ConsumerState<orderView> {
   if (pedido.isEmpty) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(
-        "No hay productos en la orden")),
+        "No hay productos en la orden",
+        style: Styles.snackText,),
+      backgroundColor: Styles.contraste,),
     );
     return;
   }
@@ -437,7 +451,7 @@ class _orderViewState extends ConsumerState<orderView> {
     final idOrden = await daoHelper.insertarOrden(1, total, fecha, idEmpleado);
     
     for (final item in pedido) {
-      await daoHelper.insertarContiene(1, idOrden, item["id"]);
+      await daoHelper.insertarContiene(1, idOrden, item["id"], item["cantidad"]);
     }
 
     setState(() {
@@ -447,10 +461,11 @@ class _orderViewState extends ConsumerState<orderView> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          "Orden registrada correctamente")),
+          "Orden registrada correctamente",
+          style: Styles.snackText,),
+        backgroundColor: Styles.fondoOscuro,),
     );
   } catch (e) {
-    print("Error registrando orden: $e");
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(

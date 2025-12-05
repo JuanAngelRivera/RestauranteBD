@@ -1,5 +1,3 @@
-import 'dart:nativewrappers/_internal/vm/lib/ffi_native_type_patch.dart';
-
 import 'package:drift/drift.dart';
 import 'package:restaurante_base_de_datos/data/app_database.dart';
 import '../data/tables/database.dart';
@@ -74,7 +72,12 @@ class DaoHelper extends DatabaseAccessor<AppDatabase> with _$DaoHelperMixin {
     return {'porcentaje': query.porcentaje};
   }
 
-  Future<int> insertarOrden(int cherryLocal, double total, String fecha, int idEmpleado) async {
+  Future<int> insertarOrden(
+    int cherryLocal,
+    double total,
+    String fecha,
+    int idEmpleado,
+  ) async {
     return await db.customInsert(
       '''
         insert into Orden (id_CherryLocal, total, fechaRealizada, id_Empleado) values (?, ?, ?, ?);
@@ -83,40 +86,110 @@ class DaoHelper extends DatabaseAccessor<AppDatabase> with _$DaoHelperMixin {
         Variable.withInt(cherryLocal),
         Variable.withReal(total),
         Variable.withString(fecha),
-        Variable.withInt(idEmpleado)
-      ]
+        Variable.withInt(idEmpleado),
+      ],
     );
   }
 
-  Future<int> insertarContiene(int cherryLocal, int idOrden, int idProducto) async {
+  Future<int> obtenerProveedorPorNombre(String nombre) async {
+    final query = (db.select(proveedors)..where((proveedor) => proveedor.nombre.equals(nombre))).getSingle();
+    final result = await query;
+    return result.id;
+  }
+
+  Future<int> insertarContiene(
+    int cherryLocal,
+    int idOrden,
+    int idProducto,
+    int cantidad,
+  ) async {
     return await db.customInsert(
       '''
-        insert into Contiene (id_CherryLocal, id_Orden, id_Producto) values (?, ?, ?);
+        insert into Contiene (id_CherryLocal, id_Orden, id_Producto, cantidad) values (?, ?, ?, ?);
       ''',
       variables: [
         Variable.withInt(cherryLocal),
         Variable.withInt(idOrden),
-        Variable.withInt(idProducto)
-      ]
+        Variable.withInt(idProducto),
+        Variable.withInt(cantidad),
+      ],
     );
   }
 
-  Future<List<Map<String, dynamic>>> ordenesPorEmpleado(
-    int idEmpleado,
-  ) async {
-    final query = await (db.select(
-      ordens,
-    )..where((orden) => orden.idEmpleado.equals(idEmpleado))).get();
-    if (query.isEmpty) return [];
-    
-    return query.map((row) {
+  Future<List<Map<String, dynamic>>> ordenesPorEmpleado(int idEmpleado) async {
+    final query = '''
+    SELECT 
+      o.id AS id,
+      o.fechaRealizada AS fecha,
+      o.id_empleado AS idEmpleado,
+      o.total AS total,
+      l.nombre AS nombreLocal
+    FROM Orden o
+    INNER JOIN CherryLocal l
+      ON o.id_CherryLocal = l.id
+    WHERE o.id_Empleado = ?
+  ''';
+
+    final result = await db
+        .customSelect(
+          query,
+          variables: [Variable.withInt(idEmpleado)],
+          readsFrom: {ordens, cherryLocals},
+        )
+        .get();
+
+    return result.map((row) {
       return {
-        'idLocal': row.idCherryLocal,
-        'id': row.id,
-        'fecha': row.fechaRealizada,
-        'idEmpleado': row.idEmpleado,
-        'total': row.total,
+        'id': row.read<int>('id'),
+        'fecha': formatearFecha(row.read<String>('fecha')),
+        'idEmpleado': row.read<int>('idEmpleado'),
+        'total': '\$${row.read<double>('total')}',
+        'idLocal': row.read<String>('nombreLocal'),
       };
     }).toList();
   }
+
+  String formatearFecha(String fechaIso) {
+  try {
+    final fecha = DateTime.parse(fechaIso);
+
+    return "${fecha.day.toString().padLeft(2, '0')}/"
+           "${fecha.month.toString().padLeft(2, '0')}/"
+           "${fecha.year} "
+           "${fecha.hour.toString().padLeft(2, '0')}:"
+           "${fecha.minute.toString().padLeft(2, '0')}";
+  } catch (e) {
+    return fechaIso;
+  }
+}
+
+Future<List<String>> ingredientesPorProducto(int idProducto) async {
+  List<String> ingredientes = [];
+    final query = '''
+    SELECT 
+      ing.cantidad as cantidad, ins.nombre as nombre, ins.descripcion as descripcionI, m.descripcion as descripcionM
+    FROM Ingredientes ing
+    LEFT OUTER JOIN Insumo ins
+      ON ing.id_Insumo = ins.id
+    LEFT OUTER JOIN Medida m
+      ON ins.id_Medida = m.id
+    WHERE ing.id_Producto = ?;
+  ''';
+
+    final result = await db
+        .customSelect(
+          query,
+          variables: [Variable.withInt(idProducto)],
+          readsFrom: {ingredients, insumos, medidas},
+        )
+        .get();
+    print("Producto $idProducto");
+    if (result.isEmpty) return ["No hay ingredientes que mostrar"];
+    for (var row in result) {
+      ingredientes.add('${row.read<String>("nombre")} (${row.read<String>("descripcionI")}) - ${row.read<int>("cantidad")} ${row.read<String>("descripcionM")}');
+      print('${row.read<String>("nombre")} (${row.read<String>("descripcionI")}) - ${row.read<int>("cantidad")} ${row.read<String>("descripcionM")}');
+    }
+    return ingredientes;
+  }
+
 }

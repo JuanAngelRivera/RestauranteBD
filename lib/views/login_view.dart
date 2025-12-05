@@ -27,6 +27,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
 
   void init() async {
     final loginDao = ref.read(loginDaoProvider);
+    
     if (!await loginDao.existenCuentas()) {
       loginDao.crearAdministrador();
     }
@@ -140,7 +141,11 @@ class _LoginViewState extends ConsumerState<LoginView> {
       if (empleado == null) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text("Empleado no encontrado")));
+        ).showSnackBar(SnackBar(
+          content: Text(
+            "Empleado no encontrado",
+            style: Styles.snackText),
+          backgroundColor: Styles.contraste,));
         return;
       }
 
@@ -156,7 +161,11 @@ class _LoginViewState extends ConsumerState<LoginView> {
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Usuario o contraseña incorrectos")),
+        SnackBar(
+          content: Text(
+            "Usuario o contraseña incorrectos",
+            style: Styles.snackText,),
+          backgroundColor: Styles.contraste,),
       );
     }
   }

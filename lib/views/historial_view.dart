@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:restaurante_base_de_datos/providers/dao_helper_provider.dart';
 import 'package:restaurante_base_de_datos/providers/session_provider.dart';
 import 'package:restaurante_base_de_datos/utils/dao_helper.dart';
+import 'package:restaurante_base_de_datos/utils/styles.dart';
+import 'package:restaurante_base_de_datos/widgets/cell_builder_widgets.dart';
+import 'package:restaurante_base_de_datos/widgets/panel_widget.dart';
 import 'package:restaurante_base_de_datos/widgets/table_screen_widget.dart';
 
 class HistorialView extends ConsumerStatefulWidget {
@@ -14,53 +17,73 @@ class HistorialView extends ConsumerStatefulWidget {
 
 class _HistorialViewState extends ConsumerState<HistorialView> {
   late DaoHelper daoHelper;
-  late Future<List<Map<String, dynamic>>> registros;
+  Future<List<Map<String, dynamic>>>? registrosFuture;
   late SessionState empleado;
-  bool hayRegistros = false;
+
+  CellBuilderWidgets cellb = CellBuilderWidgets();
+
   @override
   void initState() {
     super.initState();
     init();
   }
 
-  void init() async {
-    empleado = ref.watch(sessionProvider);
+  void init() {
+    empleado = ref.read(sessionProvider);
     daoHelper = ref.read(daoHelperProvider);
-    obtenerRegistros(empleado.empleadoId!);
-  }
 
-  void obtenerRegistros(int idEmpleado) async {
-    final query = await daoHelper.ordenesPorEmpleado(idEmpleado);
-    if (query.isNotEmpty) {
-      registros = daoHelper.ordenesPorEmpleado(idEmpleado);
-      hayRegistros = true;
-    }
+    // Carga directa del Future
+    registrosFuture = daoHelper.ordenesPorEmpleado(empleado.empleadoId!);
+
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Historial de órdenes")),
-      body: hayRegistros == false
-          ? Center(child: Text("Aún no hay registros"))
-          : Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TableScreenWidget(
-                titulo: "Órdenes de ${empleado.nombreUsuario}",
-                columnas: ["Local", "Orden", "Fecha", "Total"],
-                dataStream: Stream.fromFuture(Future.value(registros)),
-                columnasPorPagina: 5,
-                onEdit: null,
-                onDelete: null,
-                cellBuilder: (row) {
-                  return [
-                    DataCell(Text(row["idLocal"].toString())),
-                    DataCell(Text(row["id"].toString())),
-                    DataCell(Text(row["fecha"])),
-                    DataCell(Text("\$${row["total"].toString()}")),
-                  ];
-                },
-              ),
+      backgroundColor: Styles.fondoOscuro,
+      appBar: AppBar(
+        foregroundColor: Colors.white,
+        title: Text("Historial de órdenes", style: Styles.titleTextW),
+        backgroundColor: Styles.fondoOscuro,
+      ),
+      body: registrosFuture == null
+          ? Center(child: CircularProgressIndicator())
+          : FutureBuilder<List<Map<String, dynamic>>>(
+              future: registrosFuture!,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Center(child: CircularProgressIndicator());
+                }
+
+                if (snapshot.data!.isEmpty) {
+                  return Center(
+                    child: Text(
+                      "Aún no hay registros",
+                      style: Styles.titleTextW,
+                    ),
+                  );
+                }
+
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: PanelWidget(
+                      padding: EdgeInsets.all(20),
+                      child: TableScreenWidget(
+                        titulo: "Órdenes de ${empleado.nombreUsuario}",
+                        columnas: ["Local", "Orden", "Fecha", "Total"],
+                        dataStream: Stream.value(snapshot.data!),
+                        columnasPorPagina: 5,
+                        onEdit: null,
+                        onDelete: null,
+                        cellBuilder: (registro) =>
+                            cellb.orderCellBuilder(registro),
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
     );
   }

@@ -6,6 +6,7 @@ import 'package:restaurante_base_de_datos/providers/dao_helper_provider.dart';
 import 'package:restaurante_base_de_datos/providers/dao_providers.dart';
 import 'package:restaurante_base_de_datos/utils/styles.dart';
 import 'package:restaurante_base_de_datos/widgets/cell_builder_widgets.dart';
+import 'package:restaurante_base_de_datos/widgets/formulario_dependencia.dart';
 import 'package:restaurante_base_de_datos/widgets/formulario_generico.dart';
 import 'package:restaurante_base_de_datos/widgets/idle_screen_widget.dart';
 import 'package:restaurante_base_de_datos/widgets/panel_widget.dart';
@@ -183,41 +184,92 @@ class _adminViewState extends ConsumerState<adminView> {
         cellBuilder: (registro) =>
             cellBuilderHelper.obtenerCellBuilder(tablaNombre, registro),
         columnasPorPagina: nombresColumnas.length,
-        onEdit: (row) {
-          mostrarFormulario(tablaNombre, id: row["id"]);
+        onEdit: tablaNombre == 'Cuenta'
+        ? null
+        : (row) {
+          switch(tablaNombre){
+            case 'Contacto':
+              mostrarFormulario(
+                tablaNombre,
+                id: {'fk': row["id"], 'pk': row["numero"]},
+              );
+              break;
+            default:
+              mostrarFormulario(tablaNombre, id: row['id']);
+              break;
+          }   
         },
         onDelete: (row) async {
-          final adminDao = ref.read(adminDaoProvider);
-
-          // Obtener columnas de la tabla
-          final columnas = await adminDao.obtenerColumnasTabla(tablaNombre);
-
-          // Filtrar las columnas que sean PK
-          final pkCols = columnas.where((c) => c['pk'] == 1).toList();
-
-          if (pkCols.isEmpty) {
-            print("⚠ No se encontró columna PK para $tablaNombre");
-            return;
+          List<Map<String, dynamic>> pkColumns = [{"name": "id"}];
+          
+          if (tablaNombre == "Contacto"){
+            pkColumns.clear();
+            pkColumns.add({"name" : "id"});
+            pkColumns.add({"name" : "numero"});
           }
 
-          // Construir la cláusula WHERE y la lista de variables
-          final whereClause = pkCols
-              .map((c) => "${c['name']} = ?")
+          String whereClauses = pkColumns
+              .map((c) => "${c["name"]} = ?")
               .join(" AND ");
-          final variables = pkCols.map((c) {
-  final value = row[c['name']];
-  if (value == null) return Variable(null); // <- aquí protegemos null
-  if (value is int) return Variable.withInt(value);
-  if (value is double) return Variable.withReal(value);
-  if (value is String) return Variable.withString(value);
-  throw UnsupportedError("Tipo no soportado en PK: $value");
-}).toList();
+          int? pkReal;
+          if(row["id"] is int) pkReal = row["id"];
+
+          if(tablaNombre == "Contacto"){
+            whereClauses = "id_Proveedor = ? AND numero = ?";
+            final daoHelper = ref.read(daoHelperProvider);
+            pkReal = await daoHelper.obtenerProveedorPorNombre(row["id"]);
+          }
+          final whereVars = pkColumns.map((c) {
+            dynamic val = row[c["name"]];
+            if(tablaNombre == "Contacto" && c["name"] == "id"){
+              val = pkReal;
+              }
+            if (val is int) return Variable.withInt(val);
+            if (val is double) return Variable.withReal(val);
+            if (val is String) return Variable.withString(val);
+            return Variable.withString(val.toString());
+          }).toList();
 
 
-          await db.customStatement(
-            "DELETE FROM $tablaNombre WHERE $whereClause",
-            variables 
+          try{
+            final filasAfectadas = await db.customUpdate(
+            "DELETE FROM $tablaNombre WHERE $whereClauses;",
+            variables: whereVars,
           );
+
+          if (filasAfectadas > 0) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  "Eliminación realizada correctamente",
+                  style: Styles.snackText,
+                ),
+                backgroundColor: Styles.fondoOscuro,
+              ),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  "Error en la eliminación",
+                  style: Styles.snackText,
+                ),
+                backgroundColor: Styles.contraste,
+              ),
+            );
+          }
+          }
+          catch(e){
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  "No se puede eliminar el elemento de $tablaNombre por que está siendo referenciado en otra tabla",
+                  style: Styles.snackText,
+                ),
+                backgroundColor: Styles.contraste,)
+            );
+          }
+
           cargarTabla(tablaNombre);
         },
       );
@@ -227,7 +279,16 @@ class _adminViewState extends ConsumerState<adminView> {
   void mostrarFormulario(String tabla, {dynamic id}) async {
     final resultado = await showDialog(
       context: context,
-      builder: (_) => FormularioGenerico(tabla: tabla, id: id),
+      builder: (_) {
+        switch (tabla) {
+          case "Contacto":
+            print("Formulario 1-n d");
+            return FormularioDependencia(tabla: tabla, id: id);
+          default:
+            print("Formulario 1-n");
+            return FormularioGenerico(tabla: tabla, id: id);
+        }
+      },
     );
 
     if (resultado == true) {
@@ -323,7 +384,7 @@ class _adminViewState extends ConsumerState<adminView> {
     """,
       variables: [
         Variable.withInt(idEmpleado),
-        Variable.withString("$usuario"),
+        Variable.withString("A$usuario"),
         Variable.withString(password),
       ],
     );

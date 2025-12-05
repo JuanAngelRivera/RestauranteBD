@@ -33,6 +33,7 @@ class _ImageListTileWidgetState extends ConsumerState<ImageListTileWidget> {
   bool masInformacion = false;
   bool tieneDescuento = false;
   late int descuento;
+  List<String> ingredientes = [];
 
   @override
   void initState() {
@@ -41,16 +42,24 @@ class _ImageListTileWidgetState extends ConsumerState<ImageListTileWidget> {
   }
 
   void init() async {
-    final daohelper = ref.read(daoHelperProvider);
-    final resultado = await daohelper.obtenerDescuentos(widget.id);
-    if (resultado == null) {
-      descuento = 0;
-    } else {
+  final daohelper = ref.read(daoHelperProvider);
+
+  final resultadoDescuento = await daohelper.obtenerDescuentos(widget.id);
+  final resultadoIngredientes = await daohelper.ingredientesPorProducto(widget.id);
+
+  setState(() {
+    if (resultadoDescuento != null) {
       tieneDescuento = true;
-      descuento = resultado["porcentaje"];
-      setState(() {});
+      descuento = resultadoDescuento["porcentaje"];
+    } else {
+      tieneDescuento = false;
+      descuento = 0;
     }
-  }
+
+    ingredientes = resultadoIngredientes;
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -81,15 +90,25 @@ class _ImageListTileWidgetState extends ConsumerState<ImageListTileWidget> {
                               : 'sources/images/fotosProducto/${widget.imagen!}',
                         ),
                       ),
+                      Text("Ingredientes: ", style: Styles.baseText,),
                       masInformacion == false
                           ? Text(". . .", style: Styles.phantomPointsText)
                           : SizedBox(height: 10),
                       masInformacion == true
-                          ? Text(
-                              "Ingredientes\nIngredientes\nIngredientes\nIngredientes\nIngredientes\n",
-                              style: Styles.phantomText,
-                              textAlign: TextAlign.left,
-                            )
+                          ? ListView.builder(
+                            itemCount: ingredientes.length,
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              return Column(
+                                children: [
+                                  Text(
+                                    '• ${ingredientes[index]}',
+                                    style: Styles.phantomText,
+                                  ),
+                                ],
+                              );
+                            })
                           : SizedBox(),
                     ],
                   ),
@@ -99,7 +118,6 @@ class _ImageListTileWidgetState extends ConsumerState<ImageListTileWidget> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
-                        // ocupa el espacio disponible
                         child: Row(
                           children: [
                             Expanded(
@@ -107,7 +125,7 @@ class _ImageListTileWidgetState extends ConsumerState<ImageListTileWidget> {
                                 widget.title,
                                 style: Styles.titleText,
                                 overflow:
-                                    TextOverflow.ellipsis, // recorta con "..."
+                                    TextOverflow.ellipsis,
                               ),
                             ),
                             SizedBox(width: 10),
